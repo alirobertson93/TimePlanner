@@ -1,0 +1,9 @@
+# build.yaml
+# Configuration for Drift code generation
+targets:
+  $default:
+    builders:
+      drift_dev:
+        enabled: true
+        options:
+          generate_connect_constructor: true
