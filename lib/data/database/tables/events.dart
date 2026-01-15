@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
-import '../../domain/enums/event_status.dart';
-import '../../domain/enums/timing_type.dart';
+import '../../../domain/enums/event_status.dart';
+import '../../../domain/enums/timing_type.dart';
 import 'categories.dart';
 
 /// Events table definition
