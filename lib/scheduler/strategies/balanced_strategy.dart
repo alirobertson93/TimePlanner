@@ -6,6 +6,10 @@ import 'scheduling_strategy.dart';
 
 /// Strategy that distributes events evenly across available time
 class BalancedStrategy implements SchedulingStrategy {
+  // TODO: Make work hours configurable per user
+  static const int defaultWorkStartHour = 9;
+  static const int defaultWorkEndHour = 17;
+
   @override
   String get name => 'balanced';
 
@@ -21,9 +25,9 @@ class BalancedStrategy implements SchedulingStrategy {
     // Find the day with the fewest scheduled events
     final targetDay = _findLeastBusyDay(grid);
 
-    // Try to find slots on that day first
-    final dayStart = DateTime(targetDay.year, targetDay.month, targetDay.day, 9, 0);
-    final dayEnd = DateTime(targetDay.year, targetDay.month, targetDay.day, 17, 0);
+    // Try to find slots on that day first (using configurable work hours)
+    final dayStart = DateTime(targetDay.year, targetDay.month, targetDay.day, defaultWorkStartHour, 0);
+    final dayEnd = DateTime(targetDay.year, targetDay.month, targetDay.day, defaultWorkEndHour, 0);
 
     var current = TimeSlot(TimeSlot.roundDown(dayStart));
     final candidates = <TimeSlot>[];

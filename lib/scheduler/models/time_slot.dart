@@ -14,8 +14,11 @@ class TimeSlot {
   TimeSlot get previous => TimeSlot(start.subtract(const Duration(minutes: 15)));
 
   /// Check if this slot overlaps with another
+  /// Adjacent slots (sharing a boundary) are not considered overlapping
   bool overlaps(TimeSlot other) {
-    return start.isBefore(other.end) && end.isAfter(other.start);
+    // Overlap exists only if there's actual time intersection, not just boundary touching
+    return start.isBefore(other.end) && end.isAfter(other.start) && 
+           !(end == other.start || start == other.end);
   }
 
   /// Check if this slot contains a specific time

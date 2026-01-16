@@ -83,15 +83,15 @@ class AvailabilityGrid {
   }
 
   /// Get count of events scheduled on a specific day
+  /// Counts events that start within the day or span into it
   int getEventCountForDay(DateTime day) {
     final dayStart = DateTime(day.year, day.month, day.day);
     final dayEnd = dayStart.add(const Duration(days: 1));
 
     return _scheduledEvents
         .where((se) =>
-            (se.scheduledStart.isAfter(dayStart) || 
-             se.scheduledStart.isAtSameMomentAs(dayStart)) &&
-            se.scheduledStart.isBefore(dayEnd))
+            se.scheduledStart.isBefore(dayEnd) &&
+            se.scheduledEnd.isAfter(dayStart))
         .length;
   }
 
