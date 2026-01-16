@@ -259,7 +259,7 @@ class TravelTimePairs extends Table {
 
 ---
 
-### 9. Goals Table ❌
+### 9. Goals Table ✅
 
 User-defined goals for time allocation.
 

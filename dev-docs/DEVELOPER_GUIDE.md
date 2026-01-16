@@ -8,16 +8,16 @@ This project includes a comprehensive documentation suite. Here's when to refere
 
 | Document | Purpose | When to Use |
 |----------|---------|-------------|
-| **README.md** | Quick start and basic info | First time setup, running the app |
-| **DEVELOPER_GUIDE.md** (this file) | Development workflow and patterns | Starting any development session |
-| **PRD.md** | Product requirements | Understanding features, priorities, and goals |
-| **DATA_MODEL.md** | Database schema | Working with data, adding tables/fields |
-| **ALGORITHM.md** | Scheduling engine logic | Implementing or modifying scheduling |
-| **ARCHITECTURE.md** | Code structure and layers | Adding features, understanding organization |
-| **TESTING.md** | Testing strategy | Writing tests, running test suites |
-| **UX_FLOWS.md** | User journeys | Building UI, understanding user interactions |
-| **WIREFRAMES.md** | Screen layouts | Implementing screens, UI components |
-| **CHANGELOG.md** | Progress tracking | Session handoffs, tracking changes |
+| **[README.md](../README.md)** | Quick start and basic info | First time setup, running the app |
+| **[DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md)** (this file) | Development workflow and patterns | Starting any development session |
+| **[PRD.md](../PRD.md)** | Product requirements | Understanding features, priorities, and goals |
+| **[DATA_MODEL.md](./DATA_MODEL.md)** | Database schema | Working with data, adding tables/fields |
+| **[ALGORITHM.md](./ALGORITHM.md)** | Scheduling engine logic | Implementing or modifying scheduling |
+| **[ARCHITECTURE.md](./ARCHITECTURE.md)** | Code structure and layers | Adding features, understanding organization |
+| **[TESTING.md](./TESTING.md)** | Testing strategy | Writing tests, running test suites |
+| **[UX_FLOWS.md](./UX_FLOWS.md)** | User journeys | Building UI, understanding user interactions |
+| **[WIREFRAMES.md](./WIREFRAMES.md)** | Screen layouts | Implementing screens, UI components |
+| **[CHANGELOG.md](./CHANGELOG.md)** | Progress tracking | Session handoffs, tracking changes |
 
 ## 🤖 Working with AI Coding Assistants
 
