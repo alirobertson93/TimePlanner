@@ -20,6 +20,279 @@ This project includes a comprehensive documentation suite. Here's when to refere
 | **[WIREFRAMES.md](./WIREFRAMES.md)** | Screen layouts | Implementing screens, UI components |
 | **[CHANGELOG.md](./CHANGELOG.md)** | Progress tracking | Session handoffs, tracking changes |
 
+## 📖 Documentation Purpose Guide
+
+Each documentation file has a **single, specific purpose**. This prevents duplication and ensures information is always up-to-date. **Never duplicate information across files** — use cross-references instead.
+
+### Quick Reference: "Where Do I Look?"
+
+| Question | Answer | File |
+|----------|--------|------|
+| "What's the current project status?" | Phase completion, component status, blockers | [ROADMAP.md](./ROADMAP.md) |
+| "What was done in previous sessions?" | Session logs, decisions made, work completed | [CHANGELOG.md](./CHANGELOG.md) |
+| "How do I start working on this project?" | Setup, workflows, patterns, conventions | [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md) |
+| "How is the code organized?" | Layers, dependencies, folder structure | [ARCHITECTURE.md](./ARCHITECTURE.md) |
+| "What's the database schema?" | Tables, fields, relationships, migrations | [DATA_MODEL.md](./DATA_MODEL.md) |
+| "How does the scheduler work?" | Algorithm, strategies, constraints | [ALGORITHM.md](./ALGORITHM.md) |
+| "How do I write tests?" | Test patterns, coverage, examples | [TESTING.md](./TESTING.md) |
+| "What should the UI look like?" | Screen layouts, design tokens | [WIREFRAMES.md](./WIREFRAMES.md) |
+| "What are the user flows?" | User journeys, interactions | [UX_FLOWS.md](./UX_FLOWS.md) |
+| "What features are planned?" | Requirements, priorities, scope | [PRD.md](../PRD.md) |
+
+### File-by-File Instructions
+
+#### ROADMAP.md — Project Status & Phases
+**Purpose**: Single source of truth for project progress and planning.
+
+**Contains**:
+- Current status (overall % complete, active phase)
+- Completed phases with details
+- Upcoming phases with features, dependencies, estimates
+- Component completion matrix
+- Active blockers
+
+**When to READ**: 
+- Starting a new development session (check what's next)
+- Deciding what to work on
+- Checking if a feature is planned
+
+**When to WRITE**:
+- Completing a phase or major feature
+- Updating component completion percentages
+- Adding/removing blockers
+- Adjusting phase priorities or estimates
+
+**DO NOT put here**: Session logs, code patterns, architecture details
+
+---
+
+#### CHANGELOG.md — Session Logs & Development History
+**Purpose**: Track what was done, when, and by whom. Enable session handoffs.
+
+**Contains**:
+- Session log entries (date, author, goals, work completed)
+- Technical debt items
+- Bug tracker
+- Decisions made during development
+
+**When to READ**:
+- Starting a session (review last 2-3 entries)
+- Understanding why something was built a certain way
+- Finding known issues or debt
+
+**When to WRITE**:
+- After every development session (add session log entry)
+- When discovering technical debt
+- When finding bugs that aren't immediately fixed
+- When making significant technical decisions
+
+**DO NOT put here**: Project status summaries (use ROADMAP.md), code patterns (use DEVELOPER_GUIDE.md)
+
+---
+
+#### DEVELOPER_GUIDE.md — How to Work on This Project
+**Purpose**: Entry point for development. Explains workflows, patterns, and conventions.
+
+**Contains**:
+- Documentation overview (this section!)
+- Development workflow (start/during/end session)
+- Code style guidelines
+- Commit message conventions
+- Common patterns (creating entities, adding features, building screens)
+- Debugging tips
+- Quick reference commands
+
+**When to READ**:
+- First time working on the project
+- Starting any development session
+- Need to remember a pattern or convention
+- Debugging issues
+
+**When to WRITE**:
+- Adding new common patterns
+- Updating conventions
+- Adding debugging tips
+
+**DO NOT put here**: Project status (use ROADMAP.md), session logs (use CHANGELOG.md), detailed architecture (use ARCHITECTURE.md)
+
+---
+
+#### ARCHITECTURE.md — Code Structure & Patterns
+**Purpose**: Explain how the code is organized and the rules for each layer.
+
+**Contains**:
+- Folder structure specification
+- Layer responsibilities (Core, Domain, Data, Scheduler, Presentation)
+- Dependency rules between layers
+- Data flow diagrams
+- Error handling patterns
+- State management patterns
+
+**When to READ**:
+- Understanding where code should go
+- Adding a new feature
+- Debugging layer-related issues
+
+**When to WRITE**:
+- Adding new layers or modules
+- Changing architectural patterns
+- Adding new error handling approaches
+
+**DO NOT put here**: Database schema (use DATA_MODEL.md), algorithm details (use ALGORITHM.md)
+
+---
+
+#### DATA_MODEL.md — Database Schema
+**Purpose**: Complete specification of database tables, fields, and relationships.
+
+**Contains**:
+- All table definitions
+- Field types and constraints
+- Relationships and foreign keys
+- Indexes
+- Default data (seed data)
+- Migration notes
+
+**When to READ**:
+- Working with database
+- Adding new tables or fields
+- Understanding data relationships
+
+**When to WRITE**:
+- Adding new tables
+- Modifying existing tables
+- Changing relationships or constraints
+
+**DO NOT put here**: How to use repositories (use ARCHITECTURE.md), algorithm logic (use ALGORITHM.md)
+
+---
+
+#### ALGORITHM.md — Scheduling Engine Specification
+**Purpose**: Detailed specification of the scheduling algorithm and strategies.
+
+**Contains**:
+- Scheduling input/output contracts
+- Multi-pass algorithm description
+- Strategy implementations (Balanced, Front-Loaded, etc.)
+- Constraint validation logic
+- Goal evaluation
+- Performance considerations
+
+**When to READ**:
+- Working on scheduler code
+- Understanding how scheduling decisions are made
+- Adding new scheduling strategies
+
+**When to WRITE**:
+- Implementing new strategies
+- Modifying algorithm behavior
+- Optimizing performance
+
+**DO NOT put here**: Database schema (use DATA_MODEL.md), UI flows (use UX_FLOWS.md)
+
+---
+
+#### TESTING.md — Testing Strategy
+**Purpose**: How to write and run tests for this project.
+
+**Contains**:
+- Test distribution goals by layer
+- Test folder structure
+- Unit test examples
+- Integration test examples
+- Widget test examples
+- Test fixtures
+- CI configuration
+
+**When to READ**:
+- Writing new tests
+- Setting up test infrastructure
+- Understanding coverage requirements
+
+**When to WRITE**:
+- Adding new test patterns
+- Updating CI configuration
+- Adding test utilities
+
+---
+
+#### WIREFRAMES.md — Screen Layouts
+**Purpose**: Visual specifications for UI screens.
+
+**Contains**:
+- Screen inventory with priorities
+- ASCII wireframes for each screen
+- Design tokens (colors, typography, spacing)
+- Responsive considerations
+- Accessibility requirements
+
+**When to READ**:
+- Building new screens
+- Understanding UI requirements
+- Implementing design tokens
+
+**When to WRITE**:
+- Designing new screens
+- Updating design specifications
+
+---
+
+#### UX_FLOWS.md — User Journeys
+**Purpose**: Document how users interact with the app.
+
+**Contains**:
+- User flows (onboarding, planning wizard, daily use)
+- Screen-to-screen navigation
+- Interaction patterns
+- Error states
+- Notification flows
+
+**When to READ**:
+- Understanding user expectations
+- Building user-facing features
+- Implementing navigation
+
+**When to WRITE**:
+- Designing new user flows
+- Modifying existing journeys
+
+---
+
+#### PRD.md — Product Requirements
+**Purpose**: What the product should do and why.
+
+**Contains**:
+- Problem statement
+- User personas
+- Feature requirements by priority
+- Non-goals (explicit exclusions)
+- Success metrics
+- Technical constraints
+
+**When to READ**:
+- Understanding product vision
+- Prioritizing work
+- Checking if a feature is in scope
+
+**When to WRITE**:
+- Changing product requirements
+- Updating priorities
+- Adding new feature requests
+
+---
+
+### Maintenance Rules
+
+1. **Single Source of Truth**: Never duplicate information. If something is in ROADMAP.md, don't repeat it in CHANGELOG.md.
+
+2. **Cross-References**: Use links like `See [ROADMAP.md](./ROADMAP.md) for current status` instead of copying content.
+
+3. **Keep It Current**: Update docs as you work, not in a big batch later.
+
+4. **Session Handoffs**: Always update CHANGELOG.md at the end of a session so the next developer (human or AI) knows what happened.
+
+5. **Status Updates**: When completing significant work, update ROADMAP.md component percentages and phase status.
+
 ## 🤖 Working with AI Coding Assistants
 
 This project is designed to be AI-assistant friendly. Follow these practices:
