@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../providers/event_providers.dart';
 import 'widgets/day_timeline.dart';
@@ -82,10 +83,7 @@ class DayViewScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Navigate to event creation form
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Event creation coming soon')),
-          );
+          context.push('/event/new', extra: selectedDate);
         },
         child: const Icon(Icons.add),
       ),
