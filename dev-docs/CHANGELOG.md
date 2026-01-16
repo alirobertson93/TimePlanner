@@ -489,7 +489,7 @@ Quick reference to file locations and status.
 |------|--------|-------|--------------|
 | lib/domain/entities/event.dart | ✅ Complete | ~100 | - |
 | lib/domain/entities/category.dart | ✅ Complete | ~50 | - |
-| lib/domain/entities/goal.dart | ❌ Not started | 0 | - |
+| lib/domain/entities/goal.dart | ✅ Complete | ~100 | - |
 | lib/domain/entities/person.dart | ❌ Not started | 0 | - |
 | lib/domain/entities/location.dart | ❌ Not started | 0 | - |
 | lib/domain/enums/timing_type.dart | ✅ Complete | ~10 | - |
@@ -507,16 +507,16 @@ Quick reference to file locations and status.
 
 | File | Status | Lines | Last Updated |
 |------|--------|-------|--------------|
-| lib/scheduler/event_scheduler.dart | ❌ Not started | 0 | - |
-| lib/scheduler/strategies/*.dart | ❌ Not started | 0 | - |
-| lib/scheduler/models/*.dart | ❌ Not started | 0 | - |
+| lib/scheduler/event_scheduler.dart | ✅ Complete | ~300 | - |
+| lib/scheduler/strategies/*.dart | 🟡 Partial | ~200 | - |
+| lib/scheduler/models/*.dart | ✅ Complete | ~150 | - |
 
 ### Presentation Layer
 
 | File | Status | Lines | Last Updated |
 |------|--------|-------|--------------|
 | lib/presentation/screens/home/*.dart | 🟡 Partial | ~200 | - |
-| lib/presentation/screens/day_view/*.dart | ❌ Not started | 0 | - |
+| lib/presentation/screens/day_view/*.dart | ✅ Complete | ~500 | - |
 | lib/presentation/providers/*.dart | 🟡 Partial | ~150 | - |
 
 ### Tests
@@ -525,7 +525,7 @@ Quick reference to file locations and status.
 |------|--------|-------|--------------|
 | test/repositories/event_repository_test.dart | ✅ Complete | ~15 | - |
 | test/repositories/category_repository_test.dart | ❌ Not started | 0 | - |
-| test/scheduler/*.dart | ❌ Not started | 0 | - |
+| test/scheduler/*.dart | ✅ Complete | ~15 | - |
 | test/widget/*.dart | ❌ Not started | 0 | - |
 
 ---

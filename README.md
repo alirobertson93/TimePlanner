@@ -9,7 +9,7 @@ This project follows a clean architecture pattern with the following layers:
 - **Domain Layer**: Pure Dart entities and business logic
 - **Data Layer**: Database (Drift/SQLite) and repositories
 - **Presentation Layer**: UI with Flutter and Riverpod state management
-- **Scheduler Layer**: (Planned) AI-powered scheduling algorithms
+- **Scheduler Layer**: Pure Dart scheduling algorithms (foundation implemented)
 
 ## Project Structure
 
@@ -30,7 +30,7 @@ lib/
 ├── domain/                        # Domain layer
 │   ├── entities/                  # Business entities
 │   └── enums/                     # Domain enums
-├── scheduler/                     # Scheduling logic (planned)
+├── scheduler/                     # Scheduling engine (pure Dart)
 └── presentation/                  # UI layer
     ├── providers/                 # Riverpod providers
     ├── screens/                   # App screens
@@ -79,6 +79,20 @@ flutter test test/repositories/event_repository_test.dart
 # Run tests with coverage
 flutter test --coverage
 ```
+
+## Documentation
+
+Detailed development documentation is available in the [`dev-docs/`](./dev-docs/) folder:
+
+- **[DEVELOPER_GUIDE.md](./dev-docs/DEVELOPER_GUIDE.md)** - Start here for development workflow
+- **[ARCHITECTURE.md](./dev-docs/ARCHITECTURE.md)** - Code structure and patterns
+- **[DATA_MODEL.md](./dev-docs/DATA_MODEL.md)** - Database schema
+- **[ALGORITHM.md](./dev-docs/ALGORITHM.md)** - Scheduling engine specification
+- **[TESTING.md](./dev-docs/TESTING.md)** - Testing strategy
+- **[UX_FLOWS.md](./dev-docs/UX_FLOWS.md)** - User journeys
+- **[WIREFRAMES.md](./dev-docs/WIREFRAMES.md)** - Screen layouts
+- **[CHANGELOG.md](./dev-docs/CHANGELOG.md)** - Development progress tracking
+- **[SETUP.md](./dev-docs/SETUP.md)** - Detailed setup instructions
 
 ## Database Schema
 
