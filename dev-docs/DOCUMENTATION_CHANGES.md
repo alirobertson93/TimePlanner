@@ -35,30 +35,13 @@ This report documents the documentation reorganization performed to improve proj
 |------|----------|--------|
 | `README.md` | Repository root | Standard convention - README stays at root |
 
-## Project Roadmap Summary
+## Historical Note
 
-### Current Status: ~50% Complete (Phase 2 Finished)
+This document served as a one-time report for the documentation reorganization performed on 2026-01-16.
 
-| Component | Status | Completion |
-|-----------|--------|------------|
-| Database Layer | ✅ Events, Categories, Goals | 70% |
-| Scheduler Foundation | ✅ Core + BalancedStrategy | 60% |
-| Day View UI | ✅ Timeline, events, navigation | 70% |
-| Week View | ❌ Not started | 0% |
-| Planning Wizard | ❌ Not started | 0% |
-| Event Form | 🟡 Placeholder | 10% |
-| People & Locations | ❌ Not started | 0% |
+**📍 For current project status, roadmap, and upcoming phases, see [ROADMAP.md](./ROADMAP.md)**
 
-### Upcoming Phases
-
-| Phase | Priority | Features |
-|-------|----------|----------|
-| Phase 3 | High | Event Form UI, Week View, Category color integration |
-| Phase 4 | High | Planning Wizard (4-step flow), Schedule generation UI |
-| Phase 5 | Medium | Additional scheduling strategies, Goals dashboard |
-| Phase 6 | Medium | People management, Locations, Travel time |
-| Phase 7 | Low | Recurrence, Notifications, Settings |
-| Phase 8 | Low | Onboarding, Polish, Performance optimization |
+The roadmap information that was previously included here has been moved to its dedicated file to serve as a single source of truth for project status and planning.
 
 ---
 *This report was generated as part of the documentation cleanup on 2026-01-16.*

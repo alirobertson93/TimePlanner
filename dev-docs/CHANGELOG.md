@@ -16,84 +16,18 @@ This changelog serves multiple purposes:
 
 **After Each Session**:
 1. Add entry to Session Log with date and summary
-2. Update Current Status section
+2. Update [ROADMAP.md](./ROADMAP.md) if phase/status changes
 3. Mark completed items in Implementation Milestones
 4. Add any new issues to Technical Debt or Bug Tracker
 5. Update relevant file statuses
 
 **Starting New Session**:
-1. Review Current Status
-2. Check Technical Debt and Bug Tracker
+1. Review [ROADMAP.md](./ROADMAP.md) for current status and priorities
+2. Check Technical Debt and Bug Tracker below
 3. Read last 2-3 session log entries
 4. Plan work based on priorities
 
----
-
-## Current Status
-
-**Last Updated**: 2026-01-16
-
-**Project Phase**: Foundation / MVP Development
-
-**Overall Progress**: ~50% (Phase 2 Complete: Goals System, Scheduler Foundation, Day View UI)
-
-### What's Working
-
-✅ **Database Layer**:
-- Events table implemented with Drift
-- Categories table with default seed data
-- Goals table with full schema
-- EventRepository with CRUD operations
-- CategoryRepository with CRUD operations
-- GoalRepository with CRUD operations and tests
-- Basic queries and reactive streams
-- Database migration from v1 to v2
-
-✅ **Data Model**:
-- Event entity with fixed/flexible timing
-- Category entity
-- Goal entity with all properties
-- Core enums (TimingType, EventStatus)
-- Goal enums (GoalType, GoalMetric, GoalPeriod, DebtStrategy)
-- Validation logic in domain entities
-
-✅ **Scheduler Foundation** (Pure Dart):
-- TimeSlot model with 15-minute granularity
-- AvailabilityGrid for tracking occupied slots
-- ScheduleRequest/ScheduleResult models
-- ScheduledEvent and Conflict models
-- SchedulingStrategy interface
-- BalancedStrategy implementation
-- EventScheduler main class
-- Comprehensive unit tests (pure Dart, no Flutter)
-
-✅ **UI Layer**:
-- Day View screen with 24-hour timeline
-- DayTimeline widget with hour markers
-- EventCard widget for displaying events
-- TimeMarker and CurrentTimeIndicator widgets
-- Event detail bottom sheet
-- Navigation between days (previous/today/next)
-- Event providers with Riverpod
-- Routing setup for day view
-
-✅ **Documentation**:
-- Complete documentation suite added
-- DEVELOPER_GUIDE.md, PRD.md, DATA_MODEL.md
-- ALGORITHM.md, ARCHITECTURE.md, TESTING.md
-- UX_FLOWS.md, WIREFRAMES.md, CHANGELOG.md
-
-### Not Started
-
-❌ **People & Locations**: Tables and UI pending
-❌ **Recurrence**: Not implemented
-❌ **Planning Wizard**: UI not started
-❌ **Week View**: Not implemented
-❌ **Event Form**: Creation/editing UI not complete
-
-### Blockers
-
-None currently.
+> **📍 For current project status, completed phases, and upcoming work, see [ROADMAP.md](./ROADMAP.md)**
 
 ---
 
