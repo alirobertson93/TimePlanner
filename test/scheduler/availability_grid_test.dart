@@ -76,7 +76,7 @@ void main() {
     test('findAvailableSlots returns null when no space available', () {
       // Fill entire grid
       var current = TimeSlot(TimeSlot.roundDown(windowStart));
-      final end = TimeSlot.roundUp(windowEnd);
+      final end = TimeSlot(TimeSlot.roundUp(windowEnd));
 
       final event = Event(
         id: 'event_1',
