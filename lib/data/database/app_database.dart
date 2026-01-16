@@ -8,11 +8,12 @@ import 'package:sqlite3/sqlite3.dart';
 
 import 'tables/categories.dart';
 import 'tables/events.dart';
+import 'tables/goals.dart';
 
 part 'app_database.g.dart';
 
 /// Main database class for the TimePlanner app
-@DriftDatabase(tables: [Categories, Events])
+@DriftDatabase(tables: [Categories, Events, Goals])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -20,7 +21,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(QueryExecutor executor) : super(executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration {
@@ -30,7 +31,10 @@ class AppDatabase extends _$AppDatabase {
         await _seedDefaultCategories();
       },
       onUpgrade: (Migrator m, int from, int to) async {
-        // Future migrations will go here
+        // Migration from version 1 to 2: Add Goals table
+        if (from == 1) {
+          await m.createTable(goals);
+        }
       },
     );
   }

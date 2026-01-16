@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../providers/repository_providers.dart';
 
 /// Home screen - placeholder for the main app interface
@@ -40,10 +41,10 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(height: 32),
             ElevatedButton.icon(
               onPressed: () {
-                // TODO: Navigate to events screen
+                context.go('/day');
               },
-              icon: const Icon(Icons.add),
-              label: const Text('Create Event'),
+              icon: const Icon(Icons.calendar_view_day),
+              label: const Text('View Day'),
             ),
           ],
         ),
