@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart' hide TimeOfDay;
-import 'package:flutter/material.dart' as material show TimeOfDay;
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../providers/event_form_providers.dart';
 import '../../providers/repository_providers.dart';
 import '../../../domain/enums/timing_type.dart';
+import 'package:flutter/material.dart' as flutter;
 
 /// Screen for creating or editing events
 class EventFormScreen extends ConsumerStatefulWidget {
@@ -182,7 +182,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
                             width: 16,
                             height: 16,
                             decoration: BoxDecoration(
-                              color: Color(int.parse('0xFF${category.colourHex}')),
+                              color: _parseColor(category.colourHex),
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -272,11 +272,11 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
                       final time = await showTimePicker(
                         context: context,
                         initialTime: formState.startTime != null
-                            ? material.TimeOfDay(
+                            ? flutter.TimeOfDay(
                                 hour: formState.startTime!.hour,
                                 minute: formState.startTime!.minute,
                               )
-                            : material.TimeOfDay.now(),
+                            : flutter.TimeOfDay.now(),
                       );
                       if (time != null) {
                         formNotifier.updateStartTime(
@@ -328,11 +328,11 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
                       final time = await showTimePicker(
                         context: context,
                         initialTime: formState.endTime != null
-                            ? material.TimeOfDay(
+                            ? flutter.TimeOfDay(
                                 hour: formState.endTime!.hour,
                                 minute: formState.endTime!.minute,
                               )
-                            : material.TimeOfDay.now(),
+                            : flutter.TimeOfDay.now(),
                       );
                       if (time != null) {
                         formNotifier.updateEndTime(
@@ -407,5 +407,23 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
         ],
       ),
     );
+  }
+
+  /// Safely parse color hex string to Color
+  Color _parseColor(String? hexString) {
+    if (hexString == null || hexString.isEmpty) {
+      return Colors.grey; // Default color
+    }
+    
+    try {
+      // Remove any non-hex characters
+      final cleanHex = hexString.replaceAll(RegExp(r'[^0-9A-Fa-f]'), '');
+      if (cleanHex.length == 6) {
+        return Color(int.parse('0xFF$cleanHex'));
+      }
+    } catch (e) {
+      // Return default color on parse error
+    }
+    return Colors.grey;
   }
 }

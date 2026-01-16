@@ -119,7 +119,9 @@ class EventFormState {
   bool get isValid => validate() == null;
 }
 
-/// Time of day helper class since we can't import flutter/material in providers
+/// Time of day helper class since we can't import flutter/material in providers.
+/// This keeps the provider pure Dart and testable without Flutter dependencies,
+/// maintaining separation of concerns in our clean architecture.
 class TimeOfDay {
   const TimeOfDay({required this.hour, required this.minute});
 

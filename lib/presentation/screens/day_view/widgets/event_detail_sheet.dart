@@ -119,8 +119,7 @@ class EventDetailSheet extends StatelessWidget {
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: () {
-                          Navigator.pop(context);
-                          context.push('/event/${event.id}/edit');
+                          context.pushReplacement('/event/${event.id}/edit');
                         },
                         icon: const Icon(Icons.edit),
                         label: const Text('Edit'),
