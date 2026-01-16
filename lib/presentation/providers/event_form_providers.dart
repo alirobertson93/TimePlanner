@@ -248,6 +248,15 @@ class EventForm extends _$EventForm {
       final now = DateTime.now();
       final uuid = const Uuid();
 
+      // Get createdAt timestamp
+      DateTime createdAt = now;
+      if (state.isEditMode && state.id != null) {
+        final existingEvent = await repository.getById(state.id!);
+        if (existingEvent != null) {
+          createdAt = existingEvent.createdAt;
+        }
+      }
+
       final event = Event(
         id: state.id ?? uuid.v4(),
         name: state.title.trim(),
@@ -276,7 +285,7 @@ class EventForm extends _$EventForm {
             : null,
         categoryId: state.categoryId,
         status: EventStatus.pending,
-        createdAt: state.isEditMode ? (await repository.getById(state.id!))!.createdAt : now,
+        createdAt: createdAt,
         updatedAt: now,
       );
 
