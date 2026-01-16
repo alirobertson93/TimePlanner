@@ -77,7 +77,7 @@ class DayTimeline extends StatelessWidget {
                       }),
                       // Current time indicator (only for today)
                       if (isToday)
-                        CurrentTimeIndicator(
+                        const CurrentTimeIndicator(
                           hourHeight: hourHeight,
                         ),
                     ],

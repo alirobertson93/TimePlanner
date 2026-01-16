@@ -1,6 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../data/repositories/event_repository.dart';
 import '../../domain/entities/event.dart';
 import '../../core/utils/date_utils.dart';
 import 'repository_providers.dart';
@@ -9,7 +7,7 @@ part 'event_providers.g.dart';
 
 /// Provider for events on a specific date
 @riverpod
-Stream<List<Event>> eventsForDate(EventsForDateRef ref, DateTime date) {
+Stream<List<Event>> eventsForDate(Ref ref, DateTime date) {
   final repository = ref.watch(eventRepositoryProvider);
   final start = DateTimeUtils.startOfDay(date);
   final end = DateTimeUtils.endOfDay(date);
