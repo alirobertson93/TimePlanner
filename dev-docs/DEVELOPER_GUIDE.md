@@ -10,6 +10,7 @@ This project includes a comprehensive documentation suite. Here's when to refere
 |----------|---------|-------------|
 | **[README.md](../README.md)** | Quick start and basic info | First time setup, running the app |
 | **[DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md)** (this file) | Development workflow and patterns | Starting any development session |
+| **[ROADMAP.md](./ROADMAP.md)** | Project status and upcoming phases | Understanding progress, planning work |
 | **[PRD.md](../PRD.md)** | Product requirements | Understanding features, priorities, and goals |
 | **[DATA_MODEL.md](./DATA_MODEL.md)** | Database schema | Working with data, adding tables/fields |
 | **[ALGORITHM.md](./ALGORITHM.md)** | Scheduling engine logic | Implementing or modifying scheduling |
@@ -28,8 +29,9 @@ This project is designed to be AI-assistant friendly. Follow these practices:
 1. **Load Context**: Share relevant documentation files with your AI assistant
    - Always share: DEVELOPER_GUIDE.md (this file)
    - Task-specific: Share docs relevant to your task (see table above)
+   - For status/planning: Share ROADMAP.md
 
-2. **Review Current State**: Check CHANGELOG.md for latest status and known issues
+2. **Review Current State**: Check [ROADMAP.md](./ROADMAP.md) for current phase and priorities, and [CHANGELOG.md](./CHANGELOG.md) for latest sessions and known issues
 
 3. **Set Clear Goals**: Define specific, measurable objectives for the session
 
@@ -42,10 +44,12 @@ This project is designed to be AI-assistant friendly. Follow these practices:
 
 ### Ending a Session
 
-1. **Update CHANGELOG.md**: Add session notes with what was accomplished
+1. **Update Documentation**: 
+   - Add session notes to [CHANGELOG.md](./CHANGELOG.md)
+   - Update [ROADMAP.md](./ROADMAP.md) if phase status changes
 2. **Commit Changes**: Use proper commit message conventions
 3. **Run Full Test Suite**: Ensure nothing is broken
-4. **Note Blockers**: Document any issues or next steps in CHANGELOG.md
+4. **Note Blockers**: Document any issues or next steps
 
 ## 🎨 Code Style Guidelines
 

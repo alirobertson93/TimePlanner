@@ -85,6 +85,7 @@ flutter test --coverage
 Detailed development documentation is available in the [`dev-docs/`](./dev-docs/) folder:
 
 - **[DEVELOPER_GUIDE.md](./dev-docs/DEVELOPER_GUIDE.md)** - Start here for development workflow
+- **[ROADMAP.md](./dev-docs/ROADMAP.md)** - Project status and upcoming features
 - **[ARCHITECTURE.md](./dev-docs/ARCHITECTURE.md)** - Code structure and patterns
 - **[DATA_MODEL.md](./dev-docs/DATA_MODEL.md)** - Database schema
 - **[ALGORITHM.md](./dev-docs/ALGORITHM.md)** - Scheduling engine specification
