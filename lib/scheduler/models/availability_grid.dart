@@ -89,7 +89,8 @@ class AvailabilityGrid {
 
     return _scheduledEvents
         .where((se) =>
-            se.scheduledStart.isAfter(dayStart) || se.scheduledStart.isAtSameMomentAs(dayStart) &&
+            (se.scheduledStart.isAfter(dayStart) || 
+             se.scheduledStart.isAtSameMomentAs(dayStart)) &&
             se.scheduledStart.isBefore(dayEnd))
         .length;
   }

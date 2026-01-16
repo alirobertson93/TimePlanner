@@ -20,7 +20,7 @@ class TimeSlot {
 
   /// Check if this slot contains a specific time
   bool contains(DateTime time) {
-    return time.isAfter(start) || time.isAtSameMomentAs(start) &&
+    return (time.isAfter(start) || time.isAtSameMomentAs(start)) &&
         time.isBefore(end);
   }
 
