@@ -2,7 +2,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:time_planner/data/database/app_database.dart';
 import 'package:time_planner/data/repositories/event_repository.dart';
-import 'package:time_planner/domain/entities/event.dart';
+import 'package:time_planner/domain/entities/event.dart' as domain;
 import 'package:time_planner/domain/enums/event_status.dart';
 import 'package:time_planner/domain/enums/timing_type.dart';
 
@@ -26,7 +26,7 @@ void main() {
       final rangeStart = DateTime(now.year, now.month, now.day, 9, 0);
       final rangeEnd = DateTime(now.year, now.month, now.day, 17, 0);
 
-      final eventInRange = Event(
+      final eventInRange = domain.Event(
         id: 'event_1',
         name: 'Meeting',
         timingType: TimingType.fixed,
@@ -36,7 +36,7 @@ void main() {
         updatedAt: now,
       );
 
-      final eventBeforeRange = Event(
+      final eventBeforeRange = domain.Event(
         id: 'event_2',
         name: 'Early Event',
         timingType: TimingType.fixed,
@@ -46,7 +46,7 @@ void main() {
         updatedAt: now,
       );
 
-      final eventAfterRange = Event(
+      final eventAfterRange = domain.Event(
         id: 'event_3',
         name: 'Late Event',
         timingType: TimingType.fixed,
@@ -75,7 +75,7 @@ void main() {
       final rangeStart = DateTime(now.year, now.month, now.day, 10, 0);
       final rangeEnd = DateTime(now.year, now.month, now.day, 15, 0);
 
-      final eventStartsBeforeRangeEndsInRange = Event(
+      final eventStartsBeforeRangeEndsInRange = domain.Event(
         id: 'event_1',
         name: 'Starts Before',
         timingType: TimingType.fixed,
@@ -85,7 +85,7 @@ void main() {
         updatedAt: now,
       );
 
-      final eventStartsInRangeEndsAfter = Event(
+      final eventStartsInRangeEndsAfter = domain.Event(
         id: 'event_2',
         name: 'Ends After',
         timingType: TimingType.fixed,
@@ -95,7 +95,7 @@ void main() {
         updatedAt: now,
       );
 
-      final eventSpansEntireRange = Event(
+      final eventSpansEntireRange = domain.Event(
         id: 'event_3',
         name: 'Spans Entire Range',
         timingType: TimingType.fixed,
@@ -123,7 +123,7 @@ void main() {
       final rangeStart = DateTime(now.year, now.month, now.day, 10, 0);
       final rangeEnd = DateTime(now.year, now.month, now.day, 12, 0);
 
-      final eventOutsideRange = Event(
+      final eventOutsideRange = domain.Event(
         id: 'event_1',
         name: 'Outside Range',
         timingType: TimingType.fixed,
@@ -147,7 +147,7 @@ void main() {
     test('saves and retrieves event correctly', () async {
       // Arrange
       final now = DateTime.now();
-      final event = Event(
+      final event = domain.Event(
         id: 'event_1',
         name: 'Test Event',
         description: 'Test Description',
@@ -183,7 +183,7 @@ void main() {
     test('updates existing event', () async {
       // Arrange
       final now = DateTime.now();
-      final event = Event(
+      final event = domain.Event(
         id: 'event_1',
         name: 'Original Name',
         timingType: TimingType.fixed,
@@ -222,7 +222,7 @@ void main() {
     test('deletes event from database', () async {
       // Arrange
       final now = DateTime.now();
-      final event = Event(
+      final event = domain.Event(
         id: 'event_1',
         name: 'Event to Delete',
         timingType: TimingType.fixed,
@@ -253,7 +253,7 @@ void main() {
     test('getAll returns all events', () async {
       // Arrange
       final now = DateTime.now();
-      final event1 = Event(
+      final event1 = domain.Event(
         id: 'event_1',
         name: 'Event 1',
         timingType: TimingType.fixed,
@@ -263,7 +263,7 @@ void main() {
         updatedAt: now,
       );
 
-      final event2 = Event(
+      final event2 = domain.Event(
         id: 'event_2',
         name: 'Event 2',
         timingType: TimingType.flexible,
@@ -286,7 +286,7 @@ void main() {
     test('getByCategory returns events for specific category', () async {
       // Arrange
       final now = DateTime.now();
-      final workEvent = Event(
+      final workEvent = domain.Event(
         id: 'event_1',
         name: 'Work Event',
         timingType: TimingType.fixed,
@@ -297,7 +297,7 @@ void main() {
         updatedAt: now,
       );
 
-      final personalEvent = Event(
+      final personalEvent = domain.Event(
         id: 'event_2',
         name: 'Personal Event',
         timingType: TimingType.fixed,
@@ -323,7 +323,7 @@ void main() {
     test('getByStatus returns events with specific status', () async {
       // Arrange
       final now = DateTime.now();
-      final pendingEvent = Event(
+      final pendingEvent = domain.Event(
         id: 'event_1',
         name: 'Pending Event',
         timingType: TimingType.fixed,
@@ -334,7 +334,7 @@ void main() {
         updatedAt: now,
       );
 
-      final completedEvent = Event(
+      final completedEvent = domain.Event(
         id: 'event_2',
         name: 'Completed Event',
         timingType: TimingType.fixed,
@@ -362,7 +362,7 @@ void main() {
     test('event with duration calculates effectiveDuration correctly', () async {
       // Arrange
       final now = DateTime.now();
-      final event = Event(
+      final event = domain.Event(
         id: 'event_1',
         name: 'Event with Duration',
         timingType: TimingType.flexible,
@@ -387,7 +387,7 @@ void main() {
       final startTime = DateTime(now.year, now.month, now.day, 10, 0);
       final endTime = DateTime(now.year, now.month, now.day, 12, 30);
       
-      final event = Event(
+      final event = domain.Event(
         id: 'event_1',
         name: 'Event with Times',
         timingType: TimingType.fixed,
@@ -410,7 +410,7 @@ void main() {
     test('isMovableByApp returns correct value', () async {
       // Arrange
       final now = DateTime.now();
-      final movableEvent = Event(
+      final movableEvent = domain.Event(
         id: 'event_1',
         name: 'Movable Event',
         timingType: TimingType.flexible,
@@ -421,7 +421,7 @@ void main() {
         updatedAt: now,
       );
 
-      final lockedEvent = Event(
+      final lockedEvent = domain.Event(
         id: 'event_2',
         name: 'Locked Event',
         timingType: TimingType.flexible,

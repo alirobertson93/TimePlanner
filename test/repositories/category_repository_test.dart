@@ -2,7 +2,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:time_planner/data/database/app_database.dart';
 import 'package:time_planner/data/repositories/event_repository.dart';
-import 'package:time_planner/domain/entities/category.dart';
+import 'package:time_planner/domain/entities/category.dart' as domain;
 
 void main() {
   late AppDatabase db;
@@ -64,7 +64,7 @@ void main() {
   group('CategoryRepository - CRUD operations', () {
     test('saves and retrieves custom category', () async {
       // Arrange
-      const category = Category(
+      const category = domain.Category(
         id: 'cat_custom',
         name: 'Custom Category',
         colourHex: '#123456',
@@ -87,7 +87,7 @@ void main() {
 
     test('updates existing category', () async {
       // Arrange
-      const category = Category(
+      const category = domain.Category(
         id: 'cat_test',
         name: 'Original Name',
         colourHex: '#111111',
@@ -114,7 +114,7 @@ void main() {
 
     test('deletes category', () async {
       // Arrange
-      const category = Category(
+      const category = domain.Category(
         id: 'cat_to_delete',
         name: 'Delete Me',
         colourHex: '#FFFFFF',
@@ -143,14 +143,14 @@ void main() {
   group('CategoryRepository - getAll', () {
     test('returns all categories including custom ones', () async {
       // Arrange
-      const customCategory1 = Category(
+      const customCategory1 = domain.Category(
         id: 'cat_custom1',
         name: 'Custom 1',
         colourHex: '#AAAAAA',
         sortOrder: 100,
       );
 
-      const customCategory2 = Category(
+      const customCategory2 = domain.Category(
         id: 'cat_custom2',
         name: 'Custom 2',
         colourHex: '#BBBBBB',

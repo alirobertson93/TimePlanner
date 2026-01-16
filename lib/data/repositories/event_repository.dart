@@ -26,7 +26,7 @@ class EventRepository {
               tbl.fixedEndTime.isBiggerOrEqualValue(end)));
 
     final results = await query.get();
-    return results.map(_mapToEntity).toList();
+    return results.map<domain.Event>(_mapToEntity).toList();
   }
 
   /// Retrieves an event by its ID
@@ -51,7 +51,7 @@ class EventRepository {
   /// Retrieves all events
   Future<List<domain.Event>> getAll() async {
     final results = await _db.select(_db.events).get();
-    return results.map(_mapToEntity).toList();
+    return results.map<domain.Event>(_mapToEntity).toList();
   }
 
   /// Retrieves events by category
@@ -60,7 +60,7 @@ class EventRepository {
       ..where((tbl) => tbl.categoryId.equals(categoryId));
 
     final results = await query.get();
-    return results.map(_mapToEntity).toList();
+    return results.map<domain.Event>(_mapToEntity).toList();
   }
 
   /// Retrieves events by status
@@ -69,11 +69,11 @@ class EventRepository {
       ..where((tbl) => tbl.status.equals(status.value));
 
     final results = await query.get();
-    return results.map(_mapToEntity).toList();
+    return results.map<domain.Event>(_mapToEntity).toList();
   }
 
   /// Maps a database event to a domain event entity
-  domain.Event _mapToEntity(EventData dbEvent) {
+  domain.Event _mapToEntity(Event dbEvent) {
     return domain.Event(
       id: dbEvent.id,
       name: dbEvent.name,
