@@ -6,7 +6,7 @@ Complete specification for the TimePlanner scheduling engine.
 
 The scheduling engine is the core intelligence of TimePlanner. It takes a set of events (fixed and flexible) along with constraints and generates an optimal schedule.
 
-**Status**: 🔴 Not yet implemented
+**Status**: 🟡 Partially Implemented (BalancedStrategy complete, additional strategies pending)
 
 ## Architectural Context
 
@@ -869,4 +869,4 @@ See TESTING.md for full testing strategy. Key test categories:
 
 ---
 
-*Last updated: 2026-01-16*
+*Last updated: 2026-01-17*
