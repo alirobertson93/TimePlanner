@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../../../../core/utils/date_utils.dart';
 
 /// Header widget showing the days of the week
 class WeekHeader extends StatelessWidget {
@@ -34,8 +35,8 @@ class WeekHeader extends StatelessWidget {
       child: Row(
         children: List.generate(7, (index) {
           final date = weekStart.add(Duration(days: index));
-          final isToday = _isSameDay(date, now);
-          final isSelected = _isSameDay(date, selectedDate);
+          final isToday = DateTimeUtils.isSameDay(date, now);
+          final isSelected = DateTimeUtils.isSameDay(date, selectedDate);
           final dayName = DateFormat.E().format(date);
           final dayNumber = date.day.toString();
 
@@ -89,11 +90,5 @@ class WeekHeader extends StatelessWidget {
         }),
       ),
     );
-  }
-
-  bool _isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
   }
 }

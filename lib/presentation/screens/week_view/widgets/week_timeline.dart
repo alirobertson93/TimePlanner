@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../domain/entities/event.dart';
 import '../../../../domain/entities/category.dart';
+import '../../../../core/utils/date_utils.dart';
 import '../../../providers/category_providers.dart';
 
 /// Timeline widget showing a 7-day grid with events
@@ -103,9 +104,7 @@ class WeekTimeline extends ConsumerWidget {
   List<Event> _getEventsForDay(DateTime date) {
     return events.where((event) {
       if (event.startTime == null) return false;
-      return event.startTime!.year == date.year &&
-          event.startTime!.month == date.month &&
-          event.startTime!.day == date.day;
+      return DateTimeUtils.isSameDay(event.startTime!, date);
     }).toList();
   }
 }
