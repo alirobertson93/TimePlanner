@@ -42,20 +42,36 @@ class StrategySelectionStep extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
 
-          // Placeholder for future strategies
-          _buildFutureStrategyCard(
+          _buildStrategyCard(
             context: context,
+            ref: ref,
+            strategy: StrategyType.frontLoaded,
+            isSelected: wizardState.selectedStrategy == StrategyType.frontLoaded,
             title: 'Front-Loaded',
             description: 'Schedule important tasks early in the week. Best for getting ahead and having flexibility later.',
             icon: Icons.trending_down,
           ),
           const SizedBox(height: 16),
 
-          _buildFutureStrategyCard(
+          _buildStrategyCard(
             context: context,
+            ref: ref,
+            strategy: StrategyType.maxFreeTime,
+            isSelected: wizardState.selectedStrategy == StrategyType.maxFreeTime,
             title: 'Max Free Time',
             description: 'Create large uninterrupted blocks of free time. Best for deep work or personal projects.',
             icon: Icons.free_breakfast,
+          ),
+          const SizedBox(height: 16),
+
+          _buildStrategyCard(
+            context: context,
+            ref: ref,
+            strategy: StrategyType.leastDisruption,
+            isSelected: wizardState.selectedStrategy == StrategyType.leastDisruption,
+            title: 'Least Disruption',
+            description: 'Minimize changes to your existing schedule. Best when rescheduling events.',
+            icon: Icons.sync_disabled,
           ),
           const SizedBox(height: 32),
 
@@ -235,103 +251,4 @@ class StrategySelectionStep extends ConsumerWidget {
     );
   }
 
-  Widget _buildFutureStrategyCard({
-    required BuildContext context,
-    required String title,
-    required String description,
-    required IconData icon,
-  }) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
-        ),
-      ),
-      color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Disabled radio
-            Radio<StrategyType>(
-              value: StrategyType.balanced, // Placeholder
-              groupValue: null, // Not selectable
-              onChanged: null,
-            ),
-            const SizedBox(width: 12),
-
-            // Icon
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                icon,
-                size: 32,
-                color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
-              ),
-            ),
-            const SizedBox(width: 16),
-
-            // Text content
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        title,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withOpacity(0.5),
-                            ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'Coming Soon',
-                          style:
-                              Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
-                                  ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    description,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurfaceVariant
-                              .withOpacity(0.5),
-                        ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
