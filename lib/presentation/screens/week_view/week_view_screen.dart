@@ -2,64 +2,86 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import '../../../core/utils/date_utils.dart';
 import '../../providers/event_providers.dart';
-import 'widgets/day_timeline.dart';
-import 'widgets/event_detail_sheet.dart';
+import 'widgets/week_header.dart';
+import 'widgets/week_timeline.dart';
 
-/// Day view screen showing a 24-hour timeline
-class DayViewScreen extends ConsumerWidget {
-  const DayViewScreen({super.key});
+/// Week view screen showing a 7-day timeline
+class WeekViewScreen extends ConsumerWidget {
+  const WeekViewScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedDate = ref.watch(selectedDateProvider);
-    final eventsAsync = ref.watch(eventsForDateProvider(selectedDate));
+    final weekStart = DateTimeUtils.startOfWeek(selectedDate);
+    final eventsAsync = ref.watch(eventsForWeekProvider(weekStart));
+
+    final weekLabel = 'Week of ${DateFormat.MMMd().format(weekStart)}';
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(DateFormat.yMMMMd().format(selectedDate)),
+        title: Text(weekLabel),
         actions: [
           IconButton(
             icon: const Icon(Icons.chevron_left),
             onPressed: () {
-              ref.read(selectedDateProvider.notifier).previousDay();
+              ref.read(selectedDateProvider.notifier).setDate(
+                    selectedDate.subtract(const Duration(days: 7)),
+                  );
             },
-            tooltip: 'Previous day',
+            tooltip: 'Previous week',
           ),
           IconButton(
             icon: const Icon(Icons.today),
             onPressed: () {
               ref.read(selectedDateProvider.notifier).today();
             },
-            tooltip: 'Today',
+            tooltip: 'This week',
           ),
           IconButton(
             icon: const Icon(Icons.chevron_right),
             onPressed: () {
-              ref.read(selectedDateProvider.notifier).nextDay();
+              ref.read(selectedDateProvider.notifier).setDate(
+                    selectedDate.add(const Duration(days: 7)),
+                  );
             },
-            tooltip: 'Next day',
+            tooltip: 'Next week',
           ),
           IconButton(
-            icon: const Icon(Icons.calendar_view_week),
+            icon: const Icon(Icons.calendar_view_day),
             onPressed: () {
-              context.go('/week');
+              context.go('/day');
             },
-            tooltip: 'Week view',
+            tooltip: 'Day view',
           ),
         ],
       ),
       body: eventsAsync.when(
-        data: (events) => DayTimeline(
-          date: selectedDate,
-          events: events,
-          onEventTap: (event) {
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              builder: (context) => EventDetailSheet(event: event),
-            );
-          },
+        data: (events) => Column(
+          children: [
+            WeekHeader(
+              weekStart: weekStart,
+              selectedDate: selectedDate,
+              onDayTap: (date) {
+                ref.read(selectedDateProvider.notifier).setDate(date);
+                context.go('/day');
+              },
+            ),
+            Expanded(
+              child: WeekTimeline(
+                weekStart: weekStart,
+                events: events,
+                onEventTap: (event) {
+                  // Navigate to day view for the event's day
+                  if (event.startTime != null) {
+                    ref.read(selectedDateProvider.notifier).setDate(event.startTime!);
+                  }
+                  context.go('/day');
+                },
+              ),
+            ),
+          ],
         ),
         loading: () => const Center(
           child: CircularProgressIndicator(),

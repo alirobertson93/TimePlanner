@@ -45,6 +45,14 @@ class HomeScreen extends ConsumerWidget {
               icon: const Icon(Icons.calendar_view_day),
               label: const Text('View Day'),
             ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () {
+                context.go('/week');
+              },
+              icon: const Icon(Icons.calendar_view_week),
+              label: const Text('View Week'),
+            ),
           ],
         ),
       ),

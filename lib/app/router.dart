@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../presentation/screens/home_screen.dart';
 import '../presentation/screens/day_view/day_view_screen.dart';
+import '../presentation/screens/week_view/week_view_screen.dart';
 import '../presentation/screens/event_form/event_form_screen.dart';
 
 /// Application router configuration
@@ -20,6 +21,11 @@ class AppRouter {
         path: '/day',
         name: 'day_view',
         builder: (context, state) => const DayViewScreen(),
+      ),
+      GoRoute(
+        path: '/week',
+        name: 'week_view',
+        builder: (context, state) => const WeekViewScreen(),
       ),
       GoRoute(
         path: '/event/new',

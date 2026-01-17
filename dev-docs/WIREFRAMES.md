@@ -6,7 +6,7 @@ Screen layouts and UI component specifications for TimePlanner.
 
 This document provides wireframes, UI patterns, and design specifications for all screens in TimePlanner. Use this as a reference during implementation.
 
-**Last Updated**: 2026-01-16
+**Last Updated**: 2026-01-17
 
 ---
 
@@ -15,10 +15,10 @@ This document provides wireframes, UI patterns, and design specifications for al
 | Priority | Screen | Status | Notes |
 |----------|--------|--------|-------|
 | **P0 (MVP)** |
-| 🟢 High | Day View | 🟡 Partial | Core screen |
+| 🟢 High | Day View | ✅ Done | Core screen with timeline, events, category colors |
 | 🟢 High | Event Form | ✅ Done | Create/edit events |
-| 🟢 High | Event Detail | ❌ Not started | Bottom sheet modal |
-| 🟡 Medium | Week View | ❌ Not started | Weekly overview |
+| 🟢 High | Event Detail | ✅ Done | Bottom sheet modal |
+| 🟡 Medium | Week View | ✅ Done | Weekly overview with 7-day grid |
 | 🟡 Medium | Planning Wizard | ❌ Not started | 4-step flow |
 | **P1 (V1.0)** |
 | 🟡 Medium | Plan Review | ❌ Not started | Schedule comparison |

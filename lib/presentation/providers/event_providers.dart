@@ -55,3 +55,14 @@ Future<void> deleteEvent(Ref ref, String eventId) async {
   // Invalidate the events provider to refresh the list
   ref.invalidate(eventsForDateProvider);
 }
+
+/// Provider for events in a week starting from the given date
+@riverpod
+Stream<List<Event>> eventsForWeek(Ref ref, DateTime weekStart) {
+  final repository = ref.watch(eventRepositoryProvider);
+  final start = DateTimeUtils.startOfDay(weekStart);
+  final end = DateTimeUtils.endOfDay(weekStart.add(const Duration(days: 6)));
+  
+  // Get events in the week range
+  return Stream.fromFuture(repository.getEventsInRange(start, end));
+}

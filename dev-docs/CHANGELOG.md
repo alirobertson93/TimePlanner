@@ -33,6 +33,88 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-17 - Phase 3: Week View Implementation
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Implement Week View screen to complete Phase 3 Event Management UI
+
+**Work Completed**:
+- ✅ Created WeekViewScreen with 7-day timeline display
+  - App bar with week label (e.g., "Week of Jan 13")
+  - Navigation buttons (previous/next week, today, day view)
+  - FAB for creating new events
+- ✅ Created WeekHeader widget
+  - Shows Mon-Sun day names with date numbers
+  - Highlights current day with circle background
+  - Highlights selected day with primary container color
+  - Tap on any day navigates to Day View
+- ✅ Created WeekTimeline widget
+  - 7-day grid with time markers (8 AM - 8 PM working hours)
+  - Event blocks positioned by start time and duration
+  - Category colors applied to event blocks
+  - Tap on event navigates to Day View for that event
+- ✅ Added eventsForWeekProvider
+  - Fetches events for 7-day range starting from week start
+  - Uses existing EventRepository.getEventsInRange
+- ✅ Added /week route to router
+- ✅ Added Week View button to Day View app bar
+- ✅ Added Week View button to Home Screen
+- ✅ Updated ROADMAP.md
+  - Marked Phase 3 as 100% complete
+  - Updated overall progress to 70%
+  - Updated Week View features as complete
+  - Updated Component Completion Summary
+- ✅ Updated CHANGELOG.md (this entry)
+
+**Decisions Made**:
+- Display working hours only (8 AM - 8 PM) in Week View for cleaner display
+- Use 50dp per hour height (vs 60dp in Day View) for more compact week display
+- Tap event in Week View navigates to Day View (provides more detail)
+- Tap day header in Week View navigates to Day View for that day
+- Reuse existing category color parsing from EventCard
+- Share selectedDateProvider between Day View and Week View
+
+**Technical Notes**:
+- Week View uses DateTimeUtils.startOfWeek() to calculate Monday of current week
+- Events provider fetches all events in 7-day range
+- _WeekEventBlock filters events to only show those within visible hours (8 AM - 8 PM)
+- Category colors fetched via categoryByIdProvider (same as Day View)
+- Build_runner needs to be run to generate eventsForWeekProvider
+
+**Files Changed**:
+- Added: lib/presentation/screens/week_view/week_view_screen.dart
+- Added: lib/presentation/screens/week_view/widgets/week_header.dart
+- Added: lib/presentation/screens/week_view/widgets/week_timeline.dart
+- Modified: lib/presentation/providers/event_providers.dart (added eventsForWeekProvider)
+- Modified: lib/app/router.dart (added /week route)
+- Modified: lib/presentation/screens/day_view/day_view_screen.dart (added Week View button)
+- Modified: lib/presentation/screens/home_screen.dart (added Week View button)
+- Modified: dev-docs/ROADMAP.md (updated Phase 3 to 100% complete)
+- Modified: dev-docs/CHANGELOG.md (added this session entry)
+
+**Next Steps**:
+- User needs to run build_runner to generate provider code:
+  ```bash
+  flutter pub run build_runner build --delete-conflicting-outputs
+  ```
+- Test Week View functionality:
+  1. Navigate to Week View from Home Screen or Day View
+  2. Verify day headers show correct dates
+  3. Tap day header to go to Day View for that day
+  4. Verify events display with category colors
+  5. Tap event to navigate to Day View
+  6. Navigate between weeks with arrows
+  7. "Today" button returns to current week
+- Ready to begin Phase 4: Planning Wizard
+
+**Known Issues**:
+- None - Week View implementation is complete pending testing
+
+**Time Spent**: ~30 minutes
+
+---
+
 ### Session: 2026-01-17 - Phase 3: Category Colors in Event Cards
 
 **Author**: AI Assistant (GitHub Copilot)
@@ -427,14 +509,14 @@ Track feature completion at a high level.
 - [ ] Locations table
 - [ ] RecurrenceRules table
 
-### Milestone 3: Basic UI (70% Complete)
+### Milestone 3: Basic UI (90% Complete)
 
 - [x] App structure and routing
 - [x] Basic Day View with timeline
 - [x] Event Detail modal (bottom sheet)
 - [x] Navigation between days
 - [x] Event Form (create/edit)
-- [ ] Week View
+- [x] Week View with 7-day grid
 - [ ] Settings screen
 
 ### Milestone 4: Scheduling Engine (60% Complete)
@@ -632,6 +714,7 @@ Quick reference to file locations and status.
 |------|--------|-------|--------------|
 | lib/presentation/screens/home/*.dart | 🟡 Partial | ~200 | - |
 | lib/presentation/screens/day_view/*.dart | ✅ Complete | ~500 | - |
+| lib/presentation/screens/week_view/*.dart | ✅ Complete | ~350 | 2026-01-17 |
 | lib/presentation/screens/event_form/*.dart | ✅ Complete | ~430 | - |
 | lib/presentation/providers/*.dart | 🟡 Partial | ~150 | - |
 | lib/presentation/providers/event_form_providers.dart | ✅ Complete | ~305 | - |
