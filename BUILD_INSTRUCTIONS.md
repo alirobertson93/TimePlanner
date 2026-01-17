@@ -73,6 +73,23 @@ flutter run
 4. Tap "Save"
 5. Verify changes are reflected
 
+**Test Deleting an Event:**
+1. Tap on an existing event in Day View
+2. Tap "Delete" in the bottom sheet
+3. Verify confirmation dialog appears with event name
+4. Tap "Cancel" - verify dialog closes without deleting
+5. Tap "Delete" again and tap "Delete" in the dialog
+6. Verify event is removed from timeline
+7. Verify success message appears
+8. Try deleting another event to ensure it works consistently
+
+**Test Category Colors:**
+1. Create events with different categories (Work, Personal, Family, etc.)
+2. Verify each event card shows its category's color in the Day View
+3. Create an event without a category
+4. Verify it shows the default blue color
+5. Check that category colors are visually distinct and match the category dropdown colors
+
 **Test Validation:**
 1. Try to save an event without a title - should show error
 2. Try to save a fixed event where end time is before start time - should show error
@@ -80,9 +97,10 @@ flutter run
 
 ## Known Limitations
 
-1. Delete functionality is not yet implemented (TODO in Event Detail Sheet)
-2. Category colors are displayed but not yet used in event cards
+1. ~~Delete functionality is not yet implemented (TODO in Event Detail Sheet)~~ ✅ Delete is now implemented
+2. ~~Category colors are displayed but not yet used in event cards~~ ✅ Category colors now displayed in event cards
 3. Flexible events are saved but won't appear in the timeline until the scheduler places them
+4. Week View is not yet implemented
 
 ## Troubleshooting
 

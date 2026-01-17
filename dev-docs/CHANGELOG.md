@@ -33,6 +33,125 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-17 - Phase 3: Category Colors in Event Cards
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Implement category color display in event cards to improve visual organization
+
+**Work Completed**:
+- ✅ Updated EventCard widget from StatelessWidget to ConsumerWidget
+- ✅ Integrated categoryByIdProvider to fetch category data
+- ✅ Implemented color parsing from hex string to Flutter Color
+- ✅ Added fallback to default blue color when category is unavailable or parsing fails
+- ✅ Used AsyncValue.when() for proper loading/error handling
+- ✅ Updated ROADMAP.md
+  - Marked Phase 3 as 85% complete (from 80%)
+  - Marked category color coding as complete [x]
+  - Updated "What's Working" section
+  - Updated Day View completion from 70% to 85%
+  - Updated overall progress from 58% to 60%
+
+**Decisions Made**:
+- Made EventCard a ConsumerWidget to access Riverpod providers
+- Fetch category data per card (will be cached by Riverpod)
+- Parse hex color format (#RRGGBB) at render time
+- Fallback to blue color for events without categories or parsing errors
+- Use AsyncValue.when() to handle loading/error states gracefully
+
+**Technical Notes**:
+- Category colors are stored as hex strings (#RRGGBB) in database
+- Color parsing converts hex to Flutter Color with full opacity (0xFF prefix)
+- Riverpod will cache category lookups, so multiple cards with same category won't cause redundant fetches
+- Implementation handles null categoryId gracefully
+
+**Files Changed**:
+- Modified: lib/presentation/screens/day_view/widgets/event_card.dart (added category color support)
+- Modified: dev-docs/ROADMAP.md (updated Phase 3 to 85% complete)
+- Modified: dev-docs/CHANGELOG.md (added this session entry)
+
+**Next Steps**:
+- User needs to run build_runner to generate provider code
+- Test category colors in Day View:
+  1. Create events with different categories
+  2. Verify event cards show correct category colors
+  3. Verify events without categories show default blue
+  4. Test with all default categories (Work, Personal, Family, Health, etc.)
+- Begin Week View implementation
+
+**Known Issues**:
+- None - category colors implementation is complete pending testing
+
+**Time Spent**: ~20 minutes
+
+---
+
+### Session: 2026-01-17 - Phase 3: Delete Functionality Implementation
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Implement delete functionality for events as the next step in Phase 3
+
+**Work Completed**:
+- ✅ Analyzed dev-docs folder to determine next steps
+- ✅ Reviewed ROADMAP.md and CHANGELOG.md for current status
+- ✅ Implemented deleteEvent provider in event_providers.dart
+  - Added Riverpod provider for deleting events by ID
+  - Integrated with EventRepository delete method
+  - Added provider invalidation to refresh UI after deletion
+- ✅ Updated EventDetailSheet to ConsumerWidget
+  - Changed from StatelessWidget to ConsumerWidget to access Riverpod
+  - Implemented _showDeleteConfirmation method with AlertDialog
+  - Added confirmation dialog before deletion
+  - Added error handling with try-catch
+  - Added success/error SnackBar feedback
+  - Closes bottom sheet after successful deletion
+- ✅ Updated ROADMAP.md
+  - Marked Phase 3 as 80% complete (from 70%)
+  - Marked delete functionality as complete [x]
+  - Updated "What's Working" section
+  - Updated "Next Steps" to remove delete implementation
+  - Updated component completion: Event Form from 90% to 95%
+  - Updated overall progress from 55% to 58%
+
+**Decisions Made**:
+- Used confirmation dialog pattern for destructive actions (follows Material Design guidelines)
+- Invalidate eventsForDateProvider after deletion to ensure UI refreshes
+- Show success SnackBar with event name for user feedback
+- Show error SnackBar if deletion fails
+- Use context.mounted checks to avoid using BuildContext after async gaps
+
+**Technical Notes**:
+- Delete functionality requires build_runner to generate provider code
+- User needs to run: `flutter pub run build_runner build --delete-conflicting-outputs`
+- Implementation follows existing patterns in the codebase
+- Error handling ensures graceful failure with user feedback
+
+**Files Changed**:
+- Modified: lib/presentation/providers/event_providers.dart (added deleteEvent provider)
+- Modified: lib/presentation/screens/day_view/widgets/event_detail_sheet.dart (implemented delete with confirmation)
+- Modified: dev-docs/ROADMAP.md (updated Phase 3 progress)
+- Modified: dev-docs/CHANGELOG.md (added this session entry)
+
+**Next Steps**:
+- User needs to run build_runner to generate provider code
+- Test delete functionality:
+  1. Open Day View and tap an event
+  2. Tap Delete button in bottom sheet
+  3. Confirm deletion in dialog
+  4. Verify event disappears from timeline
+  5. Verify success message appears
+  6. Test cancel button works
+- Add category colors to event cards in Day View
+- Implement Week View
+
+**Known Issues**:
+- None - delete functionality is complete pending testing
+
+**Time Spent**: ~30 minutes
+
+---
+
 ### Session: 2026-01-16 - Phase 3: Event Form Implementation
 
 **Author**: AI Assistant (GitHub Copilot)
@@ -628,4 +747,4 @@ Record important technical decisions for future reference.
 
 *This is a living document. Update after each development session.*
 
-*Last updated: 2026-01-16*
+*Last updated: 2026-01-17*

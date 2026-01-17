@@ -45,3 +45,13 @@ class SelectedDate extends _$SelectedDate {
     state = DateTime.now();
   }
 }
+
+/// Delete an event by ID
+@riverpod
+Future<void> deleteEvent(Ref ref, String eventId) async {
+  final repository = ref.watch(eventRepositoryProvider);
+  await repository.delete(eventId);
+  
+  // Invalidate the events provider to refresh the list
+  ref.invalidate(eventsForDateProvider);
+}
