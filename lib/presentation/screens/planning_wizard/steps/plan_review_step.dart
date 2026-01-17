@@ -141,7 +141,7 @@ class PlanReviewStep extends ConsumerWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Strategy: ${result.strategyUsed.toString().split('.').last}',
+                  'Strategy: ${_capitalizeFirst(result.strategyUsed)}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
@@ -446,5 +446,11 @@ class PlanReviewStep extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  /// Capitalize the first letter of a string
+  String _capitalizeFirst(String text) {
+    if (text.isEmpty) return text;
+    return text[0].toUpperCase() + text.substring(1);
   }
 }

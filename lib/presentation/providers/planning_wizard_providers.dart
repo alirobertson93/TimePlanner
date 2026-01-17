@@ -80,7 +80,8 @@ class PlanningWizardState {
   bool get isCurrentStepValid {
     switch (currentStep) {
       case 0: // Date range selection
-        return startDate != null && endDate != null && endDate!.isAfter(startDate!);
+        // Allow same-day planning (startDate == endDate) or longer ranges
+        return startDate != null && endDate != null && !endDate!.isBefore(startDate!);
       case 1: // Goals review
         return true; // Goals are optional
       case 2: // Strategy selection
