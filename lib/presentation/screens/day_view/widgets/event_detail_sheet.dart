@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../domain/entities/event.dart';
+import '../../../providers/event_providers.dart';
 
 /// Bottom sheet showing event details
-class EventDetailSheet extends StatelessWidget {
+class EventDetailSheet extends ConsumerWidget {
   const EventDetailSheet({
     super.key,
     required this.event,
@@ -13,7 +15,7 @@ class EventDetailSheet extends StatelessWidget {
   final Event event;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return DraggableScrollableSheet(
       initialChildSize: 0.6,
       minChildSize: 0.4,
@@ -128,10 +130,7 @@ class EventDetailSheet extends StatelessWidget {
                     const SizedBox(width: 16),
                     Expanded(
                       child: FilledButton.icon(
-                        onPressed: () {
-                          // TODO: Implement delete with confirmation
-                          Navigator.pop(context);
-                        },
+                        onPressed: () => _showDeleteConfirmation(context, ref),
                         icon: const Icon(Icons.delete),
                         label: const Text('Delete'),
                         style: FilledButton.styleFrom(
@@ -198,5 +197,61 @@ class EventDetailSheet extends StatelessWidget {
     } else {
       return '$minutes min';
     }
+  }
+
+  /// Shows a confirmation dialog before deleting the event
+  void _showDeleteConfirmation(BuildContext context, WidgetRef ref) {
+    showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete Event'),
+        content: Text(
+          'Are you sure you want to delete "${event.name}"? This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    ).then((confirmed) async {
+      if (confirmed == true) {
+        try {
+          // Delete the event
+          await ref.read(deleteEventProvider(event.id).future);
+          
+          // Close the bottom sheet
+          if (context.mounted) {
+            Navigator.of(context).pop();
+            
+            // Show success message
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Event "${event.name}" deleted successfully'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
+        } catch (e) {
+          // Show error message
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Failed to delete event: $e'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      }
+    });
   }
 }
