@@ -17,3 +17,24 @@ Future<Category?> categoryById(Ref ref, String categoryId) async {
   final repository = ref.watch(categoryRepositoryProvider);
   return repository.getById(categoryId);
 }
+
+/// Provider for deleting an event
+@riverpod
+class DeleteEvent extends _$DeleteEvent {
+  @override
+  FutureOr<void> build() {
+    // Initial state - nothing to do
+  }
+
+  /// Delete an event by ID
+  Future<bool> call(String eventId) async {
+    state = const AsyncLoading();
+    
+    state = await AsyncValue.guard(() async {
+      final repository = ref.read(eventRepositoryProvider);
+      await repository.delete(eventId);
+    });
+    
+    return !state.hasError;
+  }
+}
