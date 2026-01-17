@@ -205,11 +205,14 @@ class LeastDisruptionStrategy implements SchedulingStrategy {
     int forwardDistance = 0;
     int backwardDistance = 0;
 
+    // Small tolerance buffer for time boundary comparisons
+    const toleranceBuffer = Duration(minutes: 1);
+
     // Search forward
     var forward = referenceSlot;
     while (forward.start.isBefore(dayEnd)) {
       final result = _tryPlaceAt(forward.start, slotsNeeded, grid);
-      if (result != null && result.last.end.isBefore(dayEnd.add(const Duration(minutes: 1)))) {
+      if (result != null && result.last.end.isBefore(dayEnd.add(toleranceBuffer))) {
         forwardResult = result;
         break;
       }
@@ -222,7 +225,7 @@ class LeastDisruptionStrategy implements SchedulingStrategy {
     while (backward.start.isAfter(dayStart) ||
         backward.start.isAtSameMomentAs(dayStart)) {
       final result = _tryPlaceAt(backward.start, slotsNeeded, grid);
-      if (result != null && result.first.start.isAfter(dayStart.subtract(const Duration(minutes: 1)))) {
+      if (result != null && result.first.start.isAfter(dayStart.subtract(toleranceBuffer))) {
         backwardResult = result;
         break;
       }

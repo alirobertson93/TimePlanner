@@ -199,11 +199,11 @@ void main() {
       // The exact position depends on the scoring algorithm
       // But it should not conflict with existing events
       final scheduledTime = slots!.first.start;
-      expect(
-        (scheduledTime.day == 13 && scheduledTime.hour != 9) ||
-            scheduledTime.day != 13,
-        isTrue,
-      );
+      final isOnMonday = scheduledTime.day == 13;
+      final isNotAt9AM = scheduledTime.hour != 9;
+      // If on Monday, should not be at 9 AM (which is occupied)
+      // If on another day, any time is valid
+      expect(isOnMonday ? isNotAt9AM : true, isTrue);
     });
   });
 }

@@ -140,8 +140,9 @@ class MaxFreeTimeStrategy implements SchedulingStrategy {
 
     // Prefer end-of-day or start-of-day placements (preserves midday free time)
     final hour = firstSlot.start.hour;
-    if (hour == defaultWorkStartHour || 
-        lastSlot.end.hour >= defaultWorkEndHour - 1) {
+    final isStartOfDay = hour == defaultWorkStartHour;
+    final isEndOfDay = lastSlot.end.hour >= defaultWorkEndHour - 1;
+    if (isStartOfDay || isEndOfDay) {
       score += 5.0;
     }
 
@@ -154,8 +155,10 @@ class MaxFreeTimeStrategy implements SchedulingStrategy {
     int count = 0;
     var current = start;
 
-    // Limit search to reasonable bounds (within a day's work hours)
-    const maxSlots = 32; // 8 hours max
+    // Limit search to reasonable bounds (work hours in 15-minute slots)
+    // 8 hours * 4 slots per hour = 32 slots
+    const slotsPerHour = 4;
+    const maxSlots = (defaultWorkEndHour - defaultWorkStartHour) * slotsPerHour;
 
     while (count < maxSlots) {
       if (!grid.isAvailable(current)) {
