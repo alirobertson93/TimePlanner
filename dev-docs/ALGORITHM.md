@@ -23,18 +23,18 @@ The scheduler is implemented as **pure Dart code with zero Flutter dependencies*
 
 ```
 lib/scheduler/
-├── scheduler.dart              # Main scheduling engine
+├── event_scheduler.dart        # Main scheduling engine
 ├── models/
 │   ├── schedule_request.dart   # Input model
 │   ├── schedule_result.dart    # Output model
 │   ├── time_slot.dart          # 15-minute time unit
 │   └── conflict.dart           # Conflict representation
 ├── strategies/
-│   ├── strategy.dart           # Strategy interface
-│   ├── balanced.dart           # Balanced strategy
-│   ├── front_loaded.dart       # Front-loaded strategy
-│   ├── max_free_time.dart      # Max free time strategy
-│   └── least_disruption.dart   # Least disruption strategy
+│   ├── scheduling_strategy.dart     # Strategy interface
+│   ├── balanced_strategy.dart       # Balanced strategy (✅ implemented)
+│   ├── front_loaded_strategy.dart   # Front-loaded strategy (⚪ not yet implemented)
+│   ├── max_free_time_strategy.dart  # Max free time strategy (⚪ not yet implemented)
+│   └── least_disruption_strategy.dart # Least disruption strategy (⚪ not yet implemented)
 ├── validators/
 │   ├── constraint_validator.dart
 │   └── conflict_detector.dart
@@ -42,6 +42,8 @@ lib/scheduler/
     ├── time_utils.dart
     └── goal_calculator.dart
 ```
+
+**Note**: Currently only `balanced_strategy.dart` is fully implemented. Other strategies are planned for future phases.
 
 ---
 

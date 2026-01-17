@@ -1,6 +1,6 @@
 # Project Roadmap
 
-**Last Updated**: 2026-01-16
+**Last Updated**: 2026-01-17
 
 This document is the single source of truth for the project's current status, completed work, and upcoming phases. For session logs and development history, see [CHANGELOG.md](./CHANGELOG.md).
 
@@ -88,7 +88,7 @@ This document is the single source of truth for the project's current status, co
 
 **Target**: Current Development Phase
 
-**Status**: 40% Complete
+**Status**: 70% Complete
 
 **What's Working**:
 - ✅ Event Form screen with full UI
@@ -309,7 +309,7 @@ This document is the single source of truth for the project's current status, co
 | **Scheduler Engine** | 🟡 Partial | 60% | Core + BalancedStrategy done. 3 more strategies pending |
 | **Day View** | 🟢 Active | 70% | Timeline, events, navigation working. Needs color coding |
 | **Week View** | ⚪ Planned | 0% | Not started (Phase 3) |
-| **Event Form** | ⚪ Planned | 0% | Not started (Phase 3) |
+| **Event Form** | 🟢 Active | 90% | Implemented, needs testing |
 | **Planning Wizard** | ⚪ Planned | 0% | Not started (Phase 4) |
 | **Goals Dashboard** | ⚪ Planned | 0% | Not started (Phase 5) |
 | **People Management** | ⚪ Planned | 0% | Not started (Phase 6) |

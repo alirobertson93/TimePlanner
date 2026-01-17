@@ -612,7 +612,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
   
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
   
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -621,7 +621,10 @@ class AppDatabase extends _$AppDatabase {
       await _seedDefaultCategories();
     },
     onUpgrade: (Migrator m, int from, int to) async {
-      // Future migrations go here
+      // Migration from version 1 to 2: Add Goals table
+      if (from == 1) {
+        await m.createTable(goals);
+      }
     },
   );
   
