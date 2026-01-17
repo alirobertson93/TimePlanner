@@ -314,7 +314,7 @@ Track feature completion at a high level.
 - [x] Basic Day View with timeline
 - [x] Event Detail modal (bottom sheet)
 - [x] Navigation between days
-- [ ] Event Form (create/edit)
+- [x] Event Form (create/edit)
 - [ ] Week View
 - [ ] Settings screen
 
@@ -513,7 +513,9 @@ Quick reference to file locations and status.
 |------|--------|-------|--------------|
 | lib/presentation/screens/home/*.dart | 🟡 Partial | ~200 | - |
 | lib/presentation/screens/day_view/*.dart | ✅ Complete | ~500 | - |
+| lib/presentation/screens/event_form/*.dart | ✅ Complete | ~430 | - |
 | lib/presentation/providers/*.dart | 🟡 Partial | ~150 | - |
+| lib/presentation/providers/event_form_providers.dart | ✅ Complete | ~305 | - |
 
 ### Tests
 

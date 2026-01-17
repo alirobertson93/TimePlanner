@@ -6,7 +6,7 @@ Complete architecture and code organization for TimePlanner.
 
 TimePlanner follows a **clean architecture** pattern with clear separation of concerns across layers. This document defines the structure, responsibilities, and patterns for each layer.
 
-**Last Updated**: 2026-01-16
+**Last Updated**: 2026-01-17
 
 ---
 
@@ -87,8 +87,8 @@ lib/
 │
 ├── data/                              # Data layer (persistence)
 │   ├── database/
-│   │   ├── database.dart              # Drift database definition
-│   │   ├── database.g.dart            # Generated code
+│   │   ├── app_database.dart          # Drift database definition
+│   │   ├── app_database.g.dart        # Generated code
 │   │   ├── tables/                    # Table definitions
 │   │   │   ├── events_table.dart
 │   │   │   ├── categories_table.dart
