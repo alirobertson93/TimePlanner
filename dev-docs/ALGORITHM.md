@@ -6,7 +6,7 @@ Complete specification for the TimePlanner scheduling engine.
 
 The scheduling engine is the core intelligence of TimePlanner. It takes a set of events (fixed and flexible) along with constraints and generates an optimal schedule.
 
-**Status**: 🟡 Partially Implemented (BalancedStrategy complete, additional strategies pending)
+**Status**: 🟢 Fully Implemented (All 4 strategies complete: Balanced, Front-Loaded, Max Free Time, Least Disruption)
 
 ## Architectural Context
 
@@ -32,9 +32,9 @@ lib/scheduler/
 ├── strategies/
 │   ├── scheduling_strategy.dart     # Strategy interface
 │   ├── balanced_strategy.dart       # Balanced strategy (✅ implemented)
-│   ├── front_loaded_strategy.dart   # Front-loaded strategy (⚪ not yet implemented)
-│   ├── max_free_time_strategy.dart  # Max free time strategy (⚪ not yet implemented)
-│   └── least_disruption_strategy.dart # Least disruption strategy (⚪ not yet implemented)
+│   ├── front_loaded_strategy.dart   # Front-loaded strategy (✅ implemented)
+│   ├── max_free_time_strategy.dart  # Max free time strategy (✅ implemented)
+│   └── least_disruption_strategy.dart # Least disruption strategy (✅ implemented)
 ├── validators/
 │   ├── constraint_validator.dart
 │   └── conflict_detector.dart
@@ -43,7 +43,7 @@ lib/scheduler/
     └── goal_calculator.dart
 ```
 
-**Note**: Currently only `balanced_strategy.dart` is fully implemented. Other strategies are planned for future phases.
+**Note**: All four scheduling strategies are now implemented and integrated with the Planning Wizard UI.
 
 ---
 
