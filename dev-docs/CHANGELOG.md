@@ -33,6 +33,68 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-16 - Phase 3: Event Form Implementation
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Implement Phase 3 - Event Form and FAB integration to enable users to create and edit events
+
+**Work Completed**:
+- ✅ Created EventFormProvider with full form state management
+  - Form validation (title required, end after start, duration > 0)
+  - Initialize for new event creation
+  - Initialize for editing existing events
+  - Integration with EventRepository for saving
+- ✅ Created EventFormScreen with complete UI
+  - Basic information section (title, description, category dropdown)
+  - Timing section with segmented button (Fixed Time | Flexible)
+  - Fixed time: date/time pickers for start and end
+  - Flexible: duration pickers (hours and minutes)
+  - Error display
+  - Save button with validation and loading state
+- ✅ Updated router with event form routes
+  - `/event/new` - Create new event
+  - `/event/:id/edit` - Edit existing event
+- ✅ Updated Day View FAB to navigate to event form
+  - Passes selected date to pre-fill start/end times
+- ✅ Wired up Edit button in Event Detail Sheet
+  - Navigates to event form with event ID
+
+**Decisions Made**:
+- Used custom TimeOfDay class in provider to avoid Flutter dependency
+- Form pre-fills with sensible defaults (current hour to next hour for fixed events)
+- Category dropdown shows color indicator for each category
+- Validation happens on save, not per-field (cleaner UX)
+- Generated files (.g.dart) are in .gitignore as per Flutter convention
+
+**Technical Notes**:
+- Flutter SDK not available in this environment, so build_runner was not run
+- User needs to run: `flutter pub run build_runner build --delete-conflicting-outputs`
+- Created BUILD_INSTRUCTIONS.md with detailed setup and testing steps
+- Stub generated file created for reference but excluded from git
+
+**Files Changed**:
+- Added: lib/presentation/providers/event_form_providers.dart
+- Added: lib/presentation/screens/event_form/event_form_screen.dart
+- Modified: lib/app/router.dart (added event form routes)
+- Modified: lib/presentation/screens/day_view/day_view_screen.dart (FAB navigation)
+- Modified: lib/presentation/screens/day_view/widgets/event_detail_sheet.dart (Edit button)
+- Added: BUILD_INSTRUCTIONS.md
+
+**Next Steps**:
+- User needs to run build_runner to generate provider code
+- Test creating fixed and flexible events
+- Test editing existing events
+- Test form validation
+- Implement delete functionality in Event Detail Sheet
+- Update ROADMAP.md to mark Phase 3 Event Form as complete
+
+**Known Issues**:
+- Delete functionality not yet implemented (marked as TODO)
+- Flexible events can be created but won't show in timeline until scheduler places them
+
+---
+
 ### Session: 2026-01-16 - Phase 2 Implementation
 
 **Author**: AI Assistant

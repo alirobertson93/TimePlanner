@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../domain/entities/event.dart';
 
@@ -118,8 +119,7 @@ class EventDetailSheet extends StatelessWidget {
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: () {
-                          // TODO: Implement edit
-                          Navigator.pop(context);
+                          context.pushReplacement('/event/${event.id}/edit');
                         },
                         icon: const Icon(Icons.edit),
                         label: const Text('Edit'),

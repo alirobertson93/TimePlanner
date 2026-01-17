@@ -1,0 +1,305 @@
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:uuid/uuid.dart';
+import '../../domain/entities/event.dart';
+import '../../domain/enums/timing_type.dart';
+import '../../domain/enums/event_status.dart';
+import 'repository_providers.dart';
+
+part 'event_form_providers.g.dart';
+
+/// State class for the event form
+class EventFormState {
+  const EventFormState({
+    this.id,
+    this.title = '',
+    this.description = '',
+    this.categoryId,
+    this.timingType = TimingType.fixed,
+    this.startDate,
+    this.startTime,
+    this.endDate,
+    this.endTime,
+    this.durationHours = 1,
+    this.durationMinutes = 0,
+    this.isEditMode = false,
+    this.isSaving = false,
+    this.error,
+  });
+
+  final String? id;
+  final String title;
+  final String description;
+  final String? categoryId;
+  final TimingType timingType;
+  final DateTime? startDate;
+  final TimeOfDay? startTime;
+  final DateTime? endDate;
+  final TimeOfDay? endTime;
+  final int durationHours;
+  final int durationMinutes;
+  final bool isEditMode;
+  final bool isSaving;
+  final String? error;
+
+  EventFormState copyWith({
+    String? id,
+    String? title,
+    String? description,
+    String? categoryId,
+    TimingType? timingType,
+    DateTime? startDate,
+    TimeOfDay? startTime,
+    DateTime? endDate,
+    TimeOfDay? endTime,
+    int? durationHours,
+    int? durationMinutes,
+    bool? isEditMode,
+    bool? isSaving,
+    String? error,
+  }) {
+    return EventFormState(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      categoryId: categoryId ?? this.categoryId,
+      timingType: timingType ?? this.timingType,
+      startDate: startDate ?? this.startDate,
+      startTime: startTime ?? this.startTime,
+      endDate: endDate ?? this.endDate,
+      endTime: endTime ?? this.endTime,
+      durationHours: durationHours ?? this.durationHours,
+      durationMinutes: durationMinutes ?? this.durationMinutes,
+      isEditMode: isEditMode ?? this.isEditMode,
+      isSaving: isSaving ?? this.isSaving,
+      error: error ?? this.error,
+    );
+  }
+
+  /// Validates the form and returns error message if invalid
+  String? validate() {
+    if (title.trim().isEmpty) {
+      return 'Title is required';
+    }
+
+    if (timingType == TimingType.fixed) {
+      if (startDate == null || startTime == null || endDate == null || endTime == null) {
+        return 'Start and end date/time are required for fixed events';
+      }
+
+      final start = DateTime(
+        startDate!.year,
+        startDate!.month,
+        startDate!.day,
+        startTime!.hour,
+        startTime!.minute,
+      );
+
+      final end = DateTime(
+        endDate!.year,
+        endDate!.month,
+        endDate!.day,
+        endTime!.hour,
+        endTime!.minute,
+      );
+
+      if (end.isBefore(start) || end.isAtSameMomentAs(start)) {
+        return 'End time must be after start time';
+      }
+    } else {
+      // Flexible event
+      if (durationHours == 0 && durationMinutes == 0) {
+        return 'Duration must be greater than 0';
+      }
+    }
+
+    return null;
+  }
+
+  /// Checks if the form is valid
+  bool get isValid => validate() == null;
+}
+
+/// Time of day helper class since we can't import flutter/material in providers.
+/// This keeps the provider pure Dart and testable without Flutter dependencies,
+/// maintaining separation of concerns in our clean architecture.
+class TimeOfDay {
+  const TimeOfDay({required this.hour, required this.minute});
+
+  final int hour;
+  final int minute;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TimeOfDay &&
+          runtimeType == other.runtimeType &&
+          hour == other.hour &&
+          minute == other.minute;
+
+  @override
+  int get hashCode => hour.hashCode ^ minute.hashCode;
+}
+
+/// Provider for the event form state
+@riverpod
+class EventForm extends _$EventForm {
+  @override
+  EventFormState build() {
+    return const EventFormState();
+  }
+
+  /// Initialize form for creating a new event
+  void initializeForNew({DateTime? initialDate}) {
+    final now = initialDate ?? DateTime.now();
+    final currentHour = now.hour;
+    final nextHour = (currentHour + 1) % 24;
+
+    state = EventFormState(
+      startDate: now,
+      startTime: TimeOfDay(hour: currentHour, minute: 0),
+      endDate: now,
+      endTime: TimeOfDay(hour: nextHour, minute: 0),
+      timingType: TimingType.fixed,
+      isEditMode: false,
+    );
+  }
+
+  /// Initialize form for editing an existing event
+  Future<void> initializeForEdit(String eventId) async {
+    final repository = ref.read(eventRepositoryProvider);
+    final event = await repository.getById(eventId);
+
+    if (event == null) {
+      state = state.copyWith(error: 'Event not found');
+      return;
+    }
+
+    state = EventFormState(
+      id: event.id,
+      title: event.name,
+      description: event.description ?? '',
+      categoryId: event.categoryId,
+      timingType: event.timingType,
+      startDate: event.startTime,
+      startTime: event.startTime != null
+          ? TimeOfDay(hour: event.startTime!.hour, minute: event.startTime!.minute)
+          : null,
+      endDate: event.endTime,
+      endTime: event.endTime != null
+          ? TimeOfDay(hour: event.endTime!.hour, minute: event.endTime!.minute)
+          : null,
+      durationHours: event.duration?.inHours ?? 1,
+      durationMinutes: event.duration?.inMinutes.remainder(60) ?? 0,
+      isEditMode: true,
+    );
+  }
+
+  /// Update form fields
+  void updateTitle(String title) {
+    state = state.copyWith(title: title);
+  }
+
+  void updateDescription(String description) {
+    state = state.copyWith(description: description);
+  }
+
+  void updateCategory(String? categoryId) {
+    state = state.copyWith(categoryId: categoryId);
+  }
+
+  void updateTimingType(TimingType type) {
+    state = state.copyWith(timingType: type);
+  }
+
+  void updateStartDate(DateTime date) {
+    state = state.copyWith(startDate: date);
+  }
+
+  void updateStartTime(TimeOfDay time) {
+    state = state.copyWith(startTime: time);
+  }
+
+  void updateEndDate(DateTime date) {
+    state = state.copyWith(endDate: date);
+  }
+
+  void updateEndTime(TimeOfDay time) {
+    state = state.copyWith(endTime: time);
+  }
+
+  void updateDurationHours(int hours) {
+    state = state.copyWith(durationHours: hours);
+  }
+
+  void updateDurationMinutes(int minutes) {
+    state = state.copyWith(durationMinutes: minutes);
+  }
+
+  /// Save the event
+  Future<bool> save() async {
+    final validationError = state.validate();
+    if (validationError != null) {
+      state = state.copyWith(error: validationError);
+      return false;
+    }
+
+    state = state.copyWith(isSaving: true, error: null);
+
+    try {
+      final repository = ref.read(eventRepositoryProvider);
+      final now = DateTime.now();
+      final uuid = const Uuid();
+
+      // Get createdAt timestamp
+      DateTime createdAt = now;
+      if (state.isEditMode && state.id != null) {
+        final existingEvent = await repository.getById(state.id!);
+        if (existingEvent != null) {
+          createdAt = existingEvent.createdAt;
+        }
+      }
+
+      final event = Event(
+        id: state.id ?? uuid.v4(),
+        name: state.title.trim(),
+        description: state.description.trim().isEmpty ? null : state.description.trim(),
+        timingType: state.timingType,
+        startTime: state.timingType == TimingType.fixed && state.startDate != null && state.startTime != null
+            ? DateTime(
+                state.startDate!.year,
+                state.startDate!.month,
+                state.startDate!.day,
+                state.startTime!.hour,
+                state.startTime!.minute,
+              )
+            : null,
+        endTime: state.timingType == TimingType.fixed && state.endDate != null && state.endTime != null
+            ? DateTime(
+                state.endDate!.year,
+                state.endDate!.month,
+                state.endDate!.day,
+                state.endTime!.hour,
+                state.endTime!.minute,
+              )
+            : null,
+        duration: state.timingType == TimingType.flexible
+            ? Duration(hours: state.durationHours, minutes: state.durationMinutes)
+            : null,
+        categoryId: state.categoryId,
+        status: EventStatus.pending,
+        createdAt: createdAt,
+        updatedAt: now,
+      );
+
+      await repository.save(event);
+      state = state.copyWith(isSaving: false);
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+        isSaving: false,
+        error: 'Failed to save event: $e',
+      );
+      return false;
+    }
+  }
+}
