@@ -33,6 +33,59 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-17 - Phase 3: Category Colors in Event Cards
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Implement category color display in event cards to improve visual organization
+
+**Work Completed**:
+- ✅ Updated EventCard widget from StatelessWidget to ConsumerWidget
+- ✅ Integrated categoryByIdProvider to fetch category data
+- ✅ Implemented color parsing from hex string to Flutter Color
+- ✅ Added fallback to default blue color when category is unavailable or parsing fails
+- ✅ Used AsyncValue.when() for proper loading/error handling
+- ✅ Updated ROADMAP.md
+  - Marked Phase 3 as 85% complete (from 80%)
+  - Marked category color coding as complete [x]
+  - Updated "What's Working" section
+  - Updated Day View completion from 70% to 85%
+  - Updated overall progress from 58% to 60%
+
+**Decisions Made**:
+- Made EventCard a ConsumerWidget to access Riverpod providers
+- Fetch category data per card (will be cached by Riverpod)
+- Parse hex color format (#RRGGBB) at render time
+- Fallback to blue color for events without categories or parsing errors
+- Use AsyncValue.when() to handle loading/error states gracefully
+
+**Technical Notes**:
+- Category colors are stored as hex strings (#RRGGBB) in database
+- Color parsing converts hex to Flutter Color with full opacity (0xFF prefix)
+- Riverpod will cache category lookups, so multiple cards with same category won't cause redundant fetches
+- Implementation handles null categoryId gracefully
+
+**Files Changed**:
+- Modified: lib/presentation/screens/day_view/widgets/event_card.dart (added category color support)
+- Modified: dev-docs/ROADMAP.md (updated Phase 3 to 85% complete)
+- Modified: dev-docs/CHANGELOG.md (added this session entry)
+
+**Next Steps**:
+- User needs to run build_runner to generate provider code
+- Test category colors in Day View:
+  1. Create events with different categories
+  2. Verify event cards show correct category colors
+  3. Verify events without categories show default blue
+  4. Test with all default categories (Work, Personal, Family, Health, etc.)
+- Begin Week View implementation
+
+**Known Issues**:
+- None - category colors implementation is complete pending testing
+
+**Time Spent**: ~20 minutes
+
+---
+
 ### Session: 2026-01-17 - Phase 3: Delete Functionality Implementation
 
 **Author**: AI Assistant (GitHub Copilot)

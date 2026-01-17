@@ -83,6 +83,13 @@ flutter run
 7. Verify success message appears
 8. Try deleting another event to ensure it works consistently
 
+**Test Category Colors:**
+1. Create events with different categories (Work, Personal, Family, etc.)
+2. Verify each event card shows its category's color in the Day View
+3. Create an event without a category
+4. Verify it shows the default blue color
+5. Check that category colors are visually distinct and match the category dropdown colors
+
 **Test Validation:**
 1. Try to save an event without a title - should show error
 2. Try to save a fixed event where end time is before start time - should show error
@@ -91,8 +98,9 @@ flutter run
 ## Known Limitations
 
 1. ~~Delete functionality is not yet implemented (TODO in Event Detail Sheet)~~ ✅ Delete is now implemented
-2. Category colors are displayed but not yet used in event cards
+2. ~~Category colors are displayed but not yet used in event cards~~ ✅ Category colors now displayed in event cards
 3. Flexible events are saved but won't appear in the timeline until the scheduler places them
+4. Week View is not yet implemented
 
 ## Troubleshooting
 

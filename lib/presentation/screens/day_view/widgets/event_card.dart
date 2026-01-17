@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../domain/entities/event.dart';
+import '../../../../domain/entities/category.dart';
+import '../../../providers/category_providers.dart';
 
 /// Card widget displaying an event in the timeline
-class EventCard extends StatelessWidget {
+class EventCard extends ConsumerWidget {
   const EventCard({
     super.key,
     required this.event,
@@ -13,13 +16,26 @@ class EventCard extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Fetch category to get color
+    final categoryAsync = event.categoryId != null
+        ? ref.watch(categoryByIdProvider(event.categoryId!))
+        : const AsyncValue<Category?>.data(null);
+
+    return categoryAsync.when(
+      data: (category) => _buildCard(context, category),
+      loading: () => _buildCard(context, null),
+      error: (_, __) => _buildCard(context, null),
+    );
+  }
+
+  Widget _buildCard(BuildContext context, Category? category) {
     return GestureDetector(
       onTap: onTap,
       child: Card(
         elevation: 2,
         margin: EdgeInsets.zero,
-        color: _getCardColor(),
+        color: _getCardColor(category),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -55,8 +71,18 @@ class EventCard extends StatelessWidget {
     );
   }
 
-  Color _getCardColor() {
-    // TODO: Use category color when categories are loaded
+  Color _getCardColor(Category? category) {
+    if (category != null && category.colourHex.isNotEmpty) {
+      try {
+        // Parse hex color (format: #RRGGBB)
+        final hexColor = category.colourHex.replaceAll('#', '');
+        return Color(int.parse('FF$hexColor', radix: 16));
+      } catch (e) {
+        // If parsing fails, fall back to default
+        return Colors.blue;
+      }
+    }
+    // Default color when no category or parsing fails
     return Colors.blue;
   }
 }
