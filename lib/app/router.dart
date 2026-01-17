@@ -4,6 +4,7 @@ import '../presentation/screens/home_screen.dart';
 import '../presentation/screens/day_view/day_view_screen.dart';
 import '../presentation/screens/week_view/week_view_screen.dart';
 import '../presentation/screens/event_form/event_form_screen.dart';
+import '../presentation/screens/planning_wizard/planning_wizard_screen.dart';
 
 /// Application router configuration
 class AppRouter {
@@ -42,6 +43,11 @@ class AppRouter {
           final eventId = state.pathParameters['id'];
           return EventFormScreen(eventId: eventId);
         },
+      ),
+      GoRoute(
+        path: '/plan',
+        name: 'planning_wizard',
+        builder: (context, state) => const PlanningWizardScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
