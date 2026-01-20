@@ -11,7 +11,7 @@ This project includes a comprehensive documentation suite. Here's when to refere
 | **[README.md](../README.md)** | Quick start and basic info | First time setup, running the app |
 | **[DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md)** (this file) | Development workflow and patterns | Starting any development session |
 | **[ROADMAP.md](./ROADMAP.md)** | Project status and upcoming phases | Understanding progress, planning work |
-| **[PRD.md](../PRD.md)** | Product requirements | Understanding features, priorities, and goals |
+| **[PRD.md](./PRD.md)** | Product requirements | Understanding features, priorities, and goals |
 | **[DATA_MODEL.md](./DATA_MODEL.md)** | Database schema | Working with data, adding tables/fields |
 | **[ALGORITHM.md](./ALGORITHM.md)** | Scheduling engine logic | Implementing or modifying scheduling |
 | **[ARCHITECTURE.md](./ARCHITECTURE.md)** | Code structure and layers | Adding features, understanding organization |
@@ -19,6 +19,8 @@ This project includes a comprehensive documentation suite. Here's when to refere
 | **[UX_FLOWS.md](./UX_FLOWS.md)** | User journeys | Building UI, understanding user interactions |
 | **[WIREFRAMES.md](./WIREFRAMES.md)** | Screen layouts | Implementing screens, UI components |
 | **[CHANGELOG.md](./CHANGELOG.md)** | Progress tracking | Session handoffs, tracking changes |
+| **[BUILD_INSTRUCTIONS.md](./BUILD_INSTRUCTIONS.md)** | Build setup | Running code generation, testing the app |
+| **[IMPLEMENTATION_SUMMARY.md](./IMPLEMENTATION_SUMMARY.md)** | Implementation details | Understanding recent feature implementations |
 
 ## 📖 Documentation Purpose Guide
 
@@ -37,7 +39,7 @@ Each documentation file has a **single, specific purpose**. This prevents duplic
 | "How do I write tests?" | Test patterns, coverage, examples | [TESTING.md](./TESTING.md) |
 | "What should the UI look like?" | Screen layouts, design tokens | [WIREFRAMES.md](./WIREFRAMES.md) |
 | "What are the user flows?" | User journeys, interactions | [UX_FLOWS.md](./UX_FLOWS.md) |
-| "What features are planned?" | Requirements, priorities, scope | [PRD.md](../PRD.md) |
+| "What features are planned?" | Requirements, priorities, scope | [PRD.md](./PRD.md) |
 
 ### File-by-File Instructions
 

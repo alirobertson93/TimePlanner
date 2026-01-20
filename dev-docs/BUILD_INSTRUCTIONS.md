@@ -100,7 +100,7 @@ flutter run
 1. ~~Delete functionality is not yet implemented (TODO in Event Detail Sheet)~~ ✅ Delete is now implemented
 2. ~~Category colors are displayed but not yet used in event cards~~ ✅ Category colors now displayed in event cards
 3. Flexible events are saved but won't appear in the timeline until the scheduler places them
-4. Week View is not yet implemented
+4. ~~Week View is not yet implemented~~ ✅ Week View is now implemented
 
 ## Troubleshooting
 
