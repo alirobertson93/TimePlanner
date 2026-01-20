@@ -18,6 +18,9 @@ class LeastDisruptionStrategy implements SchedulingStrategy {
   // Default work hours (9 AM to 5 PM)
   static const int defaultWorkStartHour = 9;
   static const int defaultWorkEndHour = 17;
+  
+  /// Maximum number of 15-minute slots to search in either direction (24 hours)
+  static const int maxSearchSlots = 96;
 
   LeastDisruptionStrategy({this.existingSchedule = const []});
 
@@ -96,9 +99,6 @@ class LeastDisruptionStrategy implements SchedulingStrategy {
     AvailabilityGrid grid,
     int slotsNeeded,
   ) {
-    // Search up to 24 hours in either direction
-    const maxSearchSlots = 96; // 24 hours worth of 15-minute slots
-    
     var forwardSlot = TimeSlot(TimeSlot.roundDown(targetTime));
     var backwardSlot = forwardSlot.previous;
 

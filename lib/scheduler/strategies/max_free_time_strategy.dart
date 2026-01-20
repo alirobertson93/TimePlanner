@@ -14,6 +14,9 @@ class MaxFreeTimeStrategy implements SchedulingStrategy {
   // Default work hours (9 AM to 5 PM)
   static const int defaultWorkStartHour = 9;
   static const int defaultWorkEndHour = 17;
+  
+  /// Penalty score for creating small unusable fragments
+  static const double smallFragmentPenalty = 0.5;
 
   @override
   String get name => 'max_free_time';
@@ -166,7 +169,7 @@ class MaxFreeTimeStrategy implements SchedulingStrategy {
 
     // Add small penalty for placements that leave small fragments at the start
     if (slotsFromStart > 0 && slotsFromStart < slotsNeeded) {
-      score += 0.5; // Creating a small unusable fragment
+      score += smallFragmentPenalty; // Creating a small unusable fragment
     }
 
     return score;
