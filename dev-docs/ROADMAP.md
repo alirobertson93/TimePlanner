@@ -6,11 +6,11 @@ This document is the single source of truth for the project's current status, co
 
 ## Current Status
 
-**Project Phase**: Phase 4 In Progress - Planning Wizard
+**Project Phase**: Phase 5 In Progress - Advanced Scheduling
 
-**Overall Progress**: ~80% Complete
+**Overall Progress**: ~85% Complete
 
-**Active Work**: Planning Wizard implementation complete, ready for testing
+**Active Work**: Additional scheduling strategies implemented, ready for testing
 
 ## Completed Phases
 
@@ -178,22 +178,31 @@ This document is the single source of truth for the project's current status, co
 
 **Dependencies**: Phase 3 (complete)
 
-## Upcoming Phases
+## In Progress Phases
 
-### Phase 5: Advanced Scheduling (Medium Priority)
+### Phase 5: Advanced Scheduling (In Progress)
 
 **Target**: After Phase 4
+
+**Status**: 50% Complete
 
 **Goals**:
 - Implement additional scheduling strategies
 - Create Goals Dashboard for tracking
 - Enhance scheduling algorithm
 
+**What's Working**:
+- ✅ FrontLoadedStrategy (important work early in week)
+- ✅ MaxFreeTimeStrategy (maximize contiguous free blocks)
+- ✅ LeastDisruptionStrategy (minimize schedule changes)
+- ✅ Updated Planning Wizard to use all strategies
+- ✅ Unit tests for all new strategies
+
 **Features**:
-- [ ] Additional Scheduling Strategies
-  - [ ] FrontLoadedStrategy (important work early in week)
-  - [ ] MaxFreeTimeStrategy (maximize contiguous free blocks)
-  - [ ] LeastDisruptionStrategy (minimize schedule changes)
+- [x] Additional Scheduling Strategies
+  - [x] FrontLoadedStrategy (important work early in week)
+  - [x] MaxFreeTimeStrategy (maximize contiguous free blocks)
+  - [x] LeastDisruptionStrategy (minimize schedule changes)
 - [ ] Goals Dashboard
   - [ ] Visual progress indicators
   - [ ] Weekly/monthly goal tracking
@@ -205,9 +214,24 @@ This document is the single source of truth for the project's current status, co
   - [ ] Multi-pass optimization
   - [ ] Performance optimizations
 
-**Dependencies**: Phase 4 (needs working wizard)
+**Key Files Added**:
+- lib/scheduler/strategies/front_loaded_strategy.dart
+- lib/scheduler/strategies/max_free_time_strategy.dart
+- lib/scheduler/strategies/least_disruption_strategy.dart
+- test/scheduler/front_loaded_strategy_test.dart
+- test/scheduler/max_free_time_strategy_test.dart
+- test/scheduler/least_disruption_strategy_test.dart
+
+**Next Steps**:
+1. Run build_runner to generate provider code
+2. Test all scheduling strategies via Planning Wizard
+3. Begin Goals Dashboard implementation
+
+**Dependencies**: Phase 4 (complete)
 
 **Estimated Effort**: 3-4 development sessions
+
+## Upcoming Phases
 
 ### Phase 6: Social & Location Features (Medium Priority)
 
@@ -318,11 +342,11 @@ This document is the single source of truth for the project's current status, co
 | **Database Layer** | 🟢 Active | 70% | Events, Categories, Goals complete. People, Locations, Recurrence pending |
 | **Domain Entities** | 🟢 Active | 60% | Core entities done. Person, Location pending |
 | **Repositories** | 🟢 Active | 60% | Event, Category, Goal repos complete with tests |
-| **Scheduler Engine** | 🟡 Partial | 60% | Core + BalancedStrategy done. 3 more strategies pending |
+| **Scheduler Engine** | 🟢 Complete | 100% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption) |
 | **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button |
 | **Week View** | 🟢 Complete | 100% | 7-day grid, event blocks, category colors, navigation |
 | **Event Form** | 🟢 Complete | 100% | Create, edit, delete implemented |
-| **Planning Wizard** | 🟢 Complete | 100% | 4-step flow, schedule generation, accept workflow |
+| **Planning Wizard** | 🟢 Complete | 100% | 4-step flow, schedule generation, all strategies available |
 | **Goals Dashboard** | ⚪ Planned | 0% | Not started (Phase 5) |
 | **People Management** | ⚪ Planned | 0% | Not started (Phase 6) |
 | **Location Management** | ⚪ Planned | 0% | Not started (Phase 6) |
