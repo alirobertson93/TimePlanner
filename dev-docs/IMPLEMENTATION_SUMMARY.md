@@ -234,7 +234,7 @@ test('validates title required', () {
 
 ### Not Yet Implemented
 
-1. **Delete Functionality**: Edit button shows delete, but it's not wired up (TODO)
+1. ~~**Delete Functionality**: Edit button shows delete, but it's not wired up (TODO)~~ ✅ Delete is now implemented
 2. **Constraint Pickers**: Advanced options (movable, resizable, locked) deferred to future phase
 3. **Quick Add**: Fast creation modal deferred to future phase
 4. **Recurring Events**: Not part of this phase
@@ -242,7 +242,7 @@ test('validates title required', () {
 ### Expected Behavior
 
 - **Flexible Events**: Can be created but won't appear in Day View timeline until the scheduler places them
-- **Category Colors**: Show in dropdown but not yet used to color event cards (future work)
+- ~~**Category Colors**: Show in dropdown but not yet used to color event cards (future work)~~ ✅ Category colors now displayed in event cards
 
 ## Required User Actions
 
@@ -313,8 +313,9 @@ This implementation integrates cleanly with existing code:
 5. 🔲 Report any issues or feedback
 6. 🔲 If all tests pass, merge this PR
 7. 🔲 Continue with next phase:
-   - Week View implementation (next major feature)
-   - Or Planning Wizard (Phase 4)
+   - ~~Week View implementation (next major feature)~~ ✅ Week View is complete
+   - ~~Or Planning Wizard (Phase 4)~~ ✅ Planning Wizard is complete
+   - Begin Phase 5: Advanced Scheduling
 
 ## Current Status
 

@@ -809,15 +809,17 @@ Quick reference to file locations and status.
 | File | Status | Last Updated |
 |------|--------|--------------|
 | README.md | ✅ Complete | 2026-01-16 |
-| DEVELOPER_GUIDE.md | ✅ Complete | 2026-01-16 |
-| PRD.md | ✅ Complete | 2026-01-16 |
-| DATA_MODEL.md | ✅ Complete | 2026-01-16 |
-| ALGORITHM.md | ✅ Complete | 2026-01-16 |
-| ARCHITECTURE.md | ✅ Complete | 2026-01-16 |
-| TESTING.md | ✅ Complete | 2026-01-16 |
-| UX_FLOWS.md | ✅ Complete | 2026-01-16 |
-| WIREFRAMES.md | ✅ Complete | 2026-01-16 |
-| CHANGELOG.md | ✅ Complete | 2026-01-16 |
+| dev-docs/DEVELOPER_GUIDE.md | ✅ Complete | 2026-01-16 |
+| dev-docs/PRD.md | ✅ Complete | 2026-01-16 |
+| dev-docs/DATA_MODEL.md | ✅ Complete | 2026-01-16 |
+| dev-docs/ALGORITHM.md | ✅ Complete | 2026-01-16 |
+| dev-docs/ARCHITECTURE.md | ✅ Complete | 2026-01-16 |
+| dev-docs/TESTING.md | ✅ Complete | 2026-01-16 |
+| dev-docs/UX_FLOWS.md | ✅ Complete | 2026-01-16 |
+| dev-docs/WIREFRAMES.md | ✅ Complete | 2026-01-16 |
+| dev-docs/CHANGELOG.md | ✅ Complete | 2026-01-20 |
+| dev-docs/BUILD_INSTRUCTIONS.md | ✅ Complete | 2026-01-20 |
+| dev-docs/IMPLEMENTATION_SUMMARY.md | ✅ Complete | 2026-01-20 |
 
 ### Core Files
 
@@ -984,4 +986,4 @@ Record important technical decisions for future reference.
 
 *This is a living document. Update after each development session.*
 
-*Last updated: 2026-01-17*
+*Last updated: 2026-01-20*
