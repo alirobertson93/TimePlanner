@@ -296,7 +296,7 @@ class PlanningWizard extends _$PlanningWizard {
 
 /// Provider for all active goals
 @riverpod
-Future<List<Goal>> allGoals(Ref ref) async {
+Future<List<Goal>> allGoals(AllGoalsRef ref) async {
   final goalRepository = ref.watch(goalRepositoryProvider);
   return goalRepository.getAll();
 }

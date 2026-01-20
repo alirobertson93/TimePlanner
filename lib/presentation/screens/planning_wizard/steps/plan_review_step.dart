@@ -265,7 +265,7 @@ class PlanReviewStep extends ConsumerWidget {
     DateTime day,
     List<ScheduledEvent> events,
   ) {
-    final dateFormat = DateFormat.EEEE_MMMMd();
+    final dateFormat = DateFormat('EEEE, MMMM d');
     final timeFormat = DateFormat.jm();
 
     return Column(
