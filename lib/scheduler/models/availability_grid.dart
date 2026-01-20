@@ -23,9 +23,9 @@ class AvailabilityGrid {
   /// Initialize all slots in the window as available
   void _initializeSlots() {
     var current = TimeSlot(TimeSlot.roundDown(windowStart));
-    final end = TimeSlot.roundUp(windowEnd);
+    final endTime = TimeSlot.roundUp(windowEnd);
 
-    while (current.start.isBefore(end.start)) {
+    while (current.start.isBefore(endTime)) {
       _slots[current.start] = null;
       current = current.next;
     }
@@ -105,7 +105,7 @@ class AvailabilityGrid {
     var current = startFrom;
     final candidates = <TimeSlot>[];
 
-    while (current.start.isBefore(TimeSlot.roundUp(windowEnd).start)) {
+    while (current.start.isBefore(TimeSlot.roundUp(windowEnd))) {
       if (isAvailable(current)) {
         candidates.add(current);
 

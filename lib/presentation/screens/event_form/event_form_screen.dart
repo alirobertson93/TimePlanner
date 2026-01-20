@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import '../../providers/event_form_providers.dart';
+import '../../providers/event_form_providers.dart' as form_providers;
 import '../../providers/repository_providers.dart';
 import '../../../domain/enums/timing_type.dart';
-import 'package:flutter/material.dart' as flutter;
+
+// Type aliases for clarity
+typedef FlutterTimeOfDay = TimeOfDay;
 
 /// Screen for creating or editing events
 class EventFormScreen extends ConsumerStatefulWidget {
@@ -38,14 +40,14 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
   Future<void> _initializeForm() async {
     if (_isInitialized) return;
 
-    final formNotifier = ref.read(eventFormProvider.notifier);
+    final formNotifier = ref.read(form_providers.eventFormProvider.notifier);
     if (widget.eventId != null) {
       await formNotifier.initializeForEdit(widget.eventId!);
     } else {
       formNotifier.initializeForNew(initialDate: widget.initialDate);
     }
 
-    final state = ref.read(eventFormProvider);
+    final state = ref.read(form_providers.eventFormProvider);
     _titleController.text = state.title;
     _descriptionController.text = state.description;
 
@@ -61,8 +63,8 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final formState = ref.watch(eventFormProvider);
-    final formNotifier = ref.read(eventFormProvider.notifier);
+    final formState = ref.watch(form_providers.eventFormProvider);
+    final formNotifier = ref.read(form_providers.eventFormProvider.notifier);
     final categoriesAsync = ref.watch(categoryRepositoryProvider).getAll();
 
     return Scaffold(
@@ -272,15 +274,15 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
                       final time = await showTimePicker(
                         context: context,
                         initialTime: formState.startTime != null
-                            ? flutter.TimeOfDay(
+                            ? FlutterTimeOfDay(
                                 hour: formState.startTime!.hour,
                                 minute: formState.startTime!.minute,
                               )
-                            : flutter.TimeOfDay.now(),
+                            : FlutterTimeOfDay.now(),
                       );
                       if (time != null) {
                         formNotifier.updateStartTime(
-                          TimeOfDay(hour: time.hour, minute: time.minute),
+                          form_providers.TimeOfDay(hour: time.hour, minute: time.minute),
                         );
                       }
                     },
@@ -328,15 +330,15 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
                       final time = await showTimePicker(
                         context: context,
                         initialTime: formState.endTime != null
-                            ? flutter.TimeOfDay(
+                            ? FlutterTimeOfDay(
                                 hour: formState.endTime!.hour,
                                 minute: formState.endTime!.minute,
                               )
-                            : flutter.TimeOfDay.now(),
+                            : FlutterTimeOfDay.now(),
                       );
                       if (time != null) {
                         formNotifier.updateEndTime(
-                          TimeOfDay(hour: time.hour, minute: time.minute),
+                          form_providers.TimeOfDay(hour: time.hour, minute: time.minute),
                         );
                       }
                     },

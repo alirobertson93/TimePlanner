@@ -7,7 +7,7 @@ part 'event_providers.g.dart';
 
 /// Provider for events on a specific date
 @riverpod
-Stream<List<Event>> eventsForDate(Ref ref, DateTime date) {
+Stream<List<Event>> eventsForDate(EventsForDateRef ref, DateTime date) {
   final repository = ref.watch(eventRepositoryProvider);
   final start = DateTimeUtils.startOfDay(date);
   final end = DateTimeUtils.endOfDay(date);
@@ -48,7 +48,7 @@ class SelectedDate extends _$SelectedDate {
 
 /// Delete an event by ID
 @riverpod
-Future<void> deleteEvent(Ref ref, String eventId) async {
+Future<void> deleteEvent(DeleteEventRef ref, String eventId) async {
   final repository = ref.watch(eventRepositoryProvider);
   await repository.delete(eventId);
   
@@ -58,7 +58,7 @@ Future<void> deleteEvent(Ref ref, String eventId) async {
 
 /// Provider for events in a week starting from the given date
 @riverpod
-Stream<List<Event>> eventsForWeek(Ref ref, DateTime weekStart) {
+Stream<List<Event>> eventsForWeek(EventsForWeekRef ref, DateTime weekStart) {
   final repository = ref.watch(eventRepositoryProvider);
   final start = DateTimeUtils.startOfDay(weekStart);
   final end = DateTimeUtils.endOfDay(weekStart.add(const Duration(days: 6)));
