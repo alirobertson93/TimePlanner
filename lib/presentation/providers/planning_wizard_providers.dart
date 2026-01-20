@@ -5,6 +5,9 @@ import '../../scheduler/event_scheduler.dart';
 import '../../scheduler/models/schedule_request.dart';
 import '../../scheduler/models/schedule_result.dart';
 import '../../scheduler/strategies/balanced_strategy.dart';
+import '../../scheduler/strategies/front_loaded_strategy.dart';
+import '../../scheduler/strategies/max_free_time_strategy.dart';
+import '../../scheduler/strategies/least_disruption_strategy.dart';
 import '../../scheduler/strategies/scheduling_strategy.dart';
 import '../../core/utils/date_utils.dart';
 import 'repository_providers.dart';
@@ -14,7 +17,9 @@ part 'planning_wizard_providers.g.dart';
 /// Enum for available scheduling strategies
 enum StrategyType {
   balanced,
-  // Future strategies: frontLoaded, maxFreeTime, leastDisruption
+  frontLoaded,
+  maxFreeTime,
+  leastDisruption,
 }
 
 /// State class for the planning wizard
@@ -255,7 +260,12 @@ class PlanningWizard extends _$PlanningWizard {
     switch (type) {
       case StrategyType.balanced:
         return BalancedStrategy();
-      // Future: add other strategies
+      case StrategyType.frontLoaded:
+        return FrontLoadedStrategy();
+      case StrategyType.maxFreeTime:
+        return MaxFreeTimeStrategy();
+      case StrategyType.leastDisruption:
+        return LeastDisruptionStrategy();
     }
   }
 
