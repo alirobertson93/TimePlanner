@@ -10,6 +10,10 @@ import 'tables/categories.dart';
 import 'tables/events.dart';
 import 'tables/goals.dart';
 
+// Import enums so the generated .g.dart file can access them
+import '../../domain/enums/timing_type.dart';
+import '../../domain/enums/event_status.dart';
+
 part 'app_database.g.dart';
 
 /// Main database class for the TimePlanner app

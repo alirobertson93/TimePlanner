@@ -78,7 +78,7 @@ class EventRepository {
       id: dbEvent.id,
       name: dbEvent.name,
       description: dbEvent.description,
-      timingType: TimingType.fromValue(dbEvent.timingType),
+      timingType: dbEvent.timingType,
       startTime: dbEvent.fixedStartTime,
       endTime: dbEvent.fixedEndTime,
       duration: dbEvent.durationMinutes != null
@@ -88,7 +88,7 @@ class EventRepository {
       appCanMove: dbEvent.appCanMove,
       appCanResize: dbEvent.appCanResize,
       isUserLocked: dbEvent.isUserLocked,
-      status: EventStatus.fromValue(dbEvent.status),
+      status: dbEvent.status,
       createdAt: dbEvent.createdAt,
       updatedAt: dbEvent.updatedAt,
     );
@@ -100,7 +100,7 @@ class EventRepository {
       id: Value(event.id),
       name: Value(event.name),
       description: Value(event.description),
-      timingType: Value(event.timingType.value),
+      timingType: Value(event.timingType),
       fixedStartTime: Value(event.startTime),
       fixedEndTime: Value(event.endTime),
       durationMinutes: Value(event.duration?.inMinutes),
@@ -108,7 +108,7 @@ class EventRepository {
       appCanMove: Value(event.appCanMove),
       appCanResize: Value(event.appCanResize),
       isUserLocked: Value(event.isUserLocked),
-      status: Value(event.status.value),
+      status: Value(event.status),
       createdAt: Value(event.createdAt),
       updatedAt: Value(event.updatedAt),
     );
