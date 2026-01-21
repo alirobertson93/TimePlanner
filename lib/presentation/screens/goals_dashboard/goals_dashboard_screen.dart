@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/goal_providers.dart';
 import '../../providers/category_providers.dart';
+import '../../../core/utils/color_utils.dart';
 import '../../../domain/enums/goal_period.dart';
 
 /// Goals Dashboard screen showing goal progress
@@ -293,7 +294,7 @@ class GoalsDashboardScreen extends ConsumerWidget {
         : null;
 
     // Get category color
-    Color categoryColor = Theme.of(context).colorScheme.primary;
+    Color categoryColor = ColorUtils.defaultCategoryColor;
     String? categoryName;
     
     if (categoryAsync != null) {
@@ -301,11 +302,7 @@ class GoalsDashboardScreen extends ConsumerWidget {
         data: (category) {
           if (category != null) {
             categoryName = category.name;
-            try {
-              categoryColor = Color(int.parse('0xFF${category.colourHex.replaceFirst('#', '')}'));
-            } catch (_) {
-              // Use default color
-            }
+            categoryColor = ColorUtils.parseHexColor(category.colourHex);
           }
         },
         loading: () {},
@@ -405,14 +402,14 @@ class GoalsDashboardScreen extends ConsumerWidget {
             Row(
               children: [
                 Text(
-                  '${goalProgress.currentValueDisplay}/${goalProgress.targetValue} ${goalProgress.unitString}',
+                  goalProgress.progressText,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 const Spacer(),
                 Text(
-                  '${goalProgress.progressPercentDisplay}%',
+                  goalProgress.progressPercentText,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: statusColor,

@@ -4,7 +4,6 @@ import '../../domain/entities/event.dart';
 import '../../domain/enums/goal_metric.dart';
 import '../../domain/enums/goal_period.dart';
 import '../../domain/enums/event_status.dart';
-import '../../core/utils/date_utils.dart';
 import 'repository_providers.dart';
 
 part 'goal_providers.g.dart';
@@ -62,6 +61,12 @@ class GoalProgress {
         return 'completions';
     }
   }
+
+  /// Formatted progress text for display (e.g., "8.5/10 hours")
+  String get progressText => '$currentValueDisplay/$targetValue $unitString';
+
+  /// Formatted progress percentage text for display (e.g., "85%")
+  String get progressPercentText => '$progressPercentDisplay%';
 
   /// Status icon string representation
   String get statusIcon {
