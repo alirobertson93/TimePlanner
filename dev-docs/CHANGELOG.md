@@ -33,6 +33,97 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-21 - Phase 6: Location Management Implementation
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Continue Phase 6 by implementing Location Management data layer and UI
+
+**Work Completed**:
+- ✅ Created Location domain entity
+  - id, name, address, latitude, longitude, notes, createdAt fields
+  - copyWith method for immutable updates
+  - Equality and hashCode implementations
+  - toString for debugging
+- ✅ Created Locations database table
+  - TextColumn for id (primary key)
+  - TextColumn for name (required, 1-200 chars)
+  - TextColumn for address (nullable)
+  - RealColumn for latitude, longitude (nullable)
+  - TextColumn for notes (nullable)
+  - DateTimeColumn for createdAt
+- ✅ Created LocationRepository
+  - getAll() - returns all locations ordered by name
+  - getById() - retrieve single location by ID
+  - save() - insert or update location
+  - delete() - remove location by ID
+  - searchByName() - case-insensitive name search
+  - watchAll() - reactive stream of all locations
+- ✅ Created LocationRepository tests
+  - Test save and retrieve
+  - Test update existing location
+  - Test delete location
+  - Test getAll ordering
+  - Test searchByName (case-insensitive)
+  - Test optional fields as null
+  - Test watchAll reactive updates
+- ✅ Updated database schema
+  - Added Locations table to @DriftDatabase annotation
+  - Updated schemaVersion from 4 to 5
+  - Added migration from v4 to v5
+- ✅ Added locationRepositoryProvider to repository_providers.dart
+- ✅ Created location_providers.dart
+  - allLocationsProvider - get all locations
+  - watchAllLocationsProvider - reactive stream
+  - locationByIdProvider - get single location
+  - searchLocationsProvider - search by name
+- ✅ Created LocationsScreen
+  - Full CRUD for location management
+  - Search functionality
+  - Add location dialog
+  - Edit location dialog
+  - Delete confirmation
+  - Empty state
+- ✅ Added /locations route to router
+- ✅ Added Locations button to Day View app bar
+- ✅ Updated ROADMAP.md with Phase 6 progress
+- ✅ Updated CHANGELOG.md (this entry)
+
+**Technical Decisions**:
+- Following same patterns as PersonRepository for consistency
+- Location entity includes latitude/longitude for future travel time calculations
+- searchByName uses case-insensitive contains matching
+- Locations ordered alphabetically by name in getAll()
+- All optional fields (address, lat/lng, notes) nullable
+
+**Files Added**:
+- lib/domain/entities/location.dart
+- lib/data/database/tables/locations.dart
+- lib/data/repositories/location_repository.dart
+- lib/presentation/providers/location_providers.dart
+- lib/presentation/screens/locations/locations_screen.dart
+- test/repositories/location_repository_test.dart
+
+**Files Modified**:
+- lib/data/database/app_database.dart - Added Locations table, schema v5
+- lib/presentation/providers/repository_providers.dart - Added locationRepositoryProvider
+- lib/app/router.dart - Added /locations route
+- lib/presentation/screens/day_view/day_view_screen.dart - Added Locations button
+- dev-docs/ROADMAP.md - Updated Phase 6 status
+- dev-docs/CHANGELOG.md - Added this session entry
+
+**Next Steps**:
+1. Run build_runner to generate database and provider code:
+   ```bash
+   flutter pub run build_runner build --delete-conflicting-outputs
+   ```
+2. Test Location Management functionality
+3. Create LocationPicker widget for events
+4. Integrate LocationPicker into Event Form
+5. Begin Travel Time implementation (optional Phase 6 feature)
+
+---
+
 ### Session: 2026-01-21 - Phase 6: People Picker Integration in Event Form
 
 **Author**: AI Assistant (GitHub Copilot)
@@ -1127,13 +1218,16 @@ Track feature completion at a high level.
 - [x] Goal progress calculation
 - [ ] Goal integration in scheduler (advanced features deferred)
 
-### Milestone 7: Advanced Features (35% Complete)
+### Milestone 7: Advanced Features (50% Complete)
 
 - [ ] Recurrence rules
 - [x] People entity and repository
 - [x] People UI (picker, management screens)
 - [x] People picker integrated into Event Form
-- [ ] Locations and travel time
+- [x] Location entity and repository
+- [x] Location UI (management screens)
+- [ ] Location picker integrated into Event Form
+- [ ] Travel time calculations
 - [ ] Event templates
 - [ ] Rescheduling operations
 
@@ -1282,7 +1376,7 @@ Quick reference to file locations and status.
 | lib/domain/entities/category.dart | ✅ Complete | ~50 | - |
 | lib/domain/entities/goal.dart | ✅ Complete | ~100 | - |
 | lib/domain/entities/person.dart | ✅ Complete | ~70 | 2026-01-21 |
-| lib/domain/entities/location.dart | ❌ Not started | 0 | - |
+| lib/domain/entities/location.dart | ✅ Complete | ~70 | 2026-01-21 |
 | lib/domain/enums/timing_type.dart | ✅ Complete | ~10 | - |
 | lib/domain/enums/event_status.dart | ✅ Complete | ~10 | - |
 
@@ -1290,14 +1384,16 @@ Quick reference to file locations and status.
 
 | File | Status | Lines | Last Updated |
 |------|--------|-------|--------------|
-| lib/data/database/app_database.dart | ✅ Complete | ~120 | 2026-01-21 |
+| lib/data/database/app_database.dart | ✅ Complete | ~135 | 2026-01-21 |
 | lib/data/database/tables/events.dart | ✅ Complete | ~40 | - |
 | lib/data/database/tables/categories.dart | ✅ Complete | ~30 | - |
 | lib/data/database/tables/goals.dart | ✅ Complete | ~50 | - |
 | lib/data/database/tables/people.dart | ✅ Complete | ~25 | 2026-01-21 |
+| lib/data/database/tables/locations.dart | ✅ Complete | ~30 | 2026-01-21 |
 | lib/data/repositories/event_repository.dart | ✅ Complete | ~175 | - |
 | lib/data/repositories/goal_repository.dart | ✅ Complete | ~100 | - |
 | lib/data/repositories/person_repository.dart | ✅ Complete | ~80 | 2026-01-21 |
+| lib/data/repositories/location_repository.dart | ✅ Complete | ~80 | 2026-01-21 |
 
 **Note**: `CategoryRepository` is currently defined within `event_repository.dart`. Per ARCHITECTURE.md, it should be refactored to its own file in a future session.
 
@@ -1324,10 +1420,12 @@ Quick reference to file locations and status.
 | lib/presentation/screens/goal_form/*.dart | ✅ Complete | ~300 | 2026-01-21 |
 | lib/presentation/screens/goals_dashboard/*.dart | ✅ Complete | ~350 | 2026-01-21 |
 | lib/presentation/screens/people/*.dart | ✅ Complete | ~560 | 2026-01-21 |
+| lib/presentation/screens/locations/*.dart | ✅ Complete | ~450 | 2026-01-21 |
 | lib/presentation/screens/planning_wizard/*.dart | ✅ Complete | ~750 | 2026-01-20 |
 | lib/presentation/providers/*.dart | ✅ Complete | ~125 | - |
 | lib/presentation/providers/event_form_providers.dart | ✅ Complete | ~325 | 2026-01-21 |
 | lib/presentation/providers/person_providers.dart | ✅ Complete | ~100 | 2026-01-21 |
+| lib/presentation/providers/location_providers.dart | ✅ Complete | ~40 | 2026-01-21 |
 | lib/presentation/providers/goal_providers.dart | ✅ Complete | ~200 | 2026-01-21 |
 | lib/presentation/providers/goal_form_providers.dart | ✅ Complete | ~200 | 2026-01-21 |
 | lib/presentation/providers/planning_wizard_providers.dart | ✅ Complete | ~300 | 2026-01-20 |
@@ -1342,6 +1440,7 @@ Quick reference to file locations and status.
 | test/repositories/goal_repository_test.dart | ✅ Complete | ~10 | - |
 | test/repositories/person_repository_test.dart | ✅ Complete | ~8 | 2026-01-21 |
 | test/repositories/event_people_repository_test.dart | ✅ Complete | ~8 | 2026-01-21 |
+| test/repositories/location_repository_test.dart | ✅ Complete | ~8 | 2026-01-21 |
 | test/scheduler/time_slot_test.dart | ✅ Complete | 10 | - |
 | test/scheduler/availability_grid_test.dart | ✅ Complete | ~5 | - |
 | test/scheduler/balanced_strategy_test.dart | ✅ Complete | ~5 | - |

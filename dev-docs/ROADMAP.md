@@ -8,9 +8,9 @@ This document is the single source of truth for the project's current status, co
 
 **Project Phase**: Phase 6 In Progress - Social & Location Features
 
-**Overall Progress**: ~97% Complete
+**Overall Progress**: ~98% Complete
 
-**Active Work**: Phase 6 - Location Management implementation (People Management complete)
+**Active Work**: Phase 6 - Location picker integration into Event Form (Location Management core complete)
 
 ## Completed Phases
 
@@ -253,7 +253,7 @@ This document is the single source of truth for the project's current status, co
 
 **Target**: Mid-development
 
-**Status**: 60% Complete
+**Status**: 80% Complete
 
 **Goals**:
 - Add People and Location entities
@@ -265,7 +265,7 @@ This document is the single source of truth for the project's current status, co
 - ✅ People database table
 - ✅ PersonRepository with CRUD operations
 - ✅ PersonRepository tests
-- ✅ Database migration (v2 → v3 → v4)
+- ✅ Database migration (v2 → v3 → v4 → v5)
 - ✅ Person provider for Riverpod
 - ✅ EventPeople junction table for many-to-many relationships
 - ✅ EventPeopleRepository with full CRUD
@@ -277,6 +277,14 @@ This document is the single source of truth for the project's current status, co
 - ✅ People button in Day View
 - ✅ PeoplePicker integrated into Event Form
 - ✅ Event-people associations saved on event create/edit
+- ✅ Location entity with address and coordinates
+- ✅ Locations database table
+- ✅ LocationRepository with CRUD operations
+- ✅ LocationRepository tests
+- ✅ Location providers for Riverpod
+- ✅ Locations Management Screen (CRUD)
+- ✅ /locations route in router
+- ✅ Locations button in Day View
 
 **Features**:
 - [x] People Management
@@ -287,11 +295,12 @@ This document is the single source of truth for the project's current status, co
   - [x] People Management Screen
   - [x] People picker UI widget
   - [x] Integrate people picker into Event Form
-- [ ] Location Management
-  - [ ] Locations table and repository
-  - [ ] Location entity with address
+- [x] Location Management
+  - [x] Locations table and repository
+  - [x] Location entity with address
+  - [x] Locations Management Screen
   - [ ] Associate locations with events
-  - [ ] Location picker UI
+  - [ ] Location picker UI for Event Form
 - [ ] Travel Time
   - [ ] Calculate travel time between locations
   - [ ] Auto-schedule travel buffer
@@ -303,24 +312,31 @@ This document is the single source of truth for the project's current status, co
 
 **Key Files Added**:
 - lib/domain/entities/person.dart
+- lib/domain/entities/location.dart
 - lib/data/database/tables/people.dart
 - lib/data/database/tables/event_people.dart
+- lib/data/database/tables/locations.dart
 - lib/data/repositories/person_repository.dart
 - lib/data/repositories/event_people_repository.dart
+- lib/data/repositories/location_repository.dart
 - lib/presentation/providers/person_providers.dart
+- lib/presentation/providers/location_providers.dart
 - lib/presentation/screens/people/people_screen.dart
+- lib/presentation/screens/locations/locations_screen.dart
 - lib/presentation/widgets/people_picker.dart
 - test/repositories/person_repository_test.dart
 - test/repositories/event_people_repository_test.dart
+- test/repositories/location_repository_test.dart
 
 **Next Steps**:
 1. Run build_runner to generate database and provider code
-2. Test People Management and Event Form integration
-3. Begin Location Management implementation
+2. Test Location Management functionality
+3. Create LocationPicker widget for Event Form integration
+4. Integrate LocationPicker into Event Form
 
 **Dependencies**: Phase 5 (Goals Dashboard foundation) - complete
 
-**Estimated Effort**: 2-3 development sessions remaining
+**Estimated Effort**: 1-2 development sessions remaining
 
 ## Upcoming Phases
 
@@ -397,18 +413,18 @@ This document is the single source of truth for the project's current status, co
 
 | Component | Status | Completion | Notes |
 |-----------|--------|------------|-------|
-| **Database Layer** | 🟢 Active | 85% | Events, Categories, Goals, People, EventPeople complete. Locations, Recurrence pending |
-| **Domain Entities** | 🟢 Active | 80% | Core entities + Person done. Location pending |
-| **Repositories** | 🟢 Active | 85% | Event, Category, Goal, Person, EventPeople repos complete with tests |
+| **Database Layer** | 🟢 Active | 95% | Events, Categories, Goals, People, EventPeople, Locations complete. Recurrence pending |
+| **Domain Entities** | 🟢 Active | 95% | Core entities + Person + Location done. |
+| **Repositories** | 🟢 Active | 95% | Event, Category, Goal, Person, EventPeople, Location repos complete with tests |
 | **Scheduler Engine** | 🟢 Complete | 100% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption) |
-| **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button |
+| **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button, Locations button |
 | **Week View** | 🟢 Complete | 100% | 7-day grid, event blocks, category colors, navigation |
 | **Event Form** | 🟢 Complete | 100% | Create, edit, delete, people selection implemented |
 | **Planning Wizard** | 🟢 Complete | 100% | 4-step flow, schedule generation, all strategies available |
 | **Goals Dashboard** | 🟢 Complete | 100% | Progress tracking, status indicators, category grouping, goal CRUD |
 | **Goal Form** | 🟢 Complete | 100% | Create, edit, delete with validation |
 | **People Management** | 🟢 Complete | 100% | Entity, tables, repositories, providers, UI, event form integration complete |
-| **Location Management** | ⚪ Planned | 0% | Not started (Phase 6) |
+| **Location Management** | 🟡 Partial | 80% | Entity, table, repository, providers, UI complete. Event form integration pending |
 | **Recurrence** | ⚪ Planned | 0% | Not started (Phase 7) |
 | **Notifications** | ⚪ Planned | 0% | Not started (Phase 7) |
 | **Settings** | ⚪ Planned | 0% | Not started (Phase 7) |

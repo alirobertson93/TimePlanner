@@ -11,6 +11,7 @@ import 'tables/events.dart';
 import 'tables/goals.dart';
 import 'tables/people.dart';
 import 'tables/event_people.dart';
+import 'tables/locations.dart';
 
 // Import enums so the generated .g.dart file can access them
 import '../../domain/enums/timing_type.dart';
@@ -19,7 +20,7 @@ import '../../domain/enums/event_status.dart';
 part 'app_database.g.dart';
 
 /// Main database class for the TimePlanner app
-@DriftDatabase(tables: [Categories, Events, Goals, People, EventPeople])
+@DriftDatabase(tables: [Categories, Events, Goals, People, EventPeople, Locations])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -27,7 +28,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration {
@@ -48,6 +49,10 @@ class AppDatabase extends _$AppDatabase {
         // Migration from version 3 to 4: Add EventPeople junction table
         if (from <= 3) {
           await m.createTable(eventPeople);
+        }
+        // Migration from version 4 to 5: Add Locations table
+        if (from <= 4) {
+          await m.createTable(locations);
         }
       },
     );
