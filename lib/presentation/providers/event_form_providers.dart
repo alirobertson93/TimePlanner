@@ -310,7 +310,17 @@ class EventForm extends _$EventForm {
       await repository.save(event);
 
       // Save people associations
-      await eventPeopleRepository.setPeopleForEvent(eventId, state.selectedPeopleIds);
+      try {
+        await eventPeopleRepository.setPeopleForEvent(eventId, state.selectedPeopleIds);
+      } catch (peopleError) {
+        // If people save fails, we still consider the event saved but log the error
+        // In a production app, this should use proper logging and potentially a transaction
+        state = state.copyWith(
+          isSaving: false,
+          error: 'Event saved but failed to save people: $peopleError',
+        );
+        return true; // Event was saved, just people associations failed
+      }
 
       state = state.copyWith(isSaving: false);
       return true;
