@@ -6,6 +6,7 @@ import '../presentation/screens/week_view/week_view_screen.dart';
 import '../presentation/screens/event_form/event_form_screen.dart';
 import '../presentation/screens/planning_wizard/planning_wizard_screen.dart';
 import '../presentation/screens/goals_dashboard/goals_dashboard_screen.dart';
+import '../presentation/screens/goal_form/goal_form_screen.dart';
 
 /// Application router configuration
 class AppRouter {
@@ -54,6 +55,19 @@ class AppRouter {
         path: '/goals',
         name: 'goals_dashboard',
         builder: (context, state) => const GoalsDashboardScreen(),
+      ),
+      GoRoute(
+        path: '/goal/new',
+        name: 'goal_new',
+        builder: (context, state) => const GoalFormScreen(),
+      ),
+      GoRoute(
+        path: '/goal/:id/edit',
+        name: 'goal_edit',
+        builder: (context, state) {
+          final goalId = state.pathParameters['id'];
+          return GoalFormScreen(goalId: goalId);
+        },
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
