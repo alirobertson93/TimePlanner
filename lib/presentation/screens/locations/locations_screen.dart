@@ -176,15 +176,15 @@ class _LocationsScreenState extends ConsumerState<LocationsScreen> {
                 return;
               }
 
+              final name = nameController.text.trim();
+              final address = addressController.text.trim();
+              final notes = notesController.text.trim();
+
               final location = Location(
                 id: const Uuid().v4(),
-                name: nameController.text.trim(),
-                address: addressController.text.trim().isEmpty
-                    ? null
-                    : addressController.text.trim(),
-                notes: notesController.text.trim().isEmpty
-                    ? null
-                    : notesController.text.trim(),
+                name: name,
+                address: address.isEmpty ? null : address,
+                notes: notes.isEmpty ? null : notes,
                 createdAt: DateTime.now(),
               );
 
@@ -275,14 +275,14 @@ class _LocationsScreenState extends ConsumerState<LocationsScreen> {
                 return;
               }
 
+              final name = nameController.text.trim();
+              final address = addressController.text.trim();
+              final notes = notesController.text.trim();
+
               final updatedLocation = location.copyWith(
-                name: nameController.text.trim(),
-                address: addressController.text.trim().isEmpty
-                    ? null
-                    : addressController.text.trim(),
-                notes: notesController.text.trim().isEmpty
-                    ? null
-                    : notesController.text.trim(),
+                name: name,
+                address: address.isEmpty ? null : address,
+                notes: notes.isEmpty ? null : notes,
               );
 
               try {
