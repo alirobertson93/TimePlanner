@@ -33,6 +33,64 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-21 - Phase 6: People Picker Integration in Event Form
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Complete People Management by integrating PeoplePicker into Event Form
+
+**Work Completed**:
+- ✅ Verified documentation accuracy (CHANGELOG.md and ROADMAP.md)
+  - Confirmed all 12 People Management items are implemented correctly
+  - Only missing item was Event Form integration (as documented)
+- ✅ Updated EventFormState to include selectedPeopleIds field
+  - Added List<String> selectedPeopleIds to state
+  - Updated copyWith method to support selectedPeopleIds
+- ✅ Updated EventForm provider methods
+  - Added updateSelectedPeople() method
+  - Modified initializeForEdit() to load existing people associations
+  - Modified save() to save event-people associations via EventPeopleRepository
+- ✅ Integrated PeoplePicker widget into EventFormScreen
+  - Added import for people_picker.dart
+  - Added "People" section after Timing section
+  - Wired up PeoplePicker with formState.selectedPeopleIds
+  - Connected onPeopleChanged callback to formNotifier.updateSelectedPeople
+- ✅ Updated ROADMAP.md
+  - Changed People Management status to 100% complete
+  - Changed Phase 6 status to 60% complete
+  - Updated Component Completion Summary
+  - Updated overall progress to ~97%
+  - Updated Active Work to Location Management
+- ✅ Updated CHANGELOG.md (this entry)
+
+**Technical Decisions**:
+- People selection stored as List<String> of IDs in form state
+- EventPeopleRepository.setPeopleForEvent() handles both new and existing events
+- PeoplePicker is fully reusable component - same widget works in Event Form as standalone
+- People section appears after Timing to maintain logical form flow
+
+**Files Modified**:
+- lib/presentation/providers/event_form_providers.dart
+  - Added selectedPeopleIds to EventFormState
+  - Added updateSelectedPeople() method
+  - Updated initializeForEdit() to load people
+  - Updated save() to save people associations
+- lib/presentation/screens/event_form/event_form_screen.dart
+  - Added people_picker.dart import
+  - Added People section with PeoplePicker widget
+- dev-docs/ROADMAP.md - Updated Phase 6 and component status
+- dev-docs/CHANGELOG.md - Added this session entry
+
+**Next Steps**:
+1. Run build_runner to generate provider code
+2. Test Event Form people selection:
+   - Create new event with people
+   - Edit existing event, verify people load
+   - Verify people associations saved correctly
+3. Begin Location Management implementation (next Phase 6 item)
+
+---
+
 ### Session: 2026-01-21 - Phase 6: People Management UI and Event-People Association
 
 **Author**: AI Assistant (GitHub Copilot)
@@ -1069,11 +1127,12 @@ Track feature completion at a high level.
 - [x] Goal progress calculation
 - [ ] Goal integration in scheduler (advanced features deferred)
 
-### Milestone 7: Advanced Features (25% Complete)
+### Milestone 7: Advanced Features (35% Complete)
 
 - [ ] Recurrence rules
 - [x] People entity and repository
-- [ ] People UI (picker, management screens)
+- [x] People UI (picker, management screens)
+- [x] People picker integrated into Event Form
 - [ ] Locations and travel time
 - [ ] Event templates
 - [ ] Rescheduling operations
@@ -1261,15 +1320,18 @@ Quick reference to file locations and status.
 | lib/presentation/screens/home_screen.dart | ✅ Complete | ~62 | - |
 | lib/presentation/screens/day_view/*.dart | ✅ Complete | ~360 | 2026-01-17 |
 | lib/presentation/screens/week_view/*.dart | ✅ Complete | ~350 | 2026-01-17 |
-| lib/presentation/screens/event_form/*.dart | ✅ Complete | ~430 | - |
+| lib/presentation/screens/event_form/*.dart | ✅ Complete | ~450 | 2026-01-21 |
 | lib/presentation/screens/goal_form/*.dart | ✅ Complete | ~300 | 2026-01-21 |
 | lib/presentation/screens/goals_dashboard/*.dart | ✅ Complete | ~350 | 2026-01-21 |
+| lib/presentation/screens/people/*.dart | ✅ Complete | ~560 | 2026-01-21 |
 | lib/presentation/screens/planning_wizard/*.dart | ✅ Complete | ~750 | 2026-01-20 |
 | lib/presentation/providers/*.dart | ✅ Complete | ~125 | - |
-| lib/presentation/providers/event_form_providers.dart | ✅ Complete | ~305 | - |
+| lib/presentation/providers/event_form_providers.dart | ✅ Complete | ~325 | 2026-01-21 |
+| lib/presentation/providers/person_providers.dart | ✅ Complete | ~100 | 2026-01-21 |
 | lib/presentation/providers/goal_providers.dart | ✅ Complete | ~200 | 2026-01-21 |
 | lib/presentation/providers/goal_form_providers.dart | ✅ Complete | ~200 | 2026-01-21 |
 | lib/presentation/providers/planning_wizard_providers.dart | ✅ Complete | ~300 | 2026-01-20 |
+| lib/presentation/widgets/people_picker.dart | ✅ Complete | ~440 | 2026-01-21 |
 
 ### Tests
 
@@ -1279,6 +1341,7 @@ Quick reference to file locations and status.
 | test/repositories/category_repository_test.dart | ⚪ Empty placeholder | 0 | - |
 | test/repositories/goal_repository_test.dart | ✅ Complete | ~10 | - |
 | test/repositories/person_repository_test.dart | ✅ Complete | ~8 | 2026-01-21 |
+| test/repositories/event_people_repository_test.dart | ✅ Complete | ~8 | 2026-01-21 |
 | test/scheduler/time_slot_test.dart | ✅ Complete | 10 | - |
 | test/scheduler/availability_grid_test.dart | ✅ Complete | ~5 | - |
 | test/scheduler/balanced_strategy_test.dart | ✅ Complete | ~5 | - |

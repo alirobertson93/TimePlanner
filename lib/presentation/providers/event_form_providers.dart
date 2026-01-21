@@ -21,6 +21,7 @@ class EventFormState {
     this.endTime,
     this.durationHours = 1,
     this.durationMinutes = 0,
+    this.selectedPeopleIds = const [],
     this.isEditMode = false,
     this.isSaving = false,
     this.error,
@@ -37,6 +38,7 @@ class EventFormState {
   final TimeOfDay? endTime;
   final int durationHours;
   final int durationMinutes;
+  final List<String> selectedPeopleIds;
   final bool isEditMode;
   final bool isSaving;
   final String? error;
@@ -53,6 +55,7 @@ class EventFormState {
     TimeOfDay? endTime,
     int? durationHours,
     int? durationMinutes,
+    List<String>? selectedPeopleIds,
     bool? isEditMode,
     bool? isSaving,
     String? error,
@@ -69,6 +72,7 @@ class EventFormState {
       endTime: endTime ?? this.endTime,
       durationHours: durationHours ?? this.durationHours,
       durationMinutes: durationMinutes ?? this.durationMinutes,
+      selectedPeopleIds: selectedPeopleIds ?? this.selectedPeopleIds,
       isEditMode: isEditMode ?? this.isEditMode,
       isSaving: isSaving ?? this.isSaving,
       error: error ?? this.error,
@@ -167,12 +171,17 @@ class EventForm extends _$EventForm {
   /// Initialize form for editing an existing event
   Future<void> initializeForEdit(String eventId) async {
     final repository = ref.read(eventRepositoryProvider);
+    final eventPeopleRepository = ref.read(eventPeopleRepositoryProvider);
     final event = await repository.getById(eventId);
 
     if (event == null) {
       state = state.copyWith(error: 'Event not found');
       return;
     }
+
+    // Load associated people
+    final associatedPeople = await eventPeopleRepository.getPeopleForEvent(eventId);
+    final peopleIds = associatedPeople.map((p) => p.id).toList();
 
     state = EventFormState(
       id: event.id,
@@ -190,6 +199,7 @@ class EventForm extends _$EventForm {
           : null,
       durationHours: event.duration?.inHours ?? 1,
       durationMinutes: event.duration?.inMinutes.remainder(60) ?? 0,
+      selectedPeopleIds: peopleIds,
       isEditMode: true,
     );
   }
@@ -235,6 +245,10 @@ class EventForm extends _$EventForm {
     state = state.copyWith(durationMinutes: minutes);
   }
 
+  void updateSelectedPeople(List<String> peopleIds) {
+    state = state.copyWith(selectedPeopleIds: peopleIds);
+  }
+
   /// Save the event
   Future<bool> save() async {
     final validationError = state.validate();
@@ -247,6 +261,7 @@ class EventForm extends _$EventForm {
 
     try {
       final repository = ref.read(eventRepositoryProvider);
+      final eventPeopleRepository = ref.read(eventPeopleRepositoryProvider);
       final now = DateTime.now();
       final uuid = const Uuid();
 
@@ -259,8 +274,9 @@ class EventForm extends _$EventForm {
         }
       }
 
+      final eventId = state.id ?? uuid.v4();
       final event = Event(
-        id: state.id ?? uuid.v4(),
+        id: eventId,
         name: state.title.trim(),
         description: state.description.trim().isEmpty ? null : state.description.trim(),
         timingType: state.timingType,
@@ -292,6 +308,20 @@ class EventForm extends _$EventForm {
       );
 
       await repository.save(event);
+
+      // Save people associations
+      try {
+        await eventPeopleRepository.setPeopleForEvent(eventId, state.selectedPeopleIds);
+      } catch (peopleError) {
+        // If people save fails, we still consider the event saved but log the error
+        // In a production app, this should use proper logging and potentially a transaction
+        state = state.copyWith(
+          isSaving: false,
+          error: 'Event saved but failed to save people: $peopleError',
+        );
+        return true; // Event was saved, just people associations failed
+      }
+
       state = state.copyWith(isSaving: false);
       return true;
     } catch (e) {
