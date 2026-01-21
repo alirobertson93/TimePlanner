@@ -6,11 +6,11 @@ This document is the single source of truth for the project's current status, co
 
 ## Current Status
 
-**Project Phase**: Phase 5 Complete - Advanced Scheduling
+**Project Phase**: Phase 6 In Progress - Social & Location Features
 
-**Overall Progress**: ~95% Complete
+**Overall Progress**: ~96% Complete
 
-**Active Work**: Phase 5 complete, ready for Phase 6
+**Active Work**: Phase 6 - People Management implementation
 
 ## Completed Phases
 
@@ -44,15 +44,18 @@ This document is the single source of truth for the project's current status, co
 - ✅ Events table with fixed/flexible timing support
 - ✅ Categories table with default seed data
 - ✅ Goals table with full schema
+- ✅ People table with Phase 6
 - ✅ EventRepository with CRUD operations
 - ✅ CategoryRepository with CRUD operations
 - ✅ GoalRepository with CRUD operations and comprehensive tests
-- ✅ Database migration system (v1 → v2)
+- ✅ PersonRepository with CRUD operations and tests
+- ✅ Database migration system (v1 → v2 → v3)
 
 **Domain Model**:
 - ✅ Event entity with validation logic
 - ✅ Category entity
 - ✅ Goal entity with all properties
+- ✅ Person entity with contact info
 - ✅ Core enums (TimingType, EventStatus)
 - ✅ Goal enums (GoalType, GoalMetric, GoalPeriod, DebtStrategy)
 
@@ -244,21 +247,31 @@ This document is the single source of truth for the project's current status, co
 
 **Dependencies**: Phase 4 (complete)
 
-## Upcoming Phases
+## In Progress Phases
 
-### Phase 6: Social & Location Features (Medium Priority)
+### Phase 6: Social & Location Features 🟡 (In Progress)
 
 **Target**: Mid-development
+
+**Status**: 25% Complete
 
 **Goals**:
 - Add People and Location entities
 - Support travel time calculations
 - Enable relationship goal tracking
 
+**What's Working**:
+- ✅ Person entity with contact info
+- ✅ People database table
+- ✅ PersonRepository with CRUD operations
+- ✅ PersonRepository tests
+- ✅ Database migration (v2 → v3)
+- ✅ Person provider for Riverpod
+
 **Features**:
-- [ ] People Management
-  - [ ] People table and repository
-  - [ ] Person entity with contact info
+- [x] People Management
+  - [x] People table and repository
+  - [x] Person entity with contact info
   - [ ] Associate people with events
   - [ ] People picker UI
 - [ ] Location Management
@@ -275,9 +288,23 @@ This document is the single source of truth for the project's current status, co
   - [ ] Track time with each person
   - [ ] Relationship goal progress
 
-**Dependencies**: Phase 5 (Goals Dashboard foundation)
+**Key Files Added**:
+- lib/domain/entities/person.dart
+- lib/data/database/tables/people.dart
+- lib/data/repositories/person_repository.dart
+- test/repositories/person_repository_test.dart
+
+**Next Steps**:
+1. Run build_runner to generate database code
+2. Test PersonRepository functionality
+3. Create People picker UI for events
+4. Begin Location Management implementation
+
+**Dependencies**: Phase 5 (Goals Dashboard foundation) - complete
 
 **Estimated Effort**: 4-5 development sessions
+
+## Upcoming Phases
 
 ### Phase 7: Advanced Features (Low Priority)
 
@@ -352,9 +379,9 @@ This document is the single source of truth for the project's current status, co
 
 | Component | Status | Completion | Notes |
 |-----------|--------|------------|-------|
-| **Database Layer** | 🟢 Active | 70% | Events, Categories, Goals complete. People, Locations, Recurrence pending |
-| **Domain Entities** | 🟢 Active | 60% | Core entities done. Person, Location pending |
-| **Repositories** | 🟢 Active | 60% | Event, Category, Goal repos complete with tests |
+| **Database Layer** | 🟢 Active | 80% | Events, Categories, Goals, People complete. Locations, Recurrence pending |
+| **Domain Entities** | 🟢 Active | 80% | Core entities + Person done. Location pending |
+| **Repositories** | 🟢 Active | 80% | Event, Category, Goal, Person repos complete with tests |
 | **Scheduler Engine** | 🟢 Complete | 100% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption) |
 | **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button |
 | **Week View** | 🟢 Complete | 100% | 7-day grid, event blocks, category colors, navigation |
@@ -362,7 +389,7 @@ This document is the single source of truth for the project's current status, co
 | **Planning Wizard** | 🟢 Complete | 100% | 4-step flow, schedule generation, all strategies available |
 | **Goals Dashboard** | 🟢 Complete | 100% | Progress tracking, status indicators, category grouping, goal CRUD |
 | **Goal Form** | 🟢 Complete | 100% | Create, edit, delete with validation |
-| **People Management** | ⚪ Planned | 0% | Not started (Phase 6) |
+| **People Management** | 🟡 Partial | 50% | Entity, table, repository complete. UI pending (Phase 6) |
 | **Location Management** | ⚪ Planned | 0% | Not started (Phase 6) |
 | **Recurrence** | ⚪ Planned | 0% | Not started (Phase 7) |
 | **Notifications** | ⚪ Planned | 0% | Not started (Phase 7) |

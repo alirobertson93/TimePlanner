@@ -33,6 +33,80 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-21 - Phase 6: People Management Implementation
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Begin Phase 6 by implementing People Management data layer
+
+**Work Completed**:
+- ✅ Created Person domain entity
+  - id, name, email, phone, notes, createdAt fields
+  - copyWith method for immutable updates
+  - Equality and hashCode implementations
+  - toString for debugging
+- ✅ Created People database table
+  - TextColumn for id (primary key)
+  - TextColumn for name (required, 1-100 chars)
+  - TextColumn for email, phone, notes (nullable)
+  - DateTimeColumn for createdAt
+- ✅ Created PersonRepository
+  - getAll() - returns all people ordered by name
+  - getById() - retrieve single person by ID
+  - save() - insert or update person
+  - delete() - remove person by ID
+  - searchByName() - case-insensitive name search
+  - watchAll() - reactive stream of all people
+- ✅ Created PersonRepository tests
+  - Test save and retrieve
+  - Test update existing person
+  - Test delete person
+  - Test getAll ordering
+  - Test searchByName (case-insensitive)
+  - Test optional fields as null
+  - Test watchAll reactive updates
+- ✅ Updated database schema
+  - Added People table to @DriftDatabase annotation
+  - Updated schemaVersion from 2 to 3
+  - Added migration from v2 to v3
+- ✅ Added personRepositoryProvider to repository_providers.dart
+- ✅ Updated ROADMAP.md
+  - Changed project phase to "Phase 6 In Progress"
+  - Updated overall progress to ~96%
+  - Added Phase 6 details with What's Working section
+  - Updated Component Completion Summary
+- ✅ Updated CHANGELOG.md (this entry)
+
+**Technical Decisions**:
+- Following same patterns as GoalRepository for consistency
+- Person entity kept simple (id, name, email, phone, notes)
+- searchByName uses case-insensitive contains matching
+- People ordered alphabetically by name in getAll()
+- All optional contact fields (email, phone, notes) nullable
+
+**Files Added**:
+- lib/domain/entities/person.dart
+- lib/data/database/tables/people.dart
+- lib/data/repositories/person_repository.dart
+- test/repositories/person_repository_test.dart
+
+**Files Modified**:
+- lib/data/database/app_database.dart - Added People table, updated schema version
+- lib/presentation/providers/repository_providers.dart - Added personRepositoryProvider
+- dev-docs/ROADMAP.md - Updated Phase 6 status
+- dev-docs/CHANGELOG.md - Added this session entry
+
+**Next Steps**:
+1. Run build_runner to generate database code:
+   ```bash
+   flutter pub run build_runner build --delete-conflicting-outputs
+   ```
+2. Test PersonRepository functionality
+3. Create People picker UI for events
+4. Begin Location Management implementation
+
+---
+
 ### Session: 2026-01-21 - Phase 5 Complete: Goal Form Implementation
 
 **Author**: AI Assistant (GitHub Copilot)
