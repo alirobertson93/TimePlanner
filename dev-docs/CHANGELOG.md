@@ -33,6 +33,91 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-21 - Phase 6: People Management UI and Event-People Association
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Continue Phase 6 by implementing People Management UI and event-people associations
+
+**Work Completed**:
+- ✅ Verified and corrected documentation accuracy
+  - Fixed CHANGELOG.md File Reference section (Person entity marked as complete)
+  - Fixed Milestone 2 People table status (now checked)
+  - Fixed Milestone 6 Goals System to 100% complete
+  - Fixed Milestone 7 to show 25% complete (People entity/repository done)
+  - Updated Data Layer table with all tables and repositories
+  - Updated Tests table with person_repository_test.dart
+- ✅ Created EventPeople junction table
+  - eventId and personId as composite primary key
+  - Cascade delete on both foreign keys
+- ✅ Created EventPeopleRepository
+  - getPeopleForEvent() - get all people associated with an event
+  - getEventIdsForPerson() - get all event IDs for a person
+  - addPersonToEvent() - create association
+  - removePersonFromEvent() - remove association
+  - setPeopleForEvent() - replace all associations for an event
+  - watchPeopleForEvent() - reactive stream
+- ✅ Updated database schema to version 4
+  - Added EventPeople table
+  - Added migration from v3 to v4
+- ✅ Created person_providers.dart
+  - allPeopleProvider - get all people
+  - watchAllPeopleProvider - reactive stream
+  - peopleForEventProvider - get people for specific event
+  - watchPeopleForEventProvider - reactive stream
+  - searchPeopleProvider - search by name
+  - personByIdProvider - get single person
+- ✅ Created PeopleScreen
+  - Full CRUD for people management
+  - Search functionality
+  - Add person dialog
+  - Edit person dialog
+  - Delete confirmation
+  - Empty state
+- ✅ Created PeoplePicker widget
+  - Reusable component for selecting people
+  - Bottom sheet multi-select interface
+  - Chip display for selected people
+  - Add new person inline
+- ✅ Added /people route to router
+- ✅ Added People button to Day View app bar
+- ✅ Created comprehensive EventPeopleRepository tests
+  - Association creation and deletion
+  - Cascade delete behavior
+  - Reactive stream updates
+- ✅ Updated repository_providers.dart
+  - Added eventPeopleRepositoryProvider
+
+**Technical Decisions**:
+- EventPeople uses composite primary key (eventId, personId)
+- Cascade delete ensures referential integrity
+- PeoplePicker designed as reusable widget for event form integration
+- Search uses case-insensitive contains matching
+
+**Files Added**:
+- lib/data/database/tables/event_people.dart
+- lib/data/repositories/event_people_repository.dart
+- lib/presentation/providers/person_providers.dart
+- lib/presentation/screens/people/people_screen.dart
+- lib/presentation/widgets/people_picker.dart
+- test/repositories/event_people_repository_test.dart
+
+**Files Modified**:
+- lib/data/database/app_database.dart - Added EventPeople table, schema v4
+- lib/presentation/providers/repository_providers.dart - Added providers
+- lib/app/router.dart - Added /people route
+- lib/presentation/screens/day_view/day_view_screen.dart - Added People button
+- dev-docs/CHANGELOG.md - Corrections and this entry
+- dev-docs/ROADMAP.md - Updated Phase 6 progress
+
+**Next Steps**:
+1. Run build_runner to generate database and provider code
+2. Test People Management functionality
+3. Integrate PeoplePicker into Event Form
+4. Begin Location Management implementation
+
+---
+
 ### Session: 2026-01-21 - Phase 6: People Management Implementation
 
 **Author**: AI Assistant (GitHub Copilot)
@@ -924,7 +1009,7 @@ Track feature completion at a high level.
 - [x] Code generation working
 - [x] Documentation suite added
 
-### Milestone 2: Core Data Model (90% Complete)
+### Milestone 2: Core Data Model (95% Complete)
 
 - [x] Events table
 - [x] Categories table
@@ -933,7 +1018,9 @@ Track feature completion at a high level.
 - [x] Goals table
 - [x] GoalRepository
 - [x] Goal repository tests
-- [ ] People table
+- [x] People table
+- [x] PersonRepository
+- [x] Person repository tests
 - [ ] Locations table
 - [ ] RecurrenceRules table
 
@@ -970,19 +1057,23 @@ Track feature completion at a high level.
 - [x] Schedule generation integration
 - [x] Accept/reject schedule flow
 
-### Milestone 6: Goals System (70% Complete)
+### Milestone 6: Goals System ✅ (Complete)
 
 - [x] Goals database tables
 - [x] Goal repository
 - [x] Goal entity and enums
-- [ ] Goal UI (dashboard)
-- [ ] Goal progress calculation
-- [ ] Goal integration in scheduler
+- [x] Goal UI (dashboard)
+- [x] Goal creation form
+- [x] Goal editing
+- [x] Goal deletion
+- [x] Goal progress calculation
+- [ ] Goal integration in scheduler (advanced features deferred)
 
-### Milestone 7: Advanced Features (0% Complete)
+### Milestone 7: Advanced Features (25% Complete)
 
 - [ ] Recurrence rules
-- [ ] People management
+- [x] People entity and repository
+- [ ] People UI (picker, management screens)
 - [ ] Locations and travel time
 - [ ] Event templates
 - [ ] Rescheduling operations
@@ -1131,7 +1222,7 @@ Quick reference to file locations and status.
 | lib/domain/entities/event.dart | ✅ Complete | ~100 | - |
 | lib/domain/entities/category.dart | ✅ Complete | ~50 | - |
 | lib/domain/entities/goal.dart | ✅ Complete | ~100 | - |
-| lib/domain/entities/person.dart | ❌ Not started | 0 | - |
+| lib/domain/entities/person.dart | ✅ Complete | ~70 | 2026-01-21 |
 | lib/domain/entities/location.dart | ❌ Not started | 0 | - |
 | lib/domain/enums/timing_type.dart | ✅ Complete | ~10 | - |
 | lib/domain/enums/event_status.dart | ✅ Complete | ~10 | - |
@@ -1140,9 +1231,14 @@ Quick reference to file locations and status.
 
 | File | Status | Lines | Last Updated |
 |------|--------|-------|--------------|
-| lib/data/database/app_database.dart | ✅ Complete | ~120 | - |
+| lib/data/database/app_database.dart | ✅ Complete | ~120 | 2026-01-21 |
+| lib/data/database/tables/events.dart | ✅ Complete | ~40 | - |
+| lib/data/database/tables/categories.dart | ✅ Complete | ~30 | - |
+| lib/data/database/tables/goals.dart | ✅ Complete | ~50 | - |
+| lib/data/database/tables/people.dart | ✅ Complete | ~25 | 2026-01-21 |
 | lib/data/repositories/event_repository.dart | ✅ Complete | ~175 | - |
 | lib/data/repositories/goal_repository.dart | ✅ Complete | ~100 | - |
+| lib/data/repositories/person_repository.dart | ✅ Complete | ~80 | 2026-01-21 |
 
 **Note**: `CategoryRepository` is currently defined within `event_repository.dart`. Per ARCHITECTURE.md, it should be refactored to its own file in a future session.
 
@@ -1166,9 +1262,13 @@ Quick reference to file locations and status.
 | lib/presentation/screens/day_view/*.dart | ✅ Complete | ~360 | 2026-01-17 |
 | lib/presentation/screens/week_view/*.dart | ✅ Complete | ~350 | 2026-01-17 |
 | lib/presentation/screens/event_form/*.dart | ✅ Complete | ~430 | - |
+| lib/presentation/screens/goal_form/*.dart | ✅ Complete | ~300 | 2026-01-21 |
+| lib/presentation/screens/goals_dashboard/*.dart | ✅ Complete | ~350 | 2026-01-21 |
 | lib/presentation/screens/planning_wizard/*.dart | ✅ Complete | ~750 | 2026-01-20 |
 | lib/presentation/providers/*.dart | ✅ Complete | ~125 | - |
 | lib/presentation/providers/event_form_providers.dart | ✅ Complete | ~305 | - |
+| lib/presentation/providers/goal_providers.dart | ✅ Complete | ~200 | 2026-01-21 |
+| lib/presentation/providers/goal_form_providers.dart | ✅ Complete | ~200 | 2026-01-21 |
 | lib/presentation/providers/planning_wizard_providers.dart | ✅ Complete | ~300 | 2026-01-20 |
 
 ### Tests
@@ -1178,6 +1278,7 @@ Quick reference to file locations and status.
 | test/repositories/event_repository_test.dart | ✅ Complete | 13 | - |
 | test/repositories/category_repository_test.dart | ⚪ Empty placeholder | 0 | - |
 | test/repositories/goal_repository_test.dart | ✅ Complete | ~10 | - |
+| test/repositories/person_repository_test.dart | ✅ Complete | ~8 | 2026-01-21 |
 | test/scheduler/time_slot_test.dart | ✅ Complete | 10 | - |
 | test/scheduler/availability_grid_test.dart | ✅ Complete | ~5 | - |
 | test/scheduler/balanced_strategy_test.dart | ✅ Complete | ~5 | - |
@@ -1288,4 +1389,4 @@ Record important technical decisions for future reference.
 
 *This is a living document. Update after each development session.*
 
-*Last updated: 2026-01-20*
+*Last updated: 2026-01-21*
