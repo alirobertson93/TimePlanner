@@ -132,8 +132,7 @@ class CategoryRepository {
 
   /// Retrieves a category by its ID
   Future<domain.Category?> getById(String id) async {
-    final query = _db.select(_db.categories)
-      ..where((tbl) => tbl.id.equals(id));
+    final query = _db.select(_db.categories)..where((tbl) => tbl.id.equals(id));
 
     final result = await query.getSingleOrNull();
     return result != null ? _mapToEntity(result) : null;
