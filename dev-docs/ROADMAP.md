@@ -8,9 +8,9 @@ This document is the single source of truth for the project's current status, co
 
 **Project Phase**: Phase 6 In Progress - Social & Location Features
 
-**Overall Progress**: ~96% Complete
+**Overall Progress**: ~97% Complete
 
-**Active Work**: Phase 6 - People Management implementation
+**Active Work**: Phase 6 - Location Management implementation (People Management complete)
 
 ## Completed Phases
 
@@ -253,7 +253,7 @@ This document is the single source of truth for the project's current status, co
 
 **Target**: Mid-development
 
-**Status**: 50% Complete
+**Status**: 60% Complete
 
 **Goals**:
 - Add People and Location entities
@@ -275,6 +275,8 @@ This document is the single source of truth for the project's current status, co
 - ✅ Person providers for UI
 - ✅ /people route in router
 - ✅ People button in Day View
+- ✅ PeoplePicker integrated into Event Form
+- ✅ Event-people associations saved on event create/edit
 
 **Features**:
 - [x] People Management
@@ -284,7 +286,7 @@ This document is the single source of truth for the project's current status, co
   - [x] EventPeople repository
   - [x] People Management Screen
   - [x] People picker UI widget
-  - [ ] Integrate people picker into Event Form
+  - [x] Integrate people picker into Event Form
 - [ ] Location Management
   - [ ] Locations table and repository
   - [ ] Location entity with address
@@ -313,13 +315,12 @@ This document is the single source of truth for the project's current status, co
 
 **Next Steps**:
 1. Run build_runner to generate database and provider code
-2. Test People Management functionality
-3. Integrate PeoplePicker into Event Form
-4. Begin Location Management implementation
+2. Test People Management and Event Form integration
+3. Begin Location Management implementation
 
 **Dependencies**: Phase 5 (Goals Dashboard foundation) - complete
 
-**Estimated Effort**: 3-4 development sessions remaining
+**Estimated Effort**: 2-3 development sessions remaining
 
 ## Upcoming Phases
 
@@ -402,11 +403,11 @@ This document is the single source of truth for the project's current status, co
 | **Scheduler Engine** | 🟢 Complete | 100% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption) |
 | **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button |
 | **Week View** | 🟢 Complete | 100% | 7-day grid, event blocks, category colors, navigation |
-| **Event Form** | 🟢 Complete | 100% | Create, edit, delete implemented |
+| **Event Form** | 🟢 Complete | 100% | Create, edit, delete, people selection implemented |
 | **Planning Wizard** | 🟢 Complete | 100% | 4-step flow, schedule generation, all strategies available |
 | **Goals Dashboard** | 🟢 Complete | 100% | Progress tracking, status indicators, category grouping, goal CRUD |
 | **Goal Form** | 🟢 Complete | 100% | Create, edit, delete with validation |
-| **People Management** | 🟡 Partial | 75% | Entity, tables, repositories, providers, UI complete. Event form integration pending |
+| **People Management** | 🟢 Complete | 100% | Entity, tables, repositories, providers, UI, event form integration complete |
 | **Location Management** | ⚪ Planned | 0% | Not started (Phase 6) |
 | **Recurrence** | ⚪ Planned | 0% | Not started (Phase 7) |
 | **Notifications** | ⚪ Planned | 0% | Not started (Phase 7) |

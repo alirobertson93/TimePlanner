@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../providers/event_form_providers.dart' as form_providers;
 import '../../providers/repository_providers.dart';
+import '../../widgets/people_picker.dart';
 import '../../../domain/enums/timing_type.dart';
 
 // Type aliases for clarity
@@ -406,6 +407,24 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
               ],
             ),
           ],
+
+          const SizedBox(height: 32),
+
+          // People Section
+          Text(
+            'People',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+          ),
+          const Divider(height: 16),
+          const SizedBox(height: 16),
+
+          // People Picker
+          PeoplePicker(
+            selectedPeopleIds: formState.selectedPeopleIds,
+            onPeopleChanged: formNotifier.updateSelectedPeople,
+          ),
         ],
       ),
     );
