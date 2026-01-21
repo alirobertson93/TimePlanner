@@ -1,6 +1,6 @@
 # Project Roadmap
 
-**Last Updated**: 2026-01-20
+**Last Updated**: 2026-01-21
 
 This document is the single source of truth for the project's current status, completed work, and upcoming phases. For session logs and development history, see [CHANGELOG.md](./CHANGELOG.md).
 
@@ -8,9 +8,9 @@ This document is the single source of truth for the project's current status, co
 
 **Project Phase**: Phase 5 In Progress - Advanced Scheduling
 
-**Overall Progress**: ~85% Complete
+**Overall Progress**: ~90% Complete
 
-**Active Work**: Additional scheduling strategies implemented, ready for testing
+**Active Work**: Goals Dashboard implemented, ready for testing
 
 ## Completed Phases
 
@@ -184,7 +184,7 @@ This document is the single source of truth for the project's current status, co
 
 **Target**: After Phase 4
 
-**Status**: 50% Complete
+**Status**: 75% Complete
 
 **Goals**:
 - Implement additional scheduling strategies
@@ -197,19 +197,25 @@ This document is the single source of truth for the project's current status, co
 - ✅ LeastDisruptionStrategy (minimize schedule changes)
 - ✅ Updated Planning Wizard to use all strategies
 - ✅ Unit tests for all new strategies
+- ✅ Goals Dashboard with progress tracking
+- ✅ Goal progress calculation from events
+- ✅ Visual progress indicators with status
+- ✅ Navigation to Goals Dashboard from Day View
 
 **Features**:
 - [x] Additional Scheduling Strategies
   - [x] FrontLoadedStrategy (important work early in week)
   - [x] MaxFreeTimeStrategy (maximize contiguous free blocks)
   - [x] LeastDisruptionStrategy (minimize schedule changes)
-- [ ] Goals Dashboard
-  - [ ] Visual progress indicators
-  - [ ] Weekly/monthly goal tracking
-  - [ ] Goal completion trends
-  - [ ] Alerts for goals at risk
+- [x] Goals Dashboard
+  - [x] Visual progress indicators
+  - [x] Weekly/monthly goal tracking
+  - [x] Goal progress calculation
+  - [x] Alerts for goals at risk
+  - [ ] Goal creation form (placeholder)
+  - [ ] Goal editing
 - [ ] Algorithm Enhancements
-  - [ ] Goal progress calculation in scheduler
+  - [x] Goal progress calculation in scheduler
   - [ ] Time-of-day preferences
   - [ ] Multi-pass optimization
   - [ ] Performance optimizations
@@ -218,14 +224,17 @@ This document is the single source of truth for the project's current status, co
 - lib/scheduler/strategies/front_loaded_strategy.dart
 - lib/scheduler/strategies/max_free_time_strategy.dart
 - lib/scheduler/strategies/least_disruption_strategy.dart
+- lib/presentation/providers/goal_providers.dart
+- lib/presentation/screens/goals_dashboard/goals_dashboard_screen.dart
 - test/scheduler/front_loaded_strategy_test.dart
 - test/scheduler/max_free_time_strategy_test.dart
 - test/scheduler/least_disruption_strategy_test.dart
 
 **Next Steps**:
 1. Run build_runner to generate provider code
-2. Test all scheduling strategies via Planning Wizard
-3. Begin Goals Dashboard implementation
+2. Test Goals Dashboard with sample goals
+3. Implement goal creation form
+4. Begin Phase 6 or Algorithm Enhancements
 
 **Dependencies**: Phase 4 (complete)
 
@@ -343,11 +352,11 @@ This document is the single source of truth for the project's current status, co
 | **Domain Entities** | 🟢 Active | 60% | Core entities done. Person, Location pending |
 | **Repositories** | 🟢 Active | 60% | Event, Category, Goal repos complete with tests |
 | **Scheduler Engine** | 🟢 Complete | 100% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption) |
-| **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button |
+| **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button |
 | **Week View** | 🟢 Complete | 100% | 7-day grid, event blocks, category colors, navigation |
 | **Event Form** | 🟢 Complete | 100% | Create, edit, delete implemented |
 | **Planning Wizard** | 🟢 Complete | 100% | 4-step flow, schedule generation, all strategies available |
-| **Goals Dashboard** | ⚪ Planned | 0% | Not started (Phase 5) |
+| **Goals Dashboard** | 🟢 Complete | 80% | Progress tracking, status indicators, category grouping. Goal creation form pending |
 | **People Management** | ⚪ Planned | 0% | Not started (Phase 6) |
 | **Location Management** | ⚪ Planned | 0% | Not started (Phase 6) |
 | **Recurrence** | ⚪ Planned | 0% | Not started (Phase 7) |
@@ -394,4 +403,4 @@ Before considering the project "complete":
 
 *For session logs and detailed development history, see [CHANGELOG.md](./CHANGELOG.md)*
 
-*Last updated: 2026-01-20*
+*Last updated: 2026-01-21*
