@@ -41,6 +41,13 @@ class DayViewScreen extends ConsumerWidget {
             tooltip: 'Next day',
           ),
           IconButton(
+            icon: const Icon(Icons.people),
+            onPressed: () {
+              context.push('/people');
+            },
+            tooltip: 'People',
+          ),
+          IconButton(
             icon: const Icon(Icons.track_changes),
             onPressed: () {
               context.push('/goals');

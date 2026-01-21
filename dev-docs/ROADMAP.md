@@ -253,7 +253,7 @@ This document is the single source of truth for the project's current status, co
 
 **Target**: Mid-development
 
-**Status**: 25% Complete
+**Status**: 50% Complete
 
 **Goals**:
 - Add People and Location entities
@@ -265,15 +265,26 @@ This document is the single source of truth for the project's current status, co
 - ✅ People database table
 - ✅ PersonRepository with CRUD operations
 - ✅ PersonRepository tests
-- ✅ Database migration (v2 → v3)
+- ✅ Database migration (v2 → v3 → v4)
 - ✅ Person provider for Riverpod
+- ✅ EventPeople junction table for many-to-many relationships
+- ✅ EventPeopleRepository with full CRUD
+- ✅ EventPeopleRepository tests
+- ✅ People Management Screen (CRUD)
+- ✅ PeoplePicker widget for events
+- ✅ Person providers for UI
+- ✅ /people route in router
+- ✅ People button in Day View
 
 **Features**:
 - [x] People Management
   - [x] People table and repository
   - [x] Person entity with contact info
-  - [ ] Associate people with events
-  - [ ] People picker UI
+  - [x] EventPeople junction table
+  - [x] EventPeople repository
+  - [x] People Management Screen
+  - [x] People picker UI widget
+  - [ ] Integrate people picker into Event Form
 - [ ] Location Management
   - [ ] Locations table and repository
   - [ ] Location entity with address
@@ -291,18 +302,24 @@ This document is the single source of truth for the project's current status, co
 **Key Files Added**:
 - lib/domain/entities/person.dart
 - lib/data/database/tables/people.dart
+- lib/data/database/tables/event_people.dart
 - lib/data/repositories/person_repository.dart
+- lib/data/repositories/event_people_repository.dart
+- lib/presentation/providers/person_providers.dart
+- lib/presentation/screens/people/people_screen.dart
+- lib/presentation/widgets/people_picker.dart
 - test/repositories/person_repository_test.dart
+- test/repositories/event_people_repository_test.dart
 
 **Next Steps**:
-1. Run build_runner to generate database code
-2. Test PersonRepository functionality
-3. Create People picker UI for events
+1. Run build_runner to generate database and provider code
+2. Test People Management functionality
+3. Integrate PeoplePicker into Event Form
 4. Begin Location Management implementation
 
 **Dependencies**: Phase 5 (Goals Dashboard foundation) - complete
 
-**Estimated Effort**: 4-5 development sessions
+**Estimated Effort**: 3-4 development sessions remaining
 
 ## Upcoming Phases
 
@@ -379,17 +396,17 @@ This document is the single source of truth for the project's current status, co
 
 | Component | Status | Completion | Notes |
 |-----------|--------|------------|-------|
-| **Database Layer** | 🟢 Active | 80% | Events, Categories, Goals, People complete. Locations, Recurrence pending |
+| **Database Layer** | 🟢 Active | 85% | Events, Categories, Goals, People, EventPeople complete. Locations, Recurrence pending |
 | **Domain Entities** | 🟢 Active | 80% | Core entities + Person done. Location pending |
-| **Repositories** | 🟢 Active | 80% | Event, Category, Goal, Person repos complete with tests |
+| **Repositories** | 🟢 Active | 85% | Event, Category, Goal, Person, EventPeople repos complete with tests |
 | **Scheduler Engine** | 🟢 Complete | 100% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption) |
-| **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button |
+| **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button |
 | **Week View** | 🟢 Complete | 100% | 7-day grid, event blocks, category colors, navigation |
 | **Event Form** | 🟢 Complete | 100% | Create, edit, delete implemented |
 | **Planning Wizard** | 🟢 Complete | 100% | 4-step flow, schedule generation, all strategies available |
 | **Goals Dashboard** | 🟢 Complete | 100% | Progress tracking, status indicators, category grouping, goal CRUD |
 | **Goal Form** | 🟢 Complete | 100% | Create, edit, delete with validation |
-| **People Management** | 🟡 Partial | 50% | Entity, table, repository complete. UI pending (Phase 6) |
+| **People Management** | 🟡 Partial | 75% | Entity, tables, repositories, providers, UI complete. Event form integration pending |
 | **Location Management** | ⚪ Planned | 0% | Not started (Phase 6) |
 | **Recurrence** | ⚪ Planned | 0% | Not started (Phase 7) |
 | **Notifications** | ⚪ Planned | 0% | Not started (Phase 7) |

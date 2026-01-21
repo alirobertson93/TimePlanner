@@ -175,7 +175,7 @@ final defaultCategories = [
 
 ---
 
-### 5. People Table ❌
+### 5. People Table ✅
 
 Track people associated with events.
 
@@ -198,7 +198,7 @@ class People extends Table {
 
 ---
 
-### 6. EventPeople Table ❌
+### 6. EventPeople Table ✅
 
 Many-to-many relationship between Events and People.
 

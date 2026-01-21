@@ -7,6 +7,7 @@ import '../presentation/screens/event_form/event_form_screen.dart';
 import '../presentation/screens/planning_wizard/planning_wizard_screen.dart';
 import '../presentation/screens/goals_dashboard/goals_dashboard_screen.dart';
 import '../presentation/screens/goal_form/goal_form_screen.dart';
+import '../presentation/screens/people/people_screen.dart';
 
 /// Application router configuration
 class AppRouter {
@@ -68,6 +69,11 @@ class AppRouter {
           final goalId = state.pathParameters['id'];
           return GoalFormScreen(goalId: goalId);
         },
+      ),
+      GoRoute(
+        path: '/people',
+        name: 'people',
+        builder: (context, state) => const PeopleScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
