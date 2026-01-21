@@ -81,7 +81,9 @@ class _PeoplePickerState extends ConsumerState<PeoplePicker> {
                         Theme.of(context).colorScheme.primaryContainer,
                     radius: 14,
                     child: Text(
-                      person.name[0].toUpperCase(),
+                      person.name.isNotEmpty
+                          ? person.name[0].toUpperCase()
+                          : '?',
                       style: TextStyle(
                         fontSize: 12,
                         color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -407,7 +409,9 @@ class _PeoplePickerBottomSheetState extends State<_PeoplePickerBottomSheet> {
                             backgroundColor:
                                 Theme.of(context).colorScheme.primaryContainer,
                             child: Text(
-                              person.name[0].toUpperCase(),
+                              person.name.isNotEmpty
+                                  ? person.name[0].toUpperCase()
+                                  : '?',
                               style: TextStyle(
                                 color: Theme.of(context)
                                     .colorScheme
