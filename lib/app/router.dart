@@ -5,6 +5,7 @@ import '../presentation/screens/day_view/day_view_screen.dart';
 import '../presentation/screens/week_view/week_view_screen.dart';
 import '../presentation/screens/event_form/event_form_screen.dart';
 import '../presentation/screens/planning_wizard/planning_wizard_screen.dart';
+import '../presentation/screens/goals_dashboard/goals_dashboard_screen.dart';
 
 /// Application router configuration
 class AppRouter {
@@ -48,6 +49,11 @@ class AppRouter {
         path: '/plan',
         name: 'planning_wizard',
         builder: (context, state) => const PlanningWizardScreen(),
+      ),
+      GoRoute(
+        path: '/goals',
+        name: 'goals_dashboard',
+        builder: (context, state) => const GoalsDashboardScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
