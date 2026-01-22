@@ -1229,7 +1229,7 @@ Track feature completion at a high level.
 - [x] Code generation working
 - [x] Documentation suite added
 
-### Milestone 2: Core Data Model (95% Complete)
+### Milestone 2: Core Data Model (98% Complete)
 
 - [x] Events table
 - [x] Categories table
@@ -1241,7 +1241,9 @@ Track feature completion at a high level.
 - [x] People table
 - [x] PersonRepository
 - [x] Person repository tests
-- [ ] Locations table
+- [x] Locations table
+- [x] LocationRepository
+- [x] Location repository tests
 - [ ] RecurrenceRules table
 
 ### Milestone 3: Basic UI (90% Complete)
@@ -1289,7 +1291,7 @@ Track feature completion at a high level.
 - [x] Goal progress calculation
 - [ ] Goal integration in scheduler (advanced features deferred)
 
-### Milestone 7: Advanced Features (50% Complete)
+### Milestone 7: Advanced Features (60% Complete)
 
 - [ ] Recurrence rules
 - [x] People entity and repository
@@ -1297,7 +1299,7 @@ Track feature completion at a high level.
 - [x] People picker integrated into Event Form
 - [x] Location entity and repository
 - [x] Location UI (management screens)
-- [ ] Location picker integrated into Event Form
+- [x] Location picker integrated into Event Form
 - [ ] Travel time calculations
 - [ ] Event templates
 - [ ] Rescheduling operations
@@ -1501,6 +1503,7 @@ Quick reference to file locations and status.
 | lib/presentation/providers/goal_form_providers.dart | ✅ Complete | ~200 | 2026-01-21 |
 | lib/presentation/providers/planning_wizard_providers.dart | ✅ Complete | ~300 | 2026-01-20 |
 | lib/presentation/widgets/people_picker.dart | ✅ Complete | ~440 | 2026-01-21 |
+| lib/presentation/widgets/location_picker.dart | ✅ Complete | ~450 | 2026-01-22 |
 
 ### Tests
 
@@ -1622,4 +1625,4 @@ Record important technical decisions for future reference.
 
 *This is a living document. Update after each development session.*
 
-*Last updated: 2026-01-21*
+*Last updated: 2026-01-22*
