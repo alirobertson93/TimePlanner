@@ -78,11 +78,17 @@ lib/
 │   │   ├── goal.dart
 │   │   ├── person.dart
 │   │   ├── location.dart
+│   │   ├── notification.dart
+│   │   ├── recurrence_rule.dart
 │   │   └── ...
 │   └── enums/                         # Domain enumerations
 │       ├── timing_type.dart
 │       ├── event_status.dart
 │       ├── goal_type.dart
+│       ├── notification_type.dart
+│       ├── notification_status.dart
+│       ├── recurrence_frequency.dart
+│       ├── recurrence_end_type.dart
 │       └── ...
 │
 ├── data/                              # Data layer (persistence)
@@ -100,6 +106,10 @@ lib/
 │       ├── event_repository.dart
 │       ├── category_repository.dart
 │       ├── goal_repository.dart
+│       ├── person_repository.dart
+│       ├── location_repository.dart
+│       ├── notification_repository.dart
+│       ├── recurrence_rule_repository.dart
 │       └── ...
 │
 ├── scheduler/                         # Scheduling engine (pure Dart)
@@ -821,4 +831,4 @@ When adding a new feature:
 
 ---
 
-*Last updated: 2026-01-16*
+*Last updated: 2026-01-22*
