@@ -33,6 +33,57 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-22 - Recurring Indicator in Event Cards
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Analyze dev docs, verify accuracy, implement next Phase 7 feature (recurring indicator in event cards)
+
+**Work Completed**:
+- ✅ Analyzed CHANGELOG.md and ROADMAP.md for accuracy
+  - Verified all documented features match actual codebase state
+  - Confirmed Phase 7 status at 60% (Settings + Recurrence Data Layer + UI complete)
+  - Documentation was accurate
+- ✅ Implemented Recurring Indicator in Event Displays (Phase 7)
+  - Updated EventCard widget in Day View
+    - Added repeat icon (Icons.repeat) for events with recurrenceRuleId
+    - Icon appears in top-right of event card title row
+    - Uses white70 color to be visible but not overpowering
+  - Updated EventDetailSheet bottom sheet
+    - Added "Repeats: Yes" info row for recurring events
+    - Uses repeat icon consistent with event card
+  - Updated WeekTimeline event blocks
+    - Added small repeat icon for recurring events
+    - Icon appears at end of event name row
+    - Size optimized (10px) for compact week view
+- ✅ Updated ROADMAP.md
+  - Phase 7 status updated to 65%
+  - Marked "Display recurring indicator in event cards" as complete
+  - Updated "What's Working" section with recurring indicator details
+  - Updated Component Completion Summary (Day View, Week View, Recurrence)
+- ✅ Updated CHANGELOG.md (this entry)
+
+**Technical Decisions**:
+- Used Icons.repeat for recurring indicator (universal symbol for recurrence)
+- White70 color for icon in event cards maintains visual hierarchy
+- Small icon size (14px in day view, 10px in week view) to not overpower text
+- Positioned icon at end of title row for consistent placement
+
+**Files Modified**:
+- lib/presentation/screens/day_view/widgets/event_card.dart - Added recurring indicator
+- lib/presentation/screens/day_view/widgets/event_detail_sheet.dart - Added recurrence info row
+- lib/presentation/screens/week_view/widgets/week_timeline.dart - Added recurring indicator
+- dev-docs/ROADMAP.md - Updated Phase 7 status and component summary
+- dev-docs/CHANGELOG.md - Added this session entry
+
+**Next Steps**:
+1. Run build_runner to generate code (if needed)
+2. Test recurring indicator display with actual recurring events
+3. Continue Phase 7 with notifications or travel time
+4. Consider exception handling for recurring events
+
+---
+
 ### Session: 2026-01-22 - Recurrence UI Integration
 
 **Author**: AI Assistant (GitHub Copilot)

@@ -42,15 +42,30 @@ class EventCard extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                event.name,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Colors.white,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      event.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Colors.white,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (event.isRecurring) ...[
+                    const SizedBox(width: 4),
+                    const Icon(
+                      Icons.repeat,
+                      size: 14,
+                      color: Colors.white70,
+                    ),
+                  ],
+                ],
               ),
               if (event.description != null && event.description!.isNotEmpty) ...[
                 const SizedBox(height: 4),
