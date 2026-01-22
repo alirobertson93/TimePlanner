@@ -10,7 +10,7 @@ This document is the single source of truth for the project's current status, co
 
 **Overall Progress**: ~100% Core Features Complete
 
-**Active Work**: Phase 7 - Recurrence feature complete (Data Layer + UI). Next: notifications, travel time, or relationship goals.
+**Active Work**: Phase 7 - Notifications UI complete. Next: system notifications (flutter_local_notifications), travel time, or relationship goals.
 
 ## Completed Phases
 
@@ -337,11 +337,11 @@ This document is the single source of truth for the project's current status, co
 
 **Target**: Late development
 
-**Status**: 75% Complete
+**Status**: 85% Complete
 
 **Goals**:
 - Add recurring event support ✅ (Complete)
-- Implement notifications 🟡 (Data Layer Complete)
+- Implement notifications 🟡 (Data Layer + UI Complete)
 - Create settings/preferences screen ✅ (Complete)
 - Add travel time calculations (deferred from Phase 6)
 - Enable relationship goal tracking (deferred from Phase 6)
@@ -388,6 +388,15 @@ This document is the single source of truth for the project's current status, co
   - Database migration v7 → v8
   - Notification providers for Riverpod
   - Comprehensive repository tests
+- ✅ Notifications UI implemented
+  - NotificationsScreen with full notification list
+  - Notifications grouped by date (Today, Yesterday, etc.)
+  - Notification tiles with type-specific icons and colors
+  - Unread indicator and swipe-to-delete
+  - Mark as read on tap, navigation to related event/goal
+  - Empty state, mark all read, clear all options
+  - /notifications route added
+  - Notification badge in Day View app bar with unread count
 
 **Features**:
 - [x] Recurrence
@@ -401,7 +410,7 @@ This document is the single source of truth for the project's current status, co
   - [x] Recurring event UI (RecurrencePicker in event form)
   - [ ] Exception handling for individual occurrences
   - [x] Display recurring indicator in event cards
-- [x] Notifications (Data Layer)
+- [x] Notifications
   - [x] NotificationType enum
   - [x] NotificationStatus enum
   - [x] Notification entity
@@ -409,10 +418,8 @@ This document is the single source of truth for the project's current status, co
   - [x] NotificationRepository
   - [x] Notification providers
   - [x] Repository tests
-  - [ ] Event reminders UI
-  - [ ] Schedule change alerts UI
-  - [ ] Goal progress notifications UI
-  - [ ] Conflict warnings UI
+  - [x] NotificationsScreen UI
+  - [x] Notification badge in Day View
   - [ ] System notifications (flutter_local_notifications)
 - [x] Settings
   - [x] User preferences UI
@@ -448,10 +455,11 @@ This document is the single source of truth for the project's current status, co
 - lib/data/repositories/notification_repository.dart
 - lib/presentation/providers/notification_providers.dart
 - test/repositories/notification_repository_test.dart
+- lib/presentation/screens/notifications/notifications_screen.dart
 
 **Key Files Modified**:
-- lib/app/router.dart - Added /settings route
-- lib/presentation/screens/day_view/day_view_screen.dart - Added Settings button
+- lib/app/router.dart - Added /settings, /notifications routes
+- lib/presentation/screens/day_view/day_view_screen.dart - Added Settings button, notification badge
 - pubspec.yaml - Added shared_preferences dependency
 - lib/data/database/app_database.dart - Added RecurrenceRules table (v7), Notifications table (v8)
 - lib/data/database/tables/events.dart - Added recurrenceRuleId column
@@ -511,7 +519,7 @@ This document is the single source of truth for the project's current status, co
 | **Domain Entities** | 🟢 Active | 100% | Core entities + Person + Location + RecurrenceRule + Notification done. Event updated with recurrenceRuleId. |
 | **Repositories** | 🟢 Active | 100% | Event, Category, Goal, Person, EventPeople, Location, RecurrenceRule, Notification repos complete with tests |
 | **Scheduler Engine** | 🟢 Complete | 100% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption) |
-| **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button, Locations button, Settings button, recurring indicators |
+| **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button, Locations button, Settings button, Notifications button (with badge), recurring indicators |
 | **Week View** | 🟢 Complete | 100% | 7-day grid, event blocks, category colors, navigation, recurring indicators |
 | **Event Form** | 🟢 Complete | 100% | Create, edit, delete, people selection, location selection, recurrence selection implemented |
 | **Planning Wizard** | 🟢 Complete | 100% | 4-step flow, schedule generation, all strategies available |
@@ -521,7 +529,7 @@ This document is the single source of truth for the project's current status, co
 | **Location Management** | 🟢 Complete | 100% | Entity, table, repository, providers, UI, event form integration complete |
 | **Settings** | 🟢 Complete | 100% | UI and SharedPreferences persistence complete (Phase 7) |
 | **Recurrence** | 🟢 Complete | 95% | Data layer + UI complete (entity, table, repository, enums, tests, RecurrencePicker widget, recurring indicators in event cards). Exception handling pending. |
-| **Notifications** | 🟡 Partial | 50% | Data layer complete (entity, enums, table, repository, providers, tests). UI pending. |
+| **Notifications** | 🟢 Active | 85% | Data layer complete + UI complete (NotificationsScreen, notification badge in Day View). System notifications pending. |
 | **Travel Time** | ⚪ Planned | 0% | Not started (Phase 7 - deferred from Phase 6) |
 | **Relationship Goals** | ⚪ Planned | 0% | Not started (Phase 7 - deferred from Phase 6) |
 | **Onboarding** | ⚪ Planned | 0% | Not started (Phase 8) |

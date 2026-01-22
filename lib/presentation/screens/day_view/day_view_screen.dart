@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../providers/event_providers.dart';
+import '../../providers/notification_providers.dart';
 import 'widgets/day_timeline.dart';
 import 'widgets/event_detail_sheet.dart';
 
@@ -75,6 +76,7 @@ class DayViewScreen extends ConsumerWidget {
             },
             tooltip: 'Week view',
           ),
+          _buildNotificationButton(context, ref),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
@@ -128,6 +130,43 @@ class DayViewScreen extends ConsumerWidget {
           context.push('/event/new', extra: selectedDate);
         },
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  Widget _buildNotificationButton(BuildContext context, WidgetRef ref) {
+    final unreadCountAsync = ref.watch(unreadCountProvider);
+
+    return unreadCountAsync.when(
+      data: (count) {
+        return IconButton(
+          icon: Badge(
+            isLabelVisible: count > 0,
+            label: Text(
+              count > 99 ? '99+' : count.toString(),
+              style: const TextStyle(fontSize: 10),
+            ),
+            child: const Icon(Icons.notifications),
+          ),
+          onPressed: () {
+            context.push('/notifications');
+          },
+          tooltip: 'Notifications${count > 0 ? ' ($count unread)' : ''}',
+        );
+      },
+      loading: () => IconButton(
+        icon: const Icon(Icons.notifications),
+        onPressed: () {
+          context.push('/notifications');
+        },
+        tooltip: 'Notifications',
+      ),
+      error: (_, __) => IconButton(
+        icon: const Icon(Icons.notifications),
+        onPressed: () {
+          context.push('/notifications');
+        },
+        tooltip: 'Notifications',
       ),
     );
   }
