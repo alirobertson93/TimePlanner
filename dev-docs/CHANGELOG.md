@@ -59,18 +59,37 @@ This changelog serves multiple purposes:
   - ROADMAP.md contains current project status
   - CHANGELOG.md contains session logs
   - Architecture documentation is being followed
+- ✅ Continued Phase 6 development
+  - Created LocationPicker widget following PeoplePicker pattern
+  - Added locationId column to Events table (schema v5 → v6)
+  - Updated Event entity with locationId field
+  - Updated EventRepository mappers for locationId
+  - Updated EventFormState and EventForm provider for location support
+  - Integrated LocationPicker into Event Form screen
+  - Updated ROADMAP.md to reflect Phase 6 at 95% complete
 
 **Technical Decisions**:
 - Used import aliasing (`as domain`) in test files to resolve name collisions between domain entities and drift-generated database classes
-- This follows the same pattern used in repository implementations (e.g., `import '../../domain/entities/location.dart' as domain;`)
+- Added locationId directly to Events table (not junction table) since events typically have ONE location
+- LocationPicker uses same pattern as PeoplePicker for consistency
+- Empty string result from LocationPicker bottom sheet indicates explicit clear (user tapped "Clear" button)
+
+**Files Added**:
+- lib/presentation/widgets/location_picker.dart
 
 **Files Modified**:
 - lib/data/repositories/location_repository.dart - Fixed `_mapToEntity` parameter type
-- lib/presentation/providers/event_form_providers.dart - Fixed named parameters for `setPeopleForEvent`
+- lib/presentation/providers/event_form_providers.dart - Added locationId support, fixed named parameters
 - lib/presentation/widgets/people_picker.dart - Fixed import paths
+- lib/presentation/screens/event_form/event_form_screen.dart - Added LocationPicker integration
+- lib/domain/entities/event.dart - Added locationId field
+- lib/data/database/tables/events.dart - Added locationId column
+- lib/data/database/app_database.dart - Added migration v5→v6
+- lib/data/repositories/event_repository.dart - Added locationId to mappers
 - test/repositories/location_repository_test.dart - Added domain. alias
 - test/repositories/event_people_repository_test.dart - Added domain. alias
 - dev-docs/CHANGELOG.md - Added this session entry
+- dev-docs/ROADMAP.md - Updated Phase 6 status to 95%
 
 **Architecture Compliance Summary**:
 - ✅ Core principles (Pure Dart Scheduler, Repositories as Persistence Boundary, Riverpod for Composition, Thin UI Layer) are being followed
@@ -79,11 +98,9 @@ This changelog serves multiple purposes:
 - ✅ File naming conventions are consistent
 
 **Next Steps**:
-1. CI should pass after these fixes
-2. Continue with Phase 6 development per ROADMAP.md:
-   - Create LocationPicker widget for Event Form integration
-   - Integrate LocationPicker into Event Form
-3. Keep CHANGELOG.md and ROADMAP.md up to date
+1. Run build_runner to generate database and provider code
+2. Test Location Picker functionality in Event Form
+3. Consider Travel Time and Relationship Goals (optional Phase 6 features)
 
 ---
 
