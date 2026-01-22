@@ -83,6 +83,16 @@ class EventDetailSheet extends ConsumerWidget {
                       label: 'Type',
                       value: event.isFixed ? 'Fixed' : 'Flexible',
                     ),
+                    // Recurrence (if applicable)
+                    if (event.isRecurring) ...[
+                      const SizedBox(height: 16),
+                      _buildInfoRow(
+                        context,
+                        icon: Icons.repeat,
+                        label: 'Repeats',
+                        value: 'Yes',
+                      ),
+                    ],
                     if (event.description != null &&
                         event.description!.isNotEmpty) ...[
                       const SizedBox(height: 24),

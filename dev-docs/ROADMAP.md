@@ -337,7 +337,7 @@ This document is the single source of truth for the project's current status, co
 
 **Target**: Late development
 
-**Status**: 60% Complete
+**Status**: 65% Complete
 
 **Goals**:
 - Add recurring event support ✅ (Complete)
@@ -375,6 +375,10 @@ This document is the single source of truth for the project's current status, co
   - End conditions: never, after occurrences, on date
   - Human-readable recurrence descriptions
   - Event Form integration complete
+- ✅ Recurring indicator in event displays
+  - EventCard shows repeat icon for recurring events
+  - EventDetailSheet shows recurrence info
+  - WeekTimeline shows repeat icon for recurring events
 
 **Features**:
 - [x] Recurrence
@@ -387,7 +391,7 @@ This document is the single source of truth for the project's current status, co
   - [x] Repository tests
   - [x] Recurring event UI (RecurrencePicker in event form)
   - [ ] Exception handling for individual occurrences
-  - [ ] Display recurring indicator in event cards
+  - [x] Display recurring indicator in event cards
 - [ ] Notifications
   - [ ] Event reminders
   - [ ] Schedule change alerts
@@ -483,8 +487,8 @@ This document is the single source of truth for the project's current status, co
 | **Domain Entities** | 🟢 Active | 100% | Core entities + Person + Location + RecurrenceRule done. Event updated with recurrenceRuleId. |
 | **Repositories** | 🟢 Active | 100% | Event, Category, Goal, Person, EventPeople, Location, RecurrenceRule repos complete with tests |
 | **Scheduler Engine** | 🟢 Complete | 100% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption) |
-| **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button, Locations button, Settings button |
-| **Week View** | 🟢 Complete | 100% | 7-day grid, event blocks, category colors, navigation |
+| **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button, Locations button, Settings button, recurring indicators |
+| **Week View** | 🟢 Complete | 100% | 7-day grid, event blocks, category colors, navigation, recurring indicators |
 | **Event Form** | 🟢 Complete | 100% | Create, edit, delete, people selection, location selection, recurrence selection implemented |
 | **Planning Wizard** | 🟢 Complete | 100% | 4-step flow, schedule generation, all strategies available |
 | **Goals Dashboard** | 🟢 Complete | 100% | Progress tracking, status indicators, category grouping, goal CRUD |
@@ -492,7 +496,7 @@ This document is the single source of truth for the project's current status, co
 | **People Management** | 🟢 Complete | 100% | Entity, tables, repositories, providers, UI, event form integration complete |
 | **Location Management** | 🟢 Complete | 100% | Entity, table, repository, providers, UI, event form integration complete |
 | **Settings** | 🟢 Complete | 100% | UI and SharedPreferences persistence complete (Phase 7) |
-| **Recurrence** | 🟢 Complete | 90% | Data layer + UI complete (entity, table, repository, enums, tests, RecurrencePicker widget). Exception handling pending. |
+| **Recurrence** | 🟢 Complete | 95% | Data layer + UI complete (entity, table, repository, enums, tests, RecurrencePicker widget, recurring indicators in event cards). Exception handling pending. |
 | **Travel Time** | ⚪ Planned | 0% | Not started (Phase 7 - deferred from Phase 6) |
 | **Relationship Goals** | ⚪ Planned | 0% | Not started (Phase 7 - deferred from Phase 6) |
 | **Notifications** | ⚪ Planned | 0% | Not started (Phase 7) |
