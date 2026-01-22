@@ -13,17 +13,20 @@ import 'tables/people.dart';
 import 'tables/event_people.dart';
 import 'tables/locations.dart';
 import 'tables/recurrence_rules.dart';
+import 'tables/notifications.dart';
 
 // Import enums so the generated .g.dart file can access them
 import '../../domain/enums/timing_type.dart';
 import '../../domain/enums/event_status.dart';
 import '../../domain/enums/recurrence_frequency.dart';
 import '../../domain/enums/recurrence_end_type.dart';
+import '../../domain/enums/notification_type.dart';
+import '../../domain/enums/notification_status.dart';
 
 part 'app_database.g.dart';
 
 /// Main database class for the TimePlanner app
-@DriftDatabase(tables: [Categories, Events, Goals, People, EventPeople, Locations, RecurrenceRules])
+@DriftDatabase(tables: [Categories, Events, Goals, People, EventPeople, Locations, RecurrenceRules, Notifications])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -31,7 +34,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration {
@@ -65,6 +68,10 @@ class AppDatabase extends _$AppDatabase {
         if (from <= 6) {
           await m.createTable(recurrenceRules);
           await m.addColumn(events, events.recurrenceRuleId);
+        }
+        // Migration from version 7 to 8: Add Notifications table
+        if (from <= 7) {
+          await m.createTable(notifications);
         }
       },
     );
