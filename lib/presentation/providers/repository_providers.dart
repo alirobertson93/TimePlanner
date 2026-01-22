@@ -4,6 +4,7 @@ import '../../data/repositories/goal_repository.dart';
 import '../../data/repositories/person_repository.dart';
 import '../../data/repositories/event_people_repository.dart';
 import '../../data/repositories/location_repository.dart';
+import '../../data/repositories/recurrence_rule_repository.dart';
 import 'database_provider.dart';
 
 /// Provider for the event repository
@@ -34,4 +35,9 @@ final eventPeopleRepositoryProvider = Provider<EventPeopleRepository>((ref) {
 /// Provider for the location repository
 final locationRepositoryProvider = Provider<LocationRepository>((ref) {
   return LocationRepository(ref.watch(databaseProvider));
+});
+
+/// Provider for the recurrence rule repository
+final recurrenceRuleRepositoryProvider = Provider<RecurrenceRuleRepository>((ref) {
+  return RecurrenceRuleRepository(ref.watch(databaseProvider));
 });

@@ -337,7 +337,7 @@ This document is the single source of truth for the project's current status, co
 
 **Target**: Late development
 
-**Status**: 30% Complete
+**Status**: 45% Complete
 
 **Goals**:
 - Add recurring event support
@@ -357,13 +357,28 @@ This document is the single source of truth for the project's current status, co
 - ✅ Settings persistence with SharedPreferences
   - All settings persist across app restarts
   - Reactive state management with Riverpod
+- ✅ Recurrence Data Layer implemented
+  - RecurrenceRule entity with full model
+  - RecurrenceRules database table
+  - RecurrenceRuleRepository with CRUD operations
+  - Recurrence enums (RecurrenceFrequency, RecurrenceEndType)
+  - Event entity updated with recurrenceRuleId
+  - Events table updated with recurrenceRuleId column
+  - Database migration v6 → v7
+  - Repository providers for recurrence rules
+  - Comprehensive repository tests
 
 **Features**:
-- [ ] Recurrence
-  - [ ] RecurrenceRules table
-  - [ ] Recurring event UI
-  - [ ] Recurrence patterns (daily, weekly, monthly)
-  - [ ] Exception handling
+- [x] Recurrence (Data Layer)
+  - [x] RecurrenceRules table
+  - [x] RecurrenceRule entity
+  - [x] RecurrenceRuleRepository
+  - [x] Recurrence enums (frequency, end type)
+  - [x] Event entity/table with recurrenceRuleId
+  - [x] Database migration
+  - [x] Repository tests
+  - [ ] Recurring event UI (picker in event form)
+  - [ ] Exception handling for individual occurrences
 - [ ] Notifications
   - [ ] Event reminders
   - [ ] Schedule change alerts
@@ -388,11 +403,23 @@ This document is the single source of truth for the project's current status, co
 **Key Files Added**:
 - lib/presentation/screens/settings/settings_screen.dart
 - lib/presentation/providers/settings_providers.dart
+- lib/domain/enums/recurrence_frequency.dart
+- lib/domain/enums/recurrence_end_type.dart
+- lib/domain/entities/recurrence_rule.dart
+- lib/data/database/tables/recurrence_rules.dart
+- lib/data/repositories/recurrence_rule_repository.dart
+- lib/presentation/providers/recurrence_providers.dart
+- test/repositories/recurrence_rule_repository_test.dart
 
 **Key Files Modified**:
 - lib/app/router.dart - Added /settings route
 - lib/presentation/screens/day_view/day_view_screen.dart - Added Settings button
 - pubspec.yaml - Added shared_preferences dependency
+- lib/data/database/app_database.dart - Added RecurrenceRules table, schema v7
+- lib/data/database/tables/events.dart - Added recurrenceRuleId column
+- lib/domain/entities/event.dart - Added recurrenceRuleId field
+- lib/data/repositories/event_repository.dart - Updated mappers for recurrenceRuleId
+- lib/presentation/providers/repository_providers.dart - Added recurrenceRuleRepositoryProvider
 
 **Dependencies**: Phase 6 (complete)
 
@@ -440,9 +467,9 @@ This document is the single source of truth for the project's current status, co
 
 | Component | Status | Completion | Notes |
 |-----------|--------|------------|-------|
-| **Database Layer** | 🟢 Active | 98% | Events (with locationId), Categories, Goals, People, EventPeople, Locations complete. Recurrence pending |
-| **Domain Entities** | 🟢 Active | 98% | Core entities + Person + Location done. Event updated with locationId. |
-| **Repositories** | 🟢 Active | 98% | Event, Category, Goal, Person, EventPeople, Location repos complete with tests |
+| **Database Layer** | 🟢 Active | 100% | Events (with locationId, recurrenceRuleId), Categories, Goals, People, EventPeople, Locations, RecurrenceRules complete |
+| **Domain Entities** | 🟢 Active | 100% | Core entities + Person + Location + RecurrenceRule done. Event updated with recurrenceRuleId. |
+| **Repositories** | 🟢 Active | 100% | Event, Category, Goal, Person, EventPeople, Location, RecurrenceRule repos complete with tests |
 | **Scheduler Engine** | 🟢 Complete | 100% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption) |
 | **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button, Locations button, Settings button |
 | **Week View** | 🟢 Complete | 100% | 7-day grid, event blocks, category colors, navigation |
@@ -453,9 +480,9 @@ This document is the single source of truth for the project's current status, co
 | **People Management** | 🟢 Complete | 100% | Entity, tables, repositories, providers, UI, event form integration complete |
 | **Location Management** | 🟢 Complete | 100% | Entity, table, repository, providers, UI, event form integration complete |
 | **Settings** | 🟢 Complete | 100% | UI and SharedPreferences persistence complete (Phase 7) |
+| **Recurrence** | 🟡 Partial | 60% | Data layer complete (entity, table, repository, enums, tests). UI integration pending (Phase 7) |
 | **Travel Time** | ⚪ Planned | 0% | Not started (Phase 7 - deferred from Phase 6) |
 | **Relationship Goals** | ⚪ Planned | 0% | Not started (Phase 7 - deferred from Phase 6) |
-| **Recurrence** | ⚪ Planned | 0% | Not started (Phase 7) |
 | **Notifications** | ⚪ Planned | 0% | Not started (Phase 7) |
 | **Onboarding** | ⚪ Planned | 0% | Not started (Phase 8) |
 

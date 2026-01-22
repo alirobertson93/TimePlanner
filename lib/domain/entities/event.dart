@@ -13,6 +13,7 @@ class Event {
     this.duration,
     this.categoryId,
     this.locationId,
+    this.recurrenceRuleId,
     this.appCanMove = true,
     this.appCanResize = true,
     this.isUserLocked = false,
@@ -30,6 +31,8 @@ class Event {
   final Duration? duration;
   final String? categoryId;
   final String? locationId;
+  /// Reference to the recurrence rule for repeating events
+  final String? recurrenceRuleId;
   final bool appCanMove;
   final bool appCanResize;
   final bool isUserLocked;
@@ -45,6 +48,9 @@ class Event {
 
   /// Returns true if the app can resize this event during scheduling
   bool get isResizableByApp => appCanResize && !isUserLocked;
+
+  /// Returns true if this event is part of a recurring series
+  bool get isRecurring => recurrenceRuleId != null;
 
   /// Calculates the effective duration of the event
   Duration get effectiveDuration {
@@ -68,6 +74,7 @@ class Event {
     Duration? duration,
     String? categoryId,
     String? locationId,
+    String? recurrenceRuleId,
     bool? appCanMove,
     bool? appCanResize,
     bool? isUserLocked,
@@ -85,6 +92,7 @@ class Event {
       duration: duration ?? this.duration,
       categoryId: categoryId ?? this.categoryId,
       locationId: locationId ?? this.locationId,
+      recurrenceRuleId: recurrenceRuleId ?? this.recurrenceRuleId,
       appCanMove: appCanMove ?? this.appCanMove,
       appCanResize: appCanResize ?? this.appCanResize,
       isUserLocked: isUserLocked ?? this.isUserLocked,
@@ -108,6 +116,7 @@ class Event {
         other.duration == duration &&
         other.categoryId == categoryId &&
         other.locationId == locationId &&
+        other.recurrenceRuleId == recurrenceRuleId &&
         other.appCanMove == appCanMove &&
         other.appCanResize == appCanResize &&
         other.isUserLocked == isUserLocked &&
@@ -128,6 +137,7 @@ class Event {
       duration,
       categoryId,
       locationId,
+      recurrenceRuleId,
       appCanMove,
       appCanResize,
       isUserLocked,
@@ -139,6 +149,6 @@ class Event {
 
   @override
   String toString() {
-    return 'Event(id: $id, name: $name, timingType: $timingType, status: $status)';
+    return 'Event(id: $id, name: $name, timingType: $timingType, status: $status, isRecurring: $isRecurring)';
   }
 }

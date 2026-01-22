@@ -3,6 +3,7 @@ import '../../../domain/enums/event_status.dart';
 import '../../../domain/enums/timing_type.dart';
 import 'categories.dart';
 import 'locations.dart';
+import 'recurrence_rules.dart';
 
 /// Events table definition
 class Events extends Table {
@@ -17,6 +18,9 @@ class Events extends Table {
       text().nullable().references(Categories, #id)();
   TextColumn get locationId =>
       text().nullable().references(Locations, #id)();
+  /// Reference to the recurrence rule for repeating events
+  TextColumn get recurrenceRuleId =>
+      text().nullable().references(RecurrenceRules, #id)();
   BoolColumn get appCanMove => boolean().withDefault(const Constant(true))();
   BoolColumn get appCanResize =>
       boolean().withDefault(const Constant(true))();
