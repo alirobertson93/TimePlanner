@@ -111,7 +111,7 @@ class EventConstraints extends Table {
 
 ---
 
-### 3. RecurrenceRules Table ❌
+### 3. RecurrenceRules Table ✅
 
 Defines recurring event patterns.
 
@@ -133,6 +133,9 @@ class RecurrenceRules extends Table {
   IntColumn get endType => intEnum<RecurrenceEndType>()();
   DateTimeColumn get endDate => dateTime().nullable()();
   IntColumn get occurrences => integer().nullable()();
+  
+  // Creation timestamp
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   
   @override
   Set<Column> get primaryKey => {id};
@@ -214,7 +217,7 @@ class EventPeople extends Table {
 
 ---
 
-### 7. Locations Table ❌
+### 7. Locations Table ✅
 
 Physical locations for events.
 
@@ -227,6 +230,9 @@ class Locations extends Table {
   // Coordinates for travel time calculation
   RealColumn get latitude => real().nullable()();
   RealColumn get longitude => real().nullable()();
+  
+  // Notes about the location
+  TextColumn get notes => text().nullable()();
   
   DateTimeColumn get createdAt => dateTime()();
   

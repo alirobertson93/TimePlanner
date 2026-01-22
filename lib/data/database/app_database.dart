@@ -12,15 +12,18 @@ import 'tables/goals.dart';
 import 'tables/people.dart';
 import 'tables/event_people.dart';
 import 'tables/locations.dart';
+import 'tables/recurrence_rules.dart';
 
 // Import enums so the generated .g.dart file can access them
 import '../../domain/enums/timing_type.dart';
 import '../../domain/enums/event_status.dart';
+import '../../domain/enums/recurrence_frequency.dart';
+import '../../domain/enums/recurrence_end_type.dart';
 
 part 'app_database.g.dart';
 
 /// Main database class for the TimePlanner app
-@DriftDatabase(tables: [Categories, Events, Goals, People, EventPeople, Locations])
+@DriftDatabase(tables: [Categories, Events, Goals, People, EventPeople, Locations, RecurrenceRules])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -28,7 +31,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration {
@@ -57,6 +60,11 @@ class AppDatabase extends _$AppDatabase {
         // Migration from version 5 to 6: Add locationId column to Events table
         if (from <= 5) {
           await m.addColumn(events, events.locationId);
+        }
+        // Migration from version 6 to 7: Add RecurrenceRules table and recurrenceRuleId column to Events
+        if (from <= 6) {
+          await m.createTable(recurrenceRules);
+          await m.addColumn(events, events.recurrenceRuleId);
         }
       },
     );
