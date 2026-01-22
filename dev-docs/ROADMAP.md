@@ -337,11 +337,11 @@ This document is the single source of truth for the project's current status, co
 
 **Target**: Late development
 
-**Status**: 65% Complete
+**Status**: 75% Complete
 
 **Goals**:
 - Add recurring event support ✅ (Complete)
-- Implement notifications
+- Implement notifications 🟡 (Data Layer Complete)
 - Create settings/preferences screen ✅ (Complete)
 - Add travel time calculations (deferred from Phase 6)
 - Enable relationship goal tracking (deferred from Phase 6)
@@ -379,6 +379,15 @@ This document is the single source of truth for the project's current status, co
   - EventCard shows repeat icon for recurring events
   - EventDetailSheet shows recurrence info
   - WeekTimeline shows repeat icon for recurring events
+- ✅ Notifications Data Layer implemented
+  - NotificationType enum (eventReminder, scheduleChange, goalProgress, conflictWarning, goalAtRisk, goalCompleted)
+  - NotificationStatus enum (pending, delivered, read, dismissed, cancelled)
+  - Notification entity with full model and helper methods
+  - Notifications database table
+  - NotificationRepository with full CRUD and query operations
+  - Database migration v7 → v8
+  - Notification providers for Riverpod
+  - Comprehensive repository tests
 
 **Features**:
 - [x] Recurrence
@@ -392,11 +401,19 @@ This document is the single source of truth for the project's current status, co
   - [x] Recurring event UI (RecurrencePicker in event form)
   - [ ] Exception handling for individual occurrences
   - [x] Display recurring indicator in event cards
-- [ ] Notifications
-  - [ ] Event reminders
-  - [ ] Schedule change alerts
-  - [ ] Goal progress notifications
-  - [ ] Conflict warnings
+- [x] Notifications (Data Layer)
+  - [x] NotificationType enum
+  - [x] NotificationStatus enum
+  - [x] Notification entity
+  - [x] Notifications table
+  - [x] NotificationRepository
+  - [x] Notification providers
+  - [x] Repository tests
+  - [ ] Event reminders UI
+  - [ ] Schedule change alerts UI
+  - [ ] Goal progress notifications UI
+  - [ ] Conflict warnings UI
+  - [ ] System notifications (flutter_local_notifications)
 - [x] Settings
   - [x] User preferences UI
   - [x] Time slot granularity UI
@@ -424,16 +441,23 @@ This document is the single source of truth for the project's current status, co
 - lib/presentation/providers/recurrence_providers.dart
 - lib/presentation/widgets/recurrence_picker.dart
 - test/repositories/recurrence_rule_repository_test.dart
+- lib/domain/enums/notification_type.dart
+- lib/domain/enums/notification_status.dart
+- lib/domain/entities/notification.dart
+- lib/data/database/tables/notifications.dart
+- lib/data/repositories/notification_repository.dart
+- lib/presentation/providers/notification_providers.dart
+- test/repositories/notification_repository_test.dart
 
 **Key Files Modified**:
 - lib/app/router.dart - Added /settings route
 - lib/presentation/screens/day_view/day_view_screen.dart - Added Settings button
 - pubspec.yaml - Added shared_preferences dependency
-- lib/data/database/app_database.dart - Added RecurrenceRules table, schema v7
+- lib/data/database/app_database.dart - Added RecurrenceRules table (v7), Notifications table (v8)
 - lib/data/database/tables/events.dart - Added recurrenceRuleId column
 - lib/domain/entities/event.dart - Added recurrenceRuleId field
 - lib/data/repositories/event_repository.dart - Updated mappers for recurrenceRuleId
-- lib/presentation/providers/repository_providers.dart - Added recurrenceRuleRepositoryProvider
+- lib/presentation/providers/repository_providers.dart - Added recurrenceRuleRepositoryProvider, notificationRepositoryProvider
 - lib/presentation/providers/event_form_providers.dart - Added recurrenceRuleId support
 - lib/presentation/screens/event_form/event_form_screen.dart - Added RecurrencePicker
 
@@ -483,9 +507,9 @@ This document is the single source of truth for the project's current status, co
 
 | Component | Status | Completion | Notes |
 |-----------|--------|------------|-------|
-| **Database Layer** | 🟢 Active | 100% | Events (with locationId, recurrenceRuleId), Categories, Goals, People, EventPeople, Locations, RecurrenceRules complete |
-| **Domain Entities** | 🟢 Active | 100% | Core entities + Person + Location + RecurrenceRule done. Event updated with recurrenceRuleId. |
-| **Repositories** | 🟢 Active | 100% | Event, Category, Goal, Person, EventPeople, Location, RecurrenceRule repos complete with tests |
+| **Database Layer** | 🟢 Active | 100% | Events (with locationId, recurrenceRuleId), Categories, Goals, People, EventPeople, Locations, RecurrenceRules, Notifications complete |
+| **Domain Entities** | 🟢 Active | 100% | Core entities + Person + Location + RecurrenceRule + Notification done. Event updated with recurrenceRuleId. |
+| **Repositories** | 🟢 Active | 100% | Event, Category, Goal, Person, EventPeople, Location, RecurrenceRule, Notification repos complete with tests |
 | **Scheduler Engine** | 🟢 Complete | 100% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption) |
 | **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button, Locations button, Settings button, recurring indicators |
 | **Week View** | 🟢 Complete | 100% | 7-day grid, event blocks, category colors, navigation, recurring indicators |
@@ -497,9 +521,9 @@ This document is the single source of truth for the project's current status, co
 | **Location Management** | 🟢 Complete | 100% | Entity, table, repository, providers, UI, event form integration complete |
 | **Settings** | 🟢 Complete | 100% | UI and SharedPreferences persistence complete (Phase 7) |
 | **Recurrence** | 🟢 Complete | 95% | Data layer + UI complete (entity, table, repository, enums, tests, RecurrencePicker widget, recurring indicators in event cards). Exception handling pending. |
+| **Notifications** | 🟡 Partial | 50% | Data layer complete (entity, enums, table, repository, providers, tests). UI pending. |
 | **Travel Time** | ⚪ Planned | 0% | Not started (Phase 7 - deferred from Phase 6) |
 | **Relationship Goals** | ⚪ Planned | 0% | Not started (Phase 7 - deferred from Phase 6) |
-| **Notifications** | ⚪ Planned | 0% | Not started (Phase 7) |
 | **Onboarding** | ⚪ Planned | 0% | Not started (Phase 8) |
 
 **Legend**:
