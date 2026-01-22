@@ -6,11 +6,11 @@ This document is the single source of truth for the project's current status, co
 
 ## Current Status
 
-**Project Phase**: Phase 6 In Progress - Social & Location Features
+**Project Phase**: Phase 7 In Progress - Advanced Features
 
-**Overall Progress**: ~99% Complete
+**Overall Progress**: ~100% Core Features Complete
 
-**Active Work**: Phase 6 - Location Management fully integrated. Travel Time and Relationship Goals are optional enhancements.
+**Active Work**: Phase 7 - Settings Screen UI complete. Working on persistence and additional features.
 
 ## Completed Phases
 
@@ -247,18 +247,18 @@ This document is the single source of truth for the project's current status, co
 
 **Dependencies**: Phase 4 (complete)
 
-## In Progress Phases
+## Completed Phases
 
-### Phase 6: Social & Location Features 🟡 (In Progress)
+### Phase 6: Social & Location Features ✅ (Complete)
 
 **Target**: Mid-development
 
-**Status**: 95% Complete
+**Status**: 100% Complete (Core Features)
 
 **Goals**:
-- Add People and Location entities
-- Support travel time calculations
-- Enable relationship goal tracking
+- Add People and Location entities ✅
+- Support travel time calculations (deferred to Phase 7)
+- Enable relationship goal tracking (deferred to Phase 7)
 
 **What's Working**:
 - ✅ Person entity with contact info
@@ -305,14 +305,10 @@ This document is the single source of truth for the project's current status, co
   - [x] Locations Management Screen
   - [x] Associate locations with events (locationId column)
   - [x] Location picker UI for Event Form
-- [ ] Travel Time
-  - [ ] Calculate travel time between locations
-  - [ ] Auto-schedule travel buffer
-  - [ ] Travel time in schedule generation
-- [ ] Relationship Goals
-  - [ ] Goals tied to specific people
-  - [ ] Track time with each person
-  - [ ] Relationship goal progress
+
+**Deferred Features (moved to Phase 7)**:
+- Travel Time calculations
+- Relationship Goals
 
 **Key Files Added**:
 - lib/domain/entities/person.dart
@@ -333,25 +329,32 @@ This document is the single source of truth for the project's current status, co
 - test/repositories/event_people_repository_test.dart
 - test/repositories/location_repository_test.dart
 
-**Next Steps**:
-1. Run build_runner to generate database and provider code
-2. Test Location Picker functionality in Event Form
-3. Consider Travel Time and Relationship Goals (lower priority)
-
 **Dependencies**: Phase 5 (Goals Dashboard foundation) - complete
-
-**Estimated Effort**: Location integration complete. Travel Time and Relationship Goals optional.
 
 ## Upcoming Phases
 
-### Phase 7: Advanced Features (Low Priority)
+### Phase 7: Advanced Features 🟡 (Next Up)
 
 **Target**: Late development
+
+**Status**: 15% Complete
 
 **Goals**:
 - Add recurring event support
 - Implement notifications
-- Create settings/preferences screen
+- Create settings/preferences screen ✅ (UI complete)
+- Add travel time calculations (deferred from Phase 6)
+- Enable relationship goal tracking (deferred from Phase 6)
+
+**What's Working**:
+- ✅ Settings Screen UI implemented
+  - Schedule settings section (time slot, work hours, first day)
+  - Default event settings section (duration, movable, resizable)
+  - Notification settings section (reminders, alerts)
+  - Appearance settings section (theme)
+  - About section (version, terms, privacy)
+- ✅ Settings route and navigation added
+- ⏳ Settings persistence (SharedPreferences) - pending
 
 **Features**:
 - [ ] Recurrence
@@ -364,16 +367,32 @@ This document is the single source of truth for the project's current status, co
   - [ ] Schedule change alerts
   - [ ] Goal progress notifications
   - [ ] Conflict warnings
-- [ ] Settings
-  - [ ] User preferences
-  - [ ] Time slot granularity
-  - [ ] Default constraints
-  - [ ] Notification preferences
-  - [ ] Theme settings
+- [x] Settings UI
+  - [x] User preferences UI
+  - [x] Time slot granularity UI
+  - [x] Default constraints UI
+  - [x] Notification preferences UI
+  - [x] Theme settings UI
+  - [ ] Settings persistence (SharedPreferences)
+- [ ] Travel Time (from Phase 6)
+  - [ ] Calculate travel time between locations
+  - [ ] Auto-schedule travel buffer
+  - [ ] Travel time in schedule generation
+- [ ] Relationship Goals (from Phase 6)
+  - [ ] Goals tied to specific people
+  - [ ] Track time with each person
+  - [ ] Relationship goal progress
 
-**Dependencies**: Phase 6 (complete core functionality)
+**Key Files Added**:
+- lib/presentation/screens/settings/settings_screen.dart
 
-**Estimated Effort**: 3-4 development sessions
+**Key Files Modified**:
+- lib/app/router.dart - Added /settings route
+- lib/presentation/screens/day_view/day_view_screen.dart - Added Settings button
+
+**Dependencies**: Phase 6 (complete)
+
+**Estimated Effort**: 4-5 development sessions
 
 ### Phase 8: Polish & Launch (Low Priority)
 
@@ -429,9 +448,11 @@ This document is the single source of truth for the project's current status, co
 | **Goal Form** | 🟢 Complete | 100% | Create, edit, delete with validation |
 | **People Management** | 🟢 Complete | 100% | Entity, tables, repositories, providers, UI, event form integration complete |
 | **Location Management** | 🟢 Complete | 100% | Entity, table, repository, providers, UI, event form integration complete |
+| **Settings** | 🟡 Partial | 50% | UI complete, persistence pending (Phase 7) |
+| **Travel Time** | ⚪ Planned | 0% | Not started (Phase 7 - deferred from Phase 6) |
+| **Relationship Goals** | ⚪ Planned | 0% | Not started (Phase 7 - deferred from Phase 6) |
 | **Recurrence** | ⚪ Planned | 0% | Not started (Phase 7) |
 | **Notifications** | ⚪ Planned | 0% | Not started (Phase 7) |
-| **Settings** | ⚪ Planned | 0% | Not started (Phase 7) |
 | **Onboarding** | ⚪ Planned | 0% | Not started (Phase 8) |
 
 **Legend**:
@@ -473,4 +494,4 @@ Before considering the project "complete":
 
 *For session logs and detailed development history, see [CHANGELOG.md](./CHANGELOG.md)*
 
-*Last updated: 2026-01-21*
+*Last updated: 2026-01-22*
