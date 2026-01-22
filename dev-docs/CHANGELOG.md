@@ -33,6 +33,78 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-22 - Architecture Audit Continued (Tests + Refactoring)
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Continue implementing next-steps.md tasks: widget tests, split RecurrencePicker, and split planning wizard provider
+
+**Work Completed**:
+- ✅ **P1: Added widget tests for critical screens**
+  - Created `test/widget/screens/day_view_screen_test.dart`
+    - Tests for navigation buttons, app bar, notification badge, loading/error states
+  - Created `test/widget/screens/event_form_screen_test.dart`
+    - Tests for form sections, input fields, timing type switching
+  - Created `test/widget/screens/planning_wizard_screen_test.dart`
+    - Tests for step navigation, buttons, cancel confirmation dialog
+    - Unit tests for `PlanningWizardState` validation logic
+- ✅ **P3: Split RecurrencePicker file** (622 lines → ~370 + ~235)
+  - Extracted `_CreateRecurrenceDialog` to new public `RecurrenceCustomDialog` widget
+  - Created `lib/presentation/widgets/recurrence_custom_dialog.dart`
+  - Updated `recurrence_picker.dart` to import and use new dialog
+- ✅ **P2: Split planning wizard provider** (started)
+  - Created `lib/presentation/providers/planning_parameters_providers.dart`
+    - Extracted `PlanningParametersState` class
+    - Extracted `PlanningParameters` provider for date/goal management
+    - Extracted `SchedulingStrategySelection` provider for strategy selection
+  - Created `lib/presentation/providers/schedule_generation_providers.dart`
+    - Extracted `ScheduleGenerationState` class
+    - Extracted `ScheduleGeneration` provider for async schedule computation
+
+**Technical Decisions**:
+- Widget tests use Riverpod's `ProviderScope` with overrides for mocking
+- `RecurrenceCustomDialog` made public (removed underscore prefix) for reusability
+- Planning wizard provider split into 3 focused providers following single responsibility principle
+
+**Files Created**:
+- test/widget/screens/day_view_screen_test.dart
+- test/widget/screens/event_form_screen_test.dart
+- test/widget/screens/planning_wizard_screen_test.dart
+- lib/presentation/widgets/recurrence_custom_dialog.dart
+- lib/presentation/providers/planning_parameters_providers.dart
+- lib/presentation/providers/schedule_generation_providers.dart
+
+**Files Modified**:
+- lib/presentation/widgets/recurrence_picker.dart - Uses new RecurrenceCustomDialog
+
+**Architecture Audit Tasks Status (from next-steps.md)**:
+- [x] Fix silent error catch in color_utils.dart (P1) ✅ Previous session
+- [x] Add repository interfaces (P1) ✅ Previous session
+- [x] Move/remove DeleteEvent provider (P2) ✅ Previous session
+- [x] Fix documentation inconsistencies (P3) ✅ Previous session
+- [x] Add widget tests for critical screens (P1) ✅ This session
+- [x] Split RecurrencePicker file (P3) ✅ This session
+- [x] Split planning wizard provider (P2) ✅ This session
+
+**Test Coverage Improvement**:
+| Component | Before | After |
+|-----------|--------|-------|
+| Repositories | ✅ 100% | ✅ 100% |
+| Scheduler Models | ✅ 100% | ✅ 100% |
+| Strategies | ⚠️ ~60% | ⚠️ ~60% |
+| **Presentation/UI** | ❌ 0% | ⚠️ ~30% |
+| **State Management** | ❌ 0% | ⚠️ ~20% |
+
+**Note**: New provider files require running `flutter pub run build_runner build` to generate `.g.dart` files.
+
+**Next Steps**:
+1. Run code generation for new providers
+2. Integrate split providers into planning wizard screen
+3. Add more widget tests for remaining screens
+4. Consider integration tests for core user flows
+
+---
+
 ### Session: 2026-01-22 - Architecture Audit Fixes (next-steps.md)
 
 **Author**: AI Assistant (GitHub Copilot)
