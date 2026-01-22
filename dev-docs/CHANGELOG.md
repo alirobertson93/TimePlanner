@@ -62,6 +62,9 @@ This changelog serves multiple purposes:
     - Badge shows "99+" for counts over 99
     - Tooltip shows unread count
     - Taps navigate to notifications screen
+- ✅ Code review improvements:
+  - Added deleteAll() method to NotificationRepository for efficient bulk deletion
+  - Added _refreshNotifications() helper method to reduce code duplication
 
 **Technical Decisions**:
 - Notifications grouped by date for better UX (most recent first)
@@ -69,6 +72,7 @@ This changelog serves multiple purposes:
 - Swipe-to-delete uses Dismissible widget
 - Badge component from Material 3 for notification count
 - watchUnreadCount stream provider enables reactive badge updates
+- deleteAll() method avoids inefficient loop-based deletion for clearing all notifications
 
 **Files Added**:
 - lib/presentation/screens/notifications/notifications_screen.dart
@@ -76,6 +80,7 @@ This changelog serves multiple purposes:
 **Files Modified**:
 - lib/app/router.dart - Added /notifications route, imported notifications screen
 - lib/presentation/screens/day_view/day_view_screen.dart - Added notification badge button with unread count
+- lib/data/repositories/notification_repository.dart - Added deleteAll() method
 
 **Next Steps**:
 1. Run build_runner to generate code
