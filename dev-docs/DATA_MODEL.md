@@ -8,6 +8,28 @@ This document defines the complete data model for TimePlanner. The database is i
 
 **Implementation Status**: ⚠️ Partial (see table status below)
 
+**Current Schema Version**: 8
+
+**Implemented Tables** (8 total):
+- Events ✅
+- Categories ✅
+- Goals ✅
+- People ✅
+- EventPeople ✅
+- Locations ✅
+- RecurrenceRules ✅
+- Notifications ✅
+
+**Not Yet Implemented Tables** (7 total):
+- EventConstraints ❌
+- TravelTimePairs ❌
+- EventGoals ❌
+- GoalProgress ❌
+- EventTemplates ❌
+- Schedules ❌
+- ScheduledEvents ❌
+- UserSettings ❌
+
 ## Database Architecture
 
 - **ORM**: Drift (type-safe SQLite wrapper)
@@ -464,6 +486,54 @@ class UserSettings extends Table {
 
 ---
 
+### 16. Notifications Table ✅
+
+Stores scheduled and delivered notifications for events, goals, etc.
+
+```dart
+class Notifications extends Table {
+  // Primary key
+  TextColumn get id => text()();
+
+  // Type of notification (event reminder, schedule change, etc.)
+  IntColumn get type => intEnum<NotificationType>()();
+
+  // Title of the notification
+  TextColumn get title => text()();
+
+  // Optional body/description
+  TextColumn get body => text().nullable()();
+
+  // Reference to related event (optional)
+  TextColumn get eventId => text().nullable()();
+
+  // Reference to related goal (optional)
+  TextColumn get goalId => text().nullable()();
+
+  // When the notification should be delivered
+  DateTimeColumn get scheduledAt => dateTime()();
+
+  // When the notification was actually delivered
+  DateTimeColumn get deliveredAt => dateTime().nullable()();
+
+  // When the notification was read
+  DateTimeColumn get readAt => dateTime().nullable()();
+
+  // Current status of the notification
+  IntColumn get status => intEnum<NotificationStatus>().withDefault(const Constant(0))();
+
+  // Creation timestamp
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+```
+
+**Note**: Added in schema version 8.
+
+---
+
 ## Enums
 
 ### TimingType
@@ -584,41 +654,55 @@ enum ScheduleStatus {
 }
 ```
 
+### NotificationType
+
+```dart
+enum NotificationType {
+  eventReminder,    // Reminder before an event starts
+  scheduleChange,   // Alert when schedule changes occur
+  goalProgress,     // Notification about goal progress
+  conflictWarning,  // Warning about scheduling conflicts
+  goalAtRisk,       // Alert when a goal is at risk of not being met
+  goalCompleted     // Notification when a goal is completed
+}
+```
+
+### NotificationStatus
+
+```dart
+enum NotificationStatus {
+  pending,     // Notification is pending delivery
+  delivered,   // Notification has been delivered to the user
+  read,        // Notification has been read by the user
+  dismissed,   // Notification was dismissed by the user
+  cancelled    // Notification was cancelled (e.g., event deleted before reminder)
+}
+```
+
 ---
 
 ## Database Class Definition
 
+The following shows the actual implemented database schema (version 8):
+
 ```dart
 @DriftDatabase(
   tables: [
-    Events,
-    EventConstraints,
-    RecurrenceRules,
     Categories,
+    Events,
+    Goals,
     People,
     EventPeople,
     Locations,
-    TravelTimePairs,
-    Goals,
-    EventGoals,
-    GoalProgress,
-    EventTemplates,
-    Schedules,
-    ScheduledEvents,
-    UserSettings,
-  ],
-  daos: [
-    EventDao,
-    CategoryDao,
-    GoalDao,
-    ScheduleDao,
+    RecurrenceRules,
+    Notifications,
   ],
 )
 class AppDatabase extends _$AppDatabase {
-  AppDatabase(QueryExecutor e) : super(e);
+  AppDatabase() : super(_openConnection());
   
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 8;
   
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -630,6 +714,31 @@ class AppDatabase extends _$AppDatabase {
       // Migration from version 1 to 2: Add Goals table
       if (from == 1) {
         await m.createTable(goals);
+      }
+      // Migration from version 2 to 3: Add People table
+      if (from <= 2) {
+        await m.createTable(people);
+      }
+      // Migration from version 3 to 4: Add EventPeople junction table
+      if (from <= 3) {
+        await m.createTable(eventPeople);
+      }
+      // Migration from version 4 to 5: Add Locations table
+      if (from <= 4) {
+        await m.createTable(locations);
+      }
+      // Migration from version 5 to 6: Add locationId column to Events table
+      if (from <= 5) {
+        await m.addColumn(events, events.locationId);
+      }
+      // Migration from version 6 to 7: Add RecurrenceRules table and recurrenceRuleId column to Events
+      if (from <= 6) {
+        await m.createTable(recurrenceRules);
+        await m.addColumn(events, events.recurrenceRuleId);
+      }
+      // Migration from version 7 to 8: Add Notifications table
+      if (from <= 7) {
+        await m.createTable(notifications);
       }
     },
   );
@@ -852,4 +961,4 @@ if (from < 2) {
 
 ---
 
-*Last updated: 2026-01-16*
+*Last updated: 2026-01-22*
