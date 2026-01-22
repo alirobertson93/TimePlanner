@@ -6,11 +6,11 @@ This document is the single source of truth for the project's current status, co
 
 ## Current Status
 
-**Project Phase**: Phase 7 Ready - Advanced Features
+**Project Phase**: Phase 7 In Progress - Advanced Features
 
 **Overall Progress**: ~100% Core Features Complete
 
-**Active Work**: Phase 6 complete. Ready to begin Phase 7 (Advanced Features).
+**Active Work**: Phase 7 - Settings Screen UI complete. Working on persistence and additional features.
 
 ## Completed Phases
 
@@ -337,14 +337,24 @@ This document is the single source of truth for the project's current status, co
 
 **Target**: Late development
 
-**Status**: 0% Complete
+**Status**: 15% Complete
 
 **Goals**:
 - Add recurring event support
 - Implement notifications
-- Create settings/preferences screen
+- Create settings/preferences screen ✅ (UI complete)
 - Add travel time calculations (deferred from Phase 6)
 - Enable relationship goal tracking (deferred from Phase 6)
+
+**What's Working**:
+- ✅ Settings Screen UI implemented
+  - Schedule settings section (time slot, work hours, first day)
+  - Default event settings section (duration, movable, resizable)
+  - Notification settings section (reminders, alerts)
+  - Appearance settings section (theme)
+  - About section (version, terms, privacy)
+- ✅ Settings route and navigation added
+- ⏳ Settings persistence (SharedPreferences) - pending
 
 **Features**:
 - [ ] Recurrence
@@ -357,12 +367,13 @@ This document is the single source of truth for the project's current status, co
   - [ ] Schedule change alerts
   - [ ] Goal progress notifications
   - [ ] Conflict warnings
-- [ ] Settings
-  - [ ] User preferences
-  - [ ] Time slot granularity
-  - [ ] Default constraints
-  - [ ] Notification preferences
-  - [ ] Theme settings
+- [x] Settings UI
+  - [x] User preferences UI
+  - [x] Time slot granularity UI
+  - [x] Default constraints UI
+  - [x] Notification preferences UI
+  - [x] Theme settings UI
+  - [ ] Settings persistence (SharedPreferences)
 - [ ] Travel Time (from Phase 6)
   - [ ] Calculate travel time between locations
   - [ ] Auto-schedule travel buffer
@@ -371,6 +382,13 @@ This document is the single source of truth for the project's current status, co
   - [ ] Goals tied to specific people
   - [ ] Track time with each person
   - [ ] Relationship goal progress
+
+**Key Files Added**:
+- lib/presentation/screens/settings/settings_screen.dart
+
+**Key Files Modified**:
+- lib/app/router.dart - Added /settings route
+- lib/presentation/screens/day_view/day_view_screen.dart - Added Settings button
 
 **Dependencies**: Phase 6 (complete)
 
@@ -430,11 +448,11 @@ This document is the single source of truth for the project's current status, co
 | **Goal Form** | 🟢 Complete | 100% | Create, edit, delete with validation |
 | **People Management** | 🟢 Complete | 100% | Entity, tables, repositories, providers, UI, event form integration complete |
 | **Location Management** | 🟢 Complete | 100% | Entity, table, repository, providers, UI, event form integration complete |
+| **Settings** | 🟡 Partial | 50% | UI complete, persistence pending (Phase 7) |
 | **Travel Time** | ⚪ Planned | 0% | Not started (Phase 7 - deferred from Phase 6) |
 | **Relationship Goals** | ⚪ Planned | 0% | Not started (Phase 7 - deferred from Phase 6) |
 | **Recurrence** | ⚪ Planned | 0% | Not started (Phase 7) |
 | **Notifications** | ⚪ Planned | 0% | Not started (Phase 7) |
-| **Settings** | ⚪ Planned | 0% | Not started (Phase 7) |
 | **Onboarding** | ⚪ Planned | 0% | Not started (Phase 8) |
 
 **Legend**:

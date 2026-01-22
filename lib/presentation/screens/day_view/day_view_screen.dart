@@ -75,6 +75,13 @@ class DayViewScreen extends ConsumerWidget {
             },
             tooltip: 'Week view',
           ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              context.push('/settings');
+            },
+            tooltip: 'Settings',
+          ),
         ],
       ),
       body: eventsAsync.when(
