@@ -302,19 +302,25 @@ class SettingsScreen extends ConsumerWidget {
   Widget _buildRadioOption(BuildContext context, String label, bool selected) {
     return SimpleDialogOption(
       onPressed: () {
-        Navigator.of(context).pop();
-        // TODO: Save the selection
+        Navigator.of(context).pop(label);
+        // TODO: Save the selection when persistence is added
       },
       child: Row(
         children: [
-          Radio<bool>(
-            value: true,
-            groupValue: selected,
-            onChanged: (_) {
-              Navigator.of(context).pop();
-              // TODO: Save the selection
-            },
+          SizedBox(
+            width: 24,
+            height: 24,
+            child: selected
+                ? Icon(
+                    Icons.check_circle,
+                    color: Theme.of(context).colorScheme.primary,
+                  )
+                : Icon(
+                    Icons.radio_button_unchecked,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
           ),
+          const SizedBox(width: 12),
           Text(label),
         ],
       ),
