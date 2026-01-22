@@ -10,7 +10,7 @@ This document is the single source of truth for the project's current status, co
 
 **Overall Progress**: ~100% Core Features Complete
 
-**Active Work**: Phase 7 - Settings Screen UI complete. Working on persistence and additional features.
+**Active Work**: Phase 7 - Settings feature complete (UI + persistence). Next: recurrence, notifications, or travel time.
 
 ## Completed Phases
 
@@ -333,16 +333,16 @@ This document is the single source of truth for the project's current status, co
 
 ## Upcoming Phases
 
-### Phase 7: Advanced Features 🟡 (Next Up)
+### Phase 7: Advanced Features 🟡 (In Progress)
 
 **Target**: Late development
 
-**Status**: 15% Complete
+**Status**: 30% Complete
 
 **Goals**:
 - Add recurring event support
 - Implement notifications
-- Create settings/preferences screen ✅ (UI complete)
+- Create settings/preferences screen ✅ (Complete)
 - Add travel time calculations (deferred from Phase 6)
 - Enable relationship goal tracking (deferred from Phase 6)
 
@@ -354,7 +354,9 @@ This document is the single source of truth for the project's current status, co
   - Appearance settings section (theme)
   - About section (version, terms, privacy)
 - ✅ Settings route and navigation added
-- ⏳ Settings persistence (SharedPreferences) - pending
+- ✅ Settings persistence with SharedPreferences
+  - All settings persist across app restarts
+  - Reactive state management with Riverpod
 
 **Features**:
 - [ ] Recurrence
@@ -367,13 +369,13 @@ This document is the single source of truth for the project's current status, co
   - [ ] Schedule change alerts
   - [ ] Goal progress notifications
   - [ ] Conflict warnings
-- [x] Settings UI
+- [x] Settings
   - [x] User preferences UI
   - [x] Time slot granularity UI
   - [x] Default constraints UI
   - [x] Notification preferences UI
   - [x] Theme settings UI
-  - [ ] Settings persistence (SharedPreferences)
+  - [x] Settings persistence (SharedPreferences)
 - [ ] Travel Time (from Phase 6)
   - [ ] Calculate travel time between locations
   - [ ] Auto-schedule travel buffer
@@ -385,10 +387,12 @@ This document is the single source of truth for the project's current status, co
 
 **Key Files Added**:
 - lib/presentation/screens/settings/settings_screen.dart
+- lib/presentation/providers/settings_providers.dart
 
 **Key Files Modified**:
 - lib/app/router.dart - Added /settings route
 - lib/presentation/screens/day_view/day_view_screen.dart - Added Settings button
+- pubspec.yaml - Added shared_preferences dependency
 
 **Dependencies**: Phase 6 (complete)
 
@@ -440,7 +444,7 @@ This document is the single source of truth for the project's current status, co
 | **Domain Entities** | 🟢 Active | 98% | Core entities + Person + Location done. Event updated with locationId. |
 | **Repositories** | 🟢 Active | 98% | Event, Category, Goal, Person, EventPeople, Location repos complete with tests |
 | **Scheduler Engine** | 🟢 Complete | 100% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption) |
-| **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button, Locations button |
+| **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button, Locations button, Settings button |
 | **Week View** | 🟢 Complete | 100% | 7-day grid, event blocks, category colors, navigation |
 | **Event Form** | 🟢 Complete | 100% | Create, edit, delete, people selection, location selection implemented |
 | **Planning Wizard** | 🟢 Complete | 100% | 4-step flow, schedule generation, all strategies available |
@@ -448,7 +452,7 @@ This document is the single source of truth for the project's current status, co
 | **Goal Form** | 🟢 Complete | 100% | Create, edit, delete with validation |
 | **People Management** | 🟢 Complete | 100% | Entity, tables, repositories, providers, UI, event form integration complete |
 | **Location Management** | 🟢 Complete | 100% | Entity, table, repository, providers, UI, event form integration complete |
-| **Settings** | 🟡 Partial | 50% | UI complete, persistence pending (Phase 7) |
+| **Settings** | 🟢 Complete | 100% | UI and SharedPreferences persistence complete (Phase 7) |
 | **Travel Time** | ⚪ Planned | 0% | Not started (Phase 7 - deferred from Phase 6) |
 | **Relationship Goals** | ⚪ Planned | 0% | Not started (Phase 7 - deferred from Phase 6) |
 | **Recurrence** | ⚪ Planned | 0% | Not started (Phase 7) |
