@@ -8,6 +8,7 @@ import '../presentation/screens/planning_wizard/planning_wizard_screen.dart';
 import '../presentation/screens/goals_dashboard/goals_dashboard_screen.dart';
 import '../presentation/screens/goal_form/goal_form_screen.dart';
 import '../presentation/screens/people/people_screen.dart';
+import '../presentation/screens/locations/locations_screen.dart';
 
 /// Application router configuration
 class AppRouter {
@@ -74,6 +75,11 @@ class AppRouter {
         path: '/people',
         name: 'people',
         builder: (context, state) => const PeopleScreen(),
+      ),
+      GoRoute(
+        path: '/locations',
+        name: 'locations',
+        builder: (context, state) => const LocationsScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
