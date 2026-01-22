@@ -143,7 +143,11 @@ class _LocationPickerState extends ConsumerState<LocationPicker> {
       ),
     );
 
-    if (result != null || result == '') {
+    // result can be:
+    // - null: user dismissed without selection
+    // - '': user clicked "Clear" to remove location
+    // - locationId: user selected a location
+    if (result != null) {
       // Empty string means explicitly clear selection
       widget.onLocationChanged(result == '' ? null : result);
     }
