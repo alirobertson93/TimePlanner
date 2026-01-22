@@ -311,7 +311,10 @@ class EventForm extends _$EventForm {
 
       // Save people associations
       try {
-        await eventPeopleRepository.setPeopleForEvent(eventId, state.selectedPeopleIds);
+        await eventPeopleRepository.setPeopleForEvent(
+          eventId: eventId,
+          personIds: state.selectedPeopleIds,
+        );
       } catch (peopleError) {
         // If people save fails, we still consider the event saved but log the error
         // In a production app, this should use proper logging and potentially a transaction

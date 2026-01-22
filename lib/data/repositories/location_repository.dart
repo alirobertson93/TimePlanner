@@ -55,7 +55,7 @@ class LocationRepository {
   }
 
   /// Maps a database location to a domain location entity
-  domain.Location _mapToEntity(LocationData dbLocation) {
+  domain.Location _mapToEntity(Location dbLocation) {
     return domain.Location(
       id: dbLocation.id,
       name: dbLocation.name,

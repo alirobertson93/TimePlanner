@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:drift/native.dart';
 import 'package:time_planner/data/database/app_database.dart';
 import 'package:time_planner/data/repositories/location_repository.dart';
-import 'package:time_planner/domain/entities/location.dart';
+import 'package:time_planner/domain/entities/location.dart' as domain;
 
 void main() {
   late AppDatabase database;
@@ -21,7 +21,7 @@ void main() {
   group('LocationRepository', () {
     test('save and getById returns the saved location', () async {
       // Arrange
-      final location = Location(
+      final location = domain.Location(
         id: 'location_1',
         name: 'Office',
         address: '123 Main St, City',
@@ -47,7 +47,7 @@ void main() {
 
     test('save updates existing location', () async {
       // Arrange
-      final location = Location(
+      final location = domain.Location(
         id: 'location_1',
         name: 'Office',
         address: '123 Main St',
@@ -71,7 +71,7 @@ void main() {
 
     test('delete removes location from database', () async {
       // Arrange
-      final location = Location(
+      final location = domain.Location(
         id: 'location_1',
         name: 'Test Location',
         createdAt: DateTime.now(),
@@ -97,19 +97,19 @@ void main() {
 
     test('getAll returns all locations ordered by name', () async {
       // Arrange
-      final location1 = Location(
+      final location1 = domain.Location(
         id: 'location_1',
         name: 'Coffee Shop',
         createdAt: DateTime.now(),
       );
 
-      final location2 = Location(
+      final location2 = domain.Location(
         id: 'location_2',
         name: 'Airport',
         createdAt: DateTime.now(),
       );
 
-      final location3 = Location(
+      final location3 = domain.Location(
         id: 'location_3',
         name: 'Beach',
         createdAt: DateTime.now(),
@@ -130,19 +130,19 @@ void main() {
 
     test('searchByName finds locations with matching names', () async {
       // Arrange
-      final location1 = Location(
+      final location1 = domain.Location(
         id: 'location_1',
         name: 'Home Office',
         createdAt: DateTime.now(),
       );
 
-      final location2 = Location(
+      final location2 = domain.Location(
         id: 'location_2',
         name: 'Work Office',
         createdAt: DateTime.now(),
       );
 
-      final location3 = Location(
+      final location3 = domain.Location(
         id: 'location_3',
         name: 'Coffee Shop',
         createdAt: DateTime.now(),
@@ -163,7 +163,7 @@ void main() {
 
     test('searchByName is case-insensitive', () async {
       // Arrange
-      final location = Location(
+      final location = domain.Location(
         id: 'location_1',
         name: 'Coffee Shop',
         createdAt: DateTime.now(),
@@ -184,7 +184,7 @@ void main() {
 
     test('save location with optional fields as null', () async {
       // Arrange
-      final location = Location(
+      final location = domain.Location(
         id: 'location_1',
         name: 'Minimal Location',
         createdAt: DateTime.now(),
@@ -205,7 +205,7 @@ void main() {
 
     test('watchAll emits updates when locations change', () async {
       // Arrange
-      final location = Location(
+      final location = domain.Location(
         id: 'location_1',
         name: 'Test Location',
         createdAt: DateTime.now(),
@@ -213,7 +213,7 @@ void main() {
 
       // Act
       final stream = repository.watchAll();
-      final emittedValues = <List<Location>>[];
+      final emittedValues = <List<domain.Location>>[];
 
       final subscription = stream.listen(emittedValues.add);
 
