@@ -567,7 +567,7 @@ class _CreateRecurrenceDialogState extends State<_CreateRecurrenceDialog> {
               frequency: _frequency,
               interval: _interval,
               byWeekDay: _frequency == RecurrenceFrequency.weekly && _selectedWeekDays.isNotEmpty
-                  ? _selectedWeekDays..sort()
+                  ? (List<int>.from(_selectedWeekDays)..sort())
                   : null,
               endType: _endType,
               endDate: _endType == RecurrenceEndType.onDate ? _endDate : null,
