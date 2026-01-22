@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../providers/settings_providers.dart';
 
 /// Screen for managing user preferences and settings
 class SettingsScreen extends ConsumerWidget {
@@ -8,6 +9,9 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider);
+    final settingsNotifier = ref.read(settingsProvider.notifier);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -24,22 +28,22 @@ class SettingsScreen extends ConsumerWidget {
             context: context,
             icon: Icons.schedule,
             title: 'Time Slot Duration',
-            subtitle: '15 minutes',
-            onTap: () => _showTimeSlotDurationDialog(context),
+            subtitle: settings.timeSlotDurationLabel,
+            onTap: () => _showTimeSlotDurationDialog(context, ref, settings.timeSlotDuration),
           ),
           _buildSettingsTile(
             context: context,
             icon: Icons.work_outline,
             title: 'Work Hours',
-            subtitle: '9:00 AM - 5:00 PM',
+            subtitle: settings.workHoursLabel,
             onTap: () => _showWorkHoursDialog(context),
           ),
           _buildSettingsTile(
             context: context,
             icon: Icons.calendar_today,
             title: 'First Day of Week',
-            subtitle: 'Monday',
-            onTap: () => _showFirstDayOfWeekDialog(context),
+            subtitle: settings.firstDayOfWeekLabel,
+            onTap: () => _showFirstDayOfWeekDialog(context, ref, settings.firstDayOfWeek),
           ),
 
           const Divider(),
@@ -50,17 +54,17 @@ class SettingsScreen extends ConsumerWidget {
             context: context,
             icon: Icons.timer,
             title: 'Default Event Duration',
-            subtitle: '1 hour',
-            onTap: () => _showDefaultDurationDialog(context),
+            subtitle: settings.defaultEventDurationLabel,
+            onTap: () => _showDefaultDurationDialog(context, ref, settings.defaultEventDuration),
           ),
           _buildSwitchTile(
             context: context,
             icon: Icons.open_with,
             title: 'Events Movable by Default',
             subtitle: 'Allow app to reschedule events',
-            value: true,
+            value: settings.eventsMovableByDefault,
             onChanged: (value) {
-              // TODO: Save preference
+              settingsNotifier.setEventsMovableByDefault(value);
             },
           ),
           _buildSwitchTile(
@@ -68,9 +72,9 @@ class SettingsScreen extends ConsumerWidget {
             icon: Icons.aspect_ratio,
             title: 'Events Resizable by Default',
             subtitle: 'Allow app to adjust event duration',
-            value: true,
+            value: settings.eventsResizableByDefault,
             onChanged: (value) {
-              // TODO: Save preference
+              settingsNotifier.setEventsResizableByDefault(value);
             },
           ),
 
@@ -83,26 +87,26 @@ class SettingsScreen extends ConsumerWidget {
             icon: Icons.notifications,
             title: 'Event Reminders',
             subtitle: 'Get notified before events',
-            value: true,
+            value: settings.eventRemindersEnabled,
             onChanged: (value) {
-              // TODO: Save preference
+              settingsNotifier.setEventRemindersEnabled(value);
             },
           ),
           _buildSettingsTile(
             context: context,
             icon: Icons.access_time,
             title: 'Default Reminder Time',
-            subtitle: '15 minutes before',
-            onTap: () => _showReminderTimeDialog(context),
+            subtitle: settings.defaultReminderLabel,
+            onTap: () => _showReminderTimeDialog(context, ref, settings.defaultReminderMinutes),
           ),
           _buildSwitchTile(
             context: context,
             icon: Icons.warning_amber,
             title: 'Goal Progress Alerts',
             subtitle: 'Notify when goals are at risk',
-            value: true,
+            value: settings.goalAlertsEnabled,
             onChanged: (value) {
-              // TODO: Save preference
+              settingsNotifier.setGoalAlertsEnabled(value);
             },
           ),
 
@@ -114,8 +118,8 @@ class SettingsScreen extends ConsumerWidget {
             context: context,
             icon: Icons.palette,
             title: 'Theme',
-            subtitle: 'System default',
-            onTap: () => _showThemeDialog(context),
+            subtitle: settings.themeModeLabel,
+            onTap: () => _showThemeDialog(context, ref, settings.themeMode),
           ),
 
           const Divider(),
@@ -200,20 +204,49 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  void _showTimeSlotDurationDialog(BuildContext context) {
-    showDialog(
+  void _showTimeSlotDurationDialog(BuildContext context, WidgetRef ref, int currentValue) async {
+    final options = [
+      (5, '5 minutes'),
+      (10, '10 minutes'),
+      (15, '15 minutes'),
+      (30, '30 minutes'),
+      (60, '1 hour'),
+    ];
+
+    final result = await showDialog<int>(
       context: context,
       builder: (context) => SimpleDialog(
         title: const Text('Time Slot Duration'),
-        children: [
-          _buildRadioOption(context, '5 minutes', false),
-          _buildRadioOption(context, '10 minutes', false),
-          _buildRadioOption(context, '15 minutes', true),
-          _buildRadioOption(context, '30 minutes', false),
-          _buildRadioOption(context, '1 hour', false),
-        ],
+        children: options.map((option) {
+          return SimpleDialogOption(
+            onPressed: () => Navigator.of(context).pop(option.$1),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: option.$1 == currentValue
+                      ? Icon(
+                          Icons.check_circle,
+                          color: Theme.of(context).colorScheme.primary,
+                        )
+                      : Icon(
+                          Icons.radio_button_unchecked,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                ),
+                const SizedBox(width: 12),
+                Text(option.$2),
+              ],
+            ),
+          );
+        }).toList(),
       ),
     );
+
+    if (result != null) {
+      ref.read(settingsProvider.notifier).setTimeSlotDuration(result);
+    }
   }
 
   void _showWorkHoursDialog(BuildContext context) {
@@ -239,91 +272,179 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  void _showFirstDayOfWeekDialog(BuildContext context) {
-    showDialog(
+  void _showFirstDayOfWeekDialog(BuildContext context, WidgetRef ref, int currentValue) async {
+    final options = [
+      (7, 'Sunday'),
+      (1, 'Monday'),
+      (6, 'Saturday'),
+    ];
+
+    final result = await showDialog<int>(
       context: context,
       builder: (context) => SimpleDialog(
         title: const Text('First Day of Week'),
-        children: [
-          _buildRadioOption(context, 'Sunday', false),
-          _buildRadioOption(context, 'Monday', true),
-          _buildRadioOption(context, 'Saturday', false),
-        ],
+        children: options.map((option) {
+          return SimpleDialogOption(
+            onPressed: () => Navigator.of(context).pop(option.$1),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: option.$1 == currentValue
+                      ? Icon(
+                          Icons.check_circle,
+                          color: Theme.of(context).colorScheme.primary,
+                        )
+                      : Icon(
+                          Icons.radio_button_unchecked,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                ),
+                const SizedBox(width: 12),
+                Text(option.$2),
+              ],
+            ),
+          );
+        }).toList(),
       ),
     );
+
+    if (result != null) {
+      ref.read(settingsProvider.notifier).setFirstDayOfWeek(result);
+    }
   }
 
-  void _showDefaultDurationDialog(BuildContext context) {
-    showDialog(
+  void _showDefaultDurationDialog(BuildContext context, WidgetRef ref, int currentValue) async {
+    final options = [
+      (15, '15 minutes'),
+      (30, '30 minutes'),
+      (60, '1 hour'),
+      (120, '2 hours'),
+    ];
+
+    final result = await showDialog<int>(
       context: context,
       builder: (context) => SimpleDialog(
         title: const Text('Default Event Duration'),
-        children: [
-          _buildRadioOption(context, '15 minutes', false),
-          _buildRadioOption(context, '30 minutes', false),
-          _buildRadioOption(context, '1 hour', true),
-          _buildRadioOption(context, '2 hours', false),
-        ],
+        children: options.map((option) {
+          return SimpleDialogOption(
+            onPressed: () => Navigator.of(context).pop(option.$1),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: option.$1 == currentValue
+                      ? Icon(
+                          Icons.check_circle,
+                          color: Theme.of(context).colorScheme.primary,
+                        )
+                      : Icon(
+                          Icons.radio_button_unchecked,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                ),
+                const SizedBox(width: 12),
+                Text(option.$2),
+              ],
+            ),
+          );
+        }).toList(),
       ),
     );
+
+    if (result != null) {
+      ref.read(settingsProvider.notifier).setDefaultEventDuration(result);
+    }
   }
 
-  void _showReminderTimeDialog(BuildContext context) {
-    showDialog(
+  void _showReminderTimeDialog(BuildContext context, WidgetRef ref, int currentValue) async {
+    final options = [
+      (0, 'At time of event'),
+      (5, '5 minutes before'),
+      (15, '15 minutes before'),
+      (30, '30 minutes before'),
+      (60, '1 hour before'),
+      (1440, '1 day before'),
+    ];
+
+    final result = await showDialog<int>(
       context: context,
       builder: (context) => SimpleDialog(
         title: const Text('Default Reminder Time'),
-        children: [
-          _buildRadioOption(context, 'At time of event', false),
-          _buildRadioOption(context, '5 minutes before', false),
-          _buildRadioOption(context, '15 minutes before', true),
-          _buildRadioOption(context, '30 minutes before', false),
-          _buildRadioOption(context, '1 hour before', false),
-          _buildRadioOption(context, '1 day before', false),
-        ],
+        children: options.map((option) {
+          return SimpleDialogOption(
+            onPressed: () => Navigator.of(context).pop(option.$1),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: option.$1 == currentValue
+                      ? Icon(
+                          Icons.check_circle,
+                          color: Theme.of(context).colorScheme.primary,
+                        )
+                      : Icon(
+                          Icons.radio_button_unchecked,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                ),
+                const SizedBox(width: 12),
+                Text(option.$2),
+              ],
+            ),
+          );
+        }).toList(),
       ),
     );
+
+    if (result != null) {
+      ref.read(settingsProvider.notifier).setDefaultReminderMinutes(result);
+    }
   }
 
-  void _showThemeDialog(BuildContext context) {
-    showDialog(
+  void _showThemeDialog(BuildContext context, WidgetRef ref, String currentValue) async {
+    final options = [
+      ('system', 'System default'),
+      ('light', 'Light'),
+      ('dark', 'Dark'),
+    ];
+
+    final result = await showDialog<String>(
       context: context,
       builder: (context) => SimpleDialog(
         title: const Text('Theme'),
-        children: [
-          _buildRadioOption(context, 'System default', true),
-          _buildRadioOption(context, 'Light', false),
-          _buildRadioOption(context, 'Dark', false),
-        ],
+        children: options.map((option) {
+          return SimpleDialogOption(
+            onPressed: () => Navigator.of(context).pop(option.$1),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: option.$1 == currentValue
+                      ? Icon(
+                          Icons.check_circle,
+                          color: Theme.of(context).colorScheme.primary,
+                        )
+                      : Icon(
+                          Icons.radio_button_unchecked,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                ),
+                const SizedBox(width: 12),
+                Text(option.$2),
+              ],
+            ),
+          );
+        }).toList(),
       ),
     );
-  }
 
-  Widget _buildRadioOption(BuildContext context, String label, bool selected) {
-    return SimpleDialogOption(
-      onPressed: () {
-        Navigator.of(context).pop(label);
-        // TODO: Save the selection when persistence is added
-      },
-      child: Row(
-        children: [
-          SizedBox(
-            width: 24,
-            height: 24,
-            child: selected
-                ? Icon(
-                    Icons.check_circle,
-                    color: Theme.of(context).colorScheme.primary,
-                  )
-                : Icon(
-                    Icons.radio_button_unchecked,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-          ),
-          const SizedBox(width: 12),
-          Text(label),
-        ],
-      ),
-    );
+    if (result != null) {
+      ref.read(settingsProvider.notifier).setThemeMode(result);
+    }
   }
 }
