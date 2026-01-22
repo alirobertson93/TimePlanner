@@ -5,8 +5,19 @@ import '../../domain/enums/event_status.dart';
 import '../../domain/enums/timing_type.dart';
 import '../database/app_database.dart';
 
+/// Interface for event repository operations
+abstract class IEventRepository {
+  Future<List<domain.Event>> getEventsInRange(DateTime start, DateTime end);
+  Future<domain.Event?> getById(String id);
+  Future<void> save(domain.Event event);
+  Future<void> delete(String id);
+  Future<List<domain.Event>> getAll();
+  Future<List<domain.Event>> getByCategory(String categoryId);
+  Future<List<domain.Event>> getByStatus(EventStatus status);
+}
+
 /// Repository for managing events in the database
-class EventRepository {
+class EventRepository implements IEventRepository {
   EventRepository(this._db);
 
   final AppDatabase _db;
@@ -119,8 +130,16 @@ class EventRepository {
   }
 }
 
+/// Interface for category repository operations
+abstract class ICategoryRepository {
+  Future<List<domain.Category>> getAll();
+  Future<domain.Category?> getById(String id);
+  Future<void> save(domain.Category category);
+  Future<void> delete(String id);
+}
+
 /// Repository for managing categories in the database
-class CategoryRepository {
+class CategoryRepository implements ICategoryRepository {
   CategoryRepository(this._db);
 
   final AppDatabase _db;

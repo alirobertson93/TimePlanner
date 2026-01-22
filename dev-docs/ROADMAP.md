@@ -341,10 +341,14 @@ This document is the single source of truth for the project's current status, co
 
 **Goals**:
 - Add recurring event support ✅ (Complete)
-- Implement notifications 🟡 (Data Layer + UI Complete)
+- Implement notifications 🟡 (Data Layer + UI Complete, System Notifications Pending)
 - Create settings/preferences screen ✅ (Complete)
 - Add travel time calculations (deferred from Phase 6)
 - Enable relationship goal tracking (deferred from Phase 6)
+
+**Notifications Clarification**:
+- ✅ **In-app notifications**: Complete (data layer, UI, notification center, badge system)
+- ⏳ **System push notifications**: Pending (flutter_local_notifications integration needed for OS-level alerts)
 
 **What's Working**:
 - ✅ Settings Screen UI implemented

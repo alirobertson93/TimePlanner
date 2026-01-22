@@ -457,6 +457,8 @@ class ScheduledEvents extends Table {
 
 App configuration and user preferences.
 
+> **Note**: User settings are currently stored via `SharedPreferences` (not a database table) for simple key-value persistence. See `lib/presentation/providers/settings_providers.dart`. This table specification is reserved for future complex preferences that may require relational storage.
+
 ```dart
 class UserSettings extends Table {
   TextColumn get key => text()();

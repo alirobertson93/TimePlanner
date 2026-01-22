@@ -4,8 +4,18 @@ import '../../domain/entities/recurrence_rule.dart' as domain;
 import '../../domain/enums/recurrence_frequency.dart';
 import '../../domain/enums/recurrence_end_type.dart';
 
+/// Interface for recurrence rule repository operations
+abstract class IRecurrenceRuleRepository {
+  Future<List<domain.RecurrenceRule>> getAll();
+  Future<domain.RecurrenceRule?> getById(String id);
+  Future<void> save(domain.RecurrenceRule rule);
+  Future<void> delete(String id);
+  Stream<List<domain.RecurrenceRule>> watchAll();
+  Future<List<domain.RecurrenceRule>> getByFrequency(RecurrenceFrequency frequency);
+}
+
 /// Repository for managing recurrence rules
-class RecurrenceRuleRepository {
+class RecurrenceRuleRepository implements IRecurrenceRuleRepository {
   final AppDatabase _db;
 
   RecurrenceRuleRepository(this._db);

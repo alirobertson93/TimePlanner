@@ -2,8 +2,18 @@ import 'package:drift/drift.dart';
 import '../../domain/entities/location.dart' as domain;
 import '../database/app_database.dart';
 
+/// Interface for location repository operations
+abstract class ILocationRepository {
+  Future<List<domain.Location>> getAll();
+  Future<domain.Location?> getById(String id);
+  Future<void> save(domain.Location location);
+  Future<void> delete(String id);
+  Future<List<domain.Location>> searchByName(String nameQuery);
+  Stream<List<domain.Location>> watchAll();
+}
+
 /// Repository for managing locations in the database
-class LocationRepository {
+class LocationRepository implements ILocationRepository {
   LocationRepository(this._db);
 
   final AppDatabase _db;

@@ -2,8 +2,18 @@ import 'package:drift/drift.dart';
 import '../../domain/entities/person.dart' as domain;
 import '../database/app_database.dart';
 
+/// Interface for person repository operations
+abstract class IPersonRepository {
+  Future<List<domain.Person>> getAll();
+  Future<domain.Person?> getById(String id);
+  Future<void> save(domain.Person person);
+  Future<void> delete(String id);
+  Future<List<domain.Person>> searchByName(String nameQuery);
+  Stream<List<domain.Person>> watchAll();
+}
+
 /// Repository for managing people in the database
-class PersonRepository {
+class PersonRepository implements IPersonRepository {
   PersonRepository(this._db);
 
   final AppDatabase _db;

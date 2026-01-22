@@ -22,7 +22,8 @@ class ColorUtils {
     try {
       final cleanHex = hexString.replaceFirst('#', '');
       return Color(int.parse('0xFF$cleanHex'));
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Invalid color format: $e');
       return defaultColor;
     }
   }

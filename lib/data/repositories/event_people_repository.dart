@@ -2,8 +2,18 @@ import 'package:drift/drift.dart';
 import '../../domain/entities/person.dart' as domain;
 import '../database/app_database.dart';
 
+/// Interface for event-people repository operations
+abstract class IEventPeopleRepository {
+  Future<List<domain.Person>> getPeopleForEvent(String eventId);
+  Future<List<String>> getEventIdsForPerson(String personId);
+  Future<void> addPersonToEvent({required String eventId, required String personId});
+  Future<void> removePersonFromEvent({required String eventId, required String personId});
+  Future<void> setPeopleForEvent({required String eventId, required List<String> personIds});
+  Stream<List<domain.Person>> watchPeopleForEvent(String eventId);
+}
+
 /// Repository for managing event-person associations
-class EventPeopleRepository {
+class EventPeopleRepository implements IEventPeopleRepository {
   EventPeopleRepository(this._db);
 
   final AppDatabase _db;

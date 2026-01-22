@@ -651,6 +651,8 @@ class GoalCalculator {
 
 ## Plan Variation Generation
 
+> ⚠️ **Planned - Not Implemented**: This feature is designed but not yet implemented in the codebase. The current Planning Wizard allows selecting a single strategy; multi-variation generation is planned for a future release.
+
 Generate multiple schedule variations:
 
 ```dart
