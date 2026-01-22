@@ -85,6 +85,11 @@ class NotificationRepository {
     await (_db.delete(_db.notifications)..where((t) => t.id.equals(id))).go();
   }
 
+  /// Delete all notifications
+  Future<void> deleteAll() async {
+    await _db.delete(_db.notifications).go();
+  }
+
   /// Delete all notifications for an event
   Future<void> deleteByEventId(String eventId) async {
     await (_db.delete(_db.notifications)..where((t) => t.eventId.equals(eventId))).go();

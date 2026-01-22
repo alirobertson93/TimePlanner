@@ -12,6 +12,12 @@ import '../../providers/repository_providers.dart';
 class NotificationsScreen extends ConsumerWidget {
   const NotificationsScreen({super.key});
 
+  /// Helper method to refresh notification providers
+  void _refreshNotifications(WidgetRef ref) {
+    ref.invalidate(watchAllNotificationsProvider);
+    ref.invalidate(unreadCountProvider);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final notificationsAsync = ref.watch(watchAllNotificationsProvider);
@@ -203,8 +209,7 @@ class NotificationsScreen extends ConsumerWidget {
       ),
       onDismissed: (_) async {
         await ref.read(notificationRepositoryProvider).delete(notification.id);
-        ref.invalidate(watchAllNotificationsProvider);
-        ref.invalidate(unreadCountProvider);
+        _refreshNotifications(ref);
       },
       child: ListTile(
         leading: _buildNotificationIcon(notification),
@@ -294,8 +299,7 @@ class NotificationsScreen extends ConsumerWidget {
     if (notification.status == NotificationStatus.delivered ||
         notification.status == NotificationStatus.pending) {
       await ref.read(notificationRepositoryProvider).markRead(notification.id);
-      ref.invalidate(watchAllNotificationsProvider);
-      ref.invalidate(unreadCountProvider);
+      _refreshNotifications(ref);
     }
 
     // Navigate based on notification type
@@ -314,8 +318,7 @@ class NotificationsScreen extends ConsumerWidget {
 
   Future<void> _markAllAsRead(WidgetRef ref) async {
     await ref.read(notificationRepositoryProvider).markAllRead();
-    ref.invalidate(watchAllNotificationsProvider);
-    ref.invalidate(unreadCountProvider);
+    _refreshNotifications(ref);
   }
 
   Future<void> _showClearAllDialog(BuildContext context, WidgetRef ref) async {
@@ -340,13 +343,8 @@ class NotificationsScreen extends ConsumerWidget {
     );
 
     if (confirmed == true) {
-      final repository = ref.read(notificationRepositoryProvider);
-      final allNotifications = await repository.getAll();
-      for (final notification in allNotifications) {
-        await repository.delete(notification.id);
-      }
-      ref.invalidate(watchAllNotificationsProvider);
-      ref.invalidate(unreadCountProvider);
+      await ref.read(notificationRepositoryProvider).deleteAll();
+      _refreshNotifications(ref);
     }
   }
 }
