@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:drift/native.dart';
-import 'package:time_planner/data/database/app_database.dart';
+import 'package:time_planner/data/database/app_database.dart'
+    hide RecurrenceRule;
 import 'package:time_planner/data/repositories/recurrence_rule_repository.dart';
 import 'package:time_planner/domain/entities/recurrence_rule.dart';
 import 'package:time_planner/domain/enums/recurrence_frequency.dart';
@@ -171,8 +172,10 @@ void main() {
       await repository.save(monthlyRule);
 
       // Act
-      final dailyRules = await repository.getByFrequency(RecurrenceFrequency.daily);
-      final weeklyRules = await repository.getByFrequency(RecurrenceFrequency.weekly);
+      final dailyRules =
+          await repository.getByFrequency(RecurrenceFrequency.daily);
+      final weeklyRules =
+          await repository.getByFrequency(RecurrenceFrequency.weekly);
 
       // Assert
       expect(dailyRules.length, equals(1));
