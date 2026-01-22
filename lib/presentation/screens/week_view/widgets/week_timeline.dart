@@ -202,15 +202,28 @@ class _WeekEventBlock extends ConsumerWidget {
             borderRadius: BorderRadius.circular(4),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
-          child: Text(
-            event.name,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 9,
-              fontWeight: FontWeight.w500,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  event.name,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              if (event.isRecurring)
+                const Icon(
+                  Icons.repeat,
+                  size: 10,
+                  color: Colors.white70,
+                ),
+            ],
           ),
         ),
       ),
