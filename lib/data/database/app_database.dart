@@ -28,7 +28,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration {
@@ -53,6 +53,10 @@ class AppDatabase extends _$AppDatabase {
         // Migration from version 4 to 5: Add Locations table
         if (from <= 4) {
           await m.createTable(locations);
+        }
+        // Migration from version 5 to 6: Add locationId column to Events table
+        if (from <= 5) {
+          await m.addColumn(events, events.locationId);
         }
       },
     );

@@ -33,6 +33,60 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-22 - Dev Docs Compliance Check and CI Fix
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Analyze dev docs, ensure code compliance with architecture principles, and fix any issues
+
+**Work Completed**:
+- ✅ Reviewed architecture documentation and principles
+  - Verified ARCHITECTURE.md defines clean architecture pattern
+  - Verified layer separation rules (Core → Domain → Data → Scheduler → Presentation)
+  - Confirmed anti-patterns to avoid
+- ✅ Verified layer separation compliance
+  - Scheduler has no Flutter imports (pure Dart) ✓
+  - Domain has no presentation imports ✓
+  - Scheduler has no data imports ✓
+  - Domain has no presentation imports ✓
+- ✅ Identified and fixed CI failures
+  - Fixed location_repository.dart: Changed `LocationData` to `Location` (the drift-generated class name)
+  - Fixed event_form_providers.dart: Changed positional arguments to named arguments for `setPeopleForEvent` call
+  - Fixed people_picker.dart: Corrected import paths from `../../providers/` to `../providers/`
+  - Fixed location_repository_test.dart: Added `domain.` prefix to resolve name collision with drift's `Location`
+  - Fixed event_people_repository_test.dart: Added `domain.` prefix to resolve name collision with drift's `Event`
+- ✅ Verified documentation suite compliance
+  - ROADMAP.md contains current project status
+  - CHANGELOG.md contains session logs
+  - Architecture documentation is being followed
+
+**Technical Decisions**:
+- Used import aliasing (`as domain`) in test files to resolve name collisions between domain entities and drift-generated database classes
+- This follows the same pattern used in repository implementations (e.g., `import '../../domain/entities/location.dart' as domain;`)
+
+**Files Modified**:
+- lib/data/repositories/location_repository.dart - Fixed `_mapToEntity` parameter type
+- lib/presentation/providers/event_form_providers.dart - Fixed named parameters for `setPeopleForEvent`
+- lib/presentation/widgets/people_picker.dart - Fixed import paths
+- test/repositories/location_repository_test.dart - Added domain. alias
+- test/repositories/event_people_repository_test.dart - Added domain. alias
+- dev-docs/CHANGELOG.md - Added this session entry
+
+**Architecture Compliance Summary**:
+- ✅ Core principles (Pure Dart Scheduler, Repositories as Persistence Boundary, Riverpod for Composition, Thin UI Layer) are being followed
+- ✅ Folder structure matches ARCHITECTURE.md specification
+- ✅ Layer dependencies are correct (no anti-patterns found)
+- ✅ File naming conventions are consistent
+
+**Next Steps**:
+1. CI should pass after these fixes
+2. Continue with Phase 6 development per ROADMAP.md:
+   - Create LocationPicker widget for Event Form integration
+   - Integrate LocationPicker into Event Form
+3. Keep CHANGELOG.md and ROADMAP.md up to date
+
+---
+
 ### Session: 2026-01-21 - Phase 6: Location Management Implementation
 
 **Author**: AI Assistant (GitHub Copilot)

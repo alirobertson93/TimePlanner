@@ -14,6 +14,7 @@ class EventFormState {
     this.title = '',
     this.description = '',
     this.categoryId,
+    this.locationId,
     this.timingType = TimingType.fixed,
     this.startDate,
     this.startTime,
@@ -31,6 +32,7 @@ class EventFormState {
   final String title;
   final String description;
   final String? categoryId;
+  final String? locationId;
   final TimingType timingType;
   final DateTime? startDate;
   final TimeOfDay? startTime;
@@ -48,6 +50,7 @@ class EventFormState {
     String? title,
     String? description,
     String? categoryId,
+    String? locationId,
     TimingType? timingType,
     DateTime? startDate,
     TimeOfDay? startTime,
@@ -65,6 +68,7 @@ class EventFormState {
       title: title ?? this.title,
       description: description ?? this.description,
       categoryId: categoryId ?? this.categoryId,
+      locationId: locationId ?? this.locationId,
       timingType: timingType ?? this.timingType,
       startDate: startDate ?? this.startDate,
       startTime: startTime ?? this.startTime,
@@ -188,6 +192,7 @@ class EventForm extends _$EventForm {
       title: event.name,
       description: event.description ?? '',
       categoryId: event.categoryId,
+      locationId: event.locationId,
       timingType: event.timingType,
       startDate: event.startTime,
       startTime: event.startTime != null
@@ -249,6 +254,10 @@ class EventForm extends _$EventForm {
     state = state.copyWith(selectedPeopleIds: peopleIds);
   }
 
+  void updateLocation(String? locationId) {
+    state = state.copyWith(locationId: locationId);
+  }
+
   /// Save the event
   Future<bool> save() async {
     final validationError = state.validate();
@@ -302,6 +311,7 @@ class EventForm extends _$EventForm {
             ? Duration(hours: state.durationHours, minutes: state.durationMinutes)
             : null,
         categoryId: state.categoryId,
+        locationId: state.locationId,
         status: EventStatus.pending,
         createdAt: createdAt,
         updatedAt: now,
