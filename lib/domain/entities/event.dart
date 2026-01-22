@@ -12,6 +12,7 @@ class Event {
     this.endTime,
     this.duration,
     this.categoryId,
+    this.locationId,
     this.appCanMove = true,
     this.appCanResize = true,
     this.isUserLocked = false,
@@ -28,6 +29,7 @@ class Event {
   final DateTime? endTime;
   final Duration? duration;
   final String? categoryId;
+  final String? locationId;
   final bool appCanMove;
   final bool appCanResize;
   final bool isUserLocked;
@@ -65,6 +67,7 @@ class Event {
     DateTime? endTime,
     Duration? duration,
     String? categoryId,
+    String? locationId,
     bool? appCanMove,
     bool? appCanResize,
     bool? isUserLocked,
@@ -81,6 +84,7 @@ class Event {
       endTime: endTime ?? this.endTime,
       duration: duration ?? this.duration,
       categoryId: categoryId ?? this.categoryId,
+      locationId: locationId ?? this.locationId,
       appCanMove: appCanMove ?? this.appCanMove,
       appCanResize: appCanResize ?? this.appCanResize,
       isUserLocked: isUserLocked ?? this.isUserLocked,
@@ -103,6 +107,7 @@ class Event {
         other.endTime == endTime &&
         other.duration == duration &&
         other.categoryId == categoryId &&
+        other.locationId == locationId &&
         other.appCanMove == appCanMove &&
         other.appCanResize == appCanResize &&
         other.isUserLocked == isUserLocked &&
@@ -122,6 +127,7 @@ class Event {
       endTime,
       duration,
       categoryId,
+      locationId,
       appCanMove,
       appCanResize,
       isUserLocked,

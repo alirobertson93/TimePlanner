@@ -85,6 +85,7 @@ class EventRepository {
           ? Duration(minutes: dbEvent.durationMinutes!)
           : null,
       categoryId: dbEvent.categoryId,
+      locationId: dbEvent.locationId,
       appCanMove: dbEvent.appCanMove,
       appCanResize: dbEvent.appCanResize,
       isUserLocked: dbEvent.isUserLocked,
@@ -105,6 +106,7 @@ class EventRepository {
       fixedEndTime: Value(event.endTime),
       durationMinutes: Value(event.duration?.inMinutes),
       categoryId: Value(event.categoryId),
+      locationId: Value(event.locationId),
       appCanMove: Value(event.appCanMove),
       appCanResize: Value(event.appCanResize),
       isUserLocked: Value(event.isUserLocked),

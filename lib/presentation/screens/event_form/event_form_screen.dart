@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../providers/event_form_providers.dart' as form_providers;
 import '../../providers/repository_providers.dart';
 import '../../widgets/people_picker.dart';
+import '../../widgets/location_picker.dart';
 import '../../../domain/enums/timing_type.dart';
 
 // Type aliases for clarity
@@ -424,6 +425,24 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
           PeoplePicker(
             selectedPeopleIds: formState.selectedPeopleIds,
             onPeopleChanged: formNotifier.updateSelectedPeople,
+          ),
+
+          const SizedBox(height: 32),
+
+          // Location Section
+          Text(
+            'Location',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+          ),
+          const Divider(height: 16),
+          const SizedBox(height: 16),
+
+          // Location Picker
+          LocationPicker(
+            selectedLocationId: formState.locationId,
+            onLocationChanged: formNotifier.updateLocation,
           ),
         ],
       ),

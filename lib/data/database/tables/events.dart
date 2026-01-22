@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import '../../../domain/enums/event_status.dart';
 import '../../../domain/enums/timing_type.dart';
 import 'categories.dart';
+import 'locations.dart';
 
 /// Events table definition
 class Events extends Table {
@@ -14,6 +15,8 @@ class Events extends Table {
   IntColumn get durationMinutes => integer().nullable()();
   TextColumn get categoryId =>
       text().nullable().references(Categories, #id)();
+  TextColumn get locationId =>
+      text().nullable().references(Locations, #id)();
   BoolColumn get appCanMove => boolean().withDefault(const Constant(true))();
   BoolColumn get appCanResize =>
       boolean().withDefault(const Constant(true))();

@@ -33,6 +33,77 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-22 - Dev Docs Compliance Check and CI Fix
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Analyze dev docs, ensure code compliance with architecture principles, and fix any issues
+
+**Work Completed**:
+- ✅ Reviewed architecture documentation and principles
+  - Verified ARCHITECTURE.md defines clean architecture pattern
+  - Verified layer separation rules (Core → Domain → Data → Scheduler → Presentation)
+  - Confirmed anti-patterns to avoid
+- ✅ Verified layer separation compliance
+  - Scheduler has no Flutter imports (pure Dart) ✓
+  - Domain has no presentation imports ✓
+  - Scheduler has no data imports ✓
+  - Domain has no presentation imports ✓
+- ✅ Identified and fixed CI failures
+  - Fixed location_repository.dart: Changed `LocationData` to `Location` (the drift-generated class name)
+  - Fixed event_form_providers.dart: Changed positional arguments to named arguments for `setPeopleForEvent` call
+  - Fixed people_picker.dart: Corrected import paths from `../../providers/` to `../providers/`
+  - Fixed location_repository_test.dart: Added `domain.` prefix to resolve name collision with drift's `Location`
+  - Fixed event_people_repository_test.dart: Added `domain.` prefix to resolve name collision with drift's `Event`
+- ✅ Verified documentation suite compliance
+  - ROADMAP.md contains current project status
+  - CHANGELOG.md contains session logs
+  - Architecture documentation is being followed
+- ✅ Continued Phase 6 development
+  - Created LocationPicker widget following PeoplePicker pattern
+  - Added locationId column to Events table (schema v5 → v6)
+  - Updated Event entity with locationId field
+  - Updated EventRepository mappers for locationId
+  - Updated EventFormState and EventForm provider for location support
+  - Integrated LocationPicker into Event Form screen
+  - Updated ROADMAP.md to reflect Phase 6 at 95% complete
+
+**Technical Decisions**:
+- Used import aliasing (`as domain`) in test files to resolve name collisions between domain entities and drift-generated database classes
+- Added locationId directly to Events table (not junction table) since events typically have ONE location
+- LocationPicker uses same pattern as PeoplePicker for consistency
+- Empty string result from LocationPicker bottom sheet indicates explicit clear (user tapped "Clear" button)
+
+**Files Added**:
+- lib/presentation/widgets/location_picker.dart
+
+**Files Modified**:
+- lib/data/repositories/location_repository.dart - Fixed `_mapToEntity` parameter type
+- lib/presentation/providers/event_form_providers.dart - Added locationId support, fixed named parameters
+- lib/presentation/widgets/people_picker.dart - Fixed import paths
+- lib/presentation/screens/event_form/event_form_screen.dart - Added LocationPicker integration
+- lib/domain/entities/event.dart - Added locationId field
+- lib/data/database/tables/events.dart - Added locationId column
+- lib/data/database/app_database.dart - Added migration v5→v6
+- lib/data/repositories/event_repository.dart - Added locationId to mappers
+- test/repositories/location_repository_test.dart - Added domain. alias
+- test/repositories/event_people_repository_test.dart - Added domain. alias
+- dev-docs/CHANGELOG.md - Added this session entry
+- dev-docs/ROADMAP.md - Updated Phase 6 status to 95%
+
+**Architecture Compliance Summary**:
+- ✅ Core principles (Pure Dart Scheduler, Repositories as Persistence Boundary, Riverpod for Composition, Thin UI Layer) are being followed
+- ✅ Folder structure matches ARCHITECTURE.md specification
+- ✅ Layer dependencies are correct (no anti-patterns found)
+- ✅ File naming conventions are consistent
+
+**Next Steps**:
+1. Run build_runner to generate database and provider code
+2. Test Location Picker functionality in Event Form
+3. Consider Travel Time and Relationship Goals (optional Phase 6 features)
+
+---
+
 ### Session: 2026-01-21 - Phase 6: Location Management Implementation
 
 **Author**: AI Assistant (GitHub Copilot)

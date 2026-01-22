@@ -4,8 +4,8 @@ import 'package:time_planner/data/database/app_database.dart';
 import 'package:time_planner/data/repositories/event_repository.dart';
 import 'package:time_planner/data/repositories/person_repository.dart';
 import 'package:time_planner/data/repositories/event_people_repository.dart';
-import 'package:time_planner/domain/entities/event.dart';
-import 'package:time_planner/domain/entities/person.dart';
+import 'package:time_planner/domain/entities/event.dart' as domain;
+import 'package:time_planner/domain/entities/person.dart' as domain;
 import 'package:time_planner/domain/enums/timing_type.dart';
 import 'package:time_planner/domain/enums/event_status.dart';
 
@@ -28,8 +28,8 @@ void main() {
   });
 
   // Helper to create a test event
-  Event createTestEvent(String id, String name) {
-    return Event(
+  domain.Event createTestEvent(String id, String name) {
+    return domain.Event(
       id: id,
       name: name,
       timingType: TimingType.fixed,
@@ -42,8 +42,8 @@ void main() {
   }
 
   // Helper to create a test person
-  Person createTestPerson(String id, String name) {
-    return Person(
+  domain.Person createTestPerson(String id, String name) {
+    return domain.Person(
       id: id,
       name: name,
       createdAt: DateTime.now(),
@@ -248,7 +248,7 @@ void main() {
 
       // Act
       final stream = eventPeopleRepository.watchPeopleForEvent('event_1');
-      final emittedValues = <List<Person>>[];
+      final emittedValues = <List<domain.Person>>[];
 
       final subscription = stream.listen(emittedValues.add);
 

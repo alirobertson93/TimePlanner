@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
-import '../../../domain/entities/person.dart';
-import '../../providers/person_providers.dart';
-import '../../providers/repository_providers.dart';
+import '../../domain/entities/person.dart';
+import '../providers/person_providers.dart';
+import '../providers/repository_providers.dart';
 
 /// A widget for selecting people to associate with an event
 class PeoplePicker extends ConsumerStatefulWidget {
