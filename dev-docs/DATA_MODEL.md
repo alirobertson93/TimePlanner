@@ -20,7 +20,7 @@ This document defines the complete data model for TimePlanner. The database is i
 - RecurrenceRules ✅
 - Notifications ✅
 
-**Not Yet Implemented Tables** (7 total):
+**Not Yet Implemented Tables** (8 total):
 - EventConstraints ❌
 - TravelTimePairs ❌
 - EventGoals ❌
