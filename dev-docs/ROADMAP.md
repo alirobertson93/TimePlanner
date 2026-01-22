@@ -10,7 +10,7 @@ This document is the single source of truth for the project's current status, co
 
 **Overall Progress**: ~100% Core Features Complete
 
-**Active Work**: Phase 7 - Settings feature complete (UI + persistence). Next: recurrence, notifications, or travel time.
+**Active Work**: Phase 7 - Recurrence feature complete (Data Layer + UI). Next: notifications, travel time, or relationship goals.
 
 ## Completed Phases
 
@@ -337,10 +337,10 @@ This document is the single source of truth for the project's current status, co
 
 **Target**: Late development
 
-**Status**: 45% Complete
+**Status**: 60% Complete
 
 **Goals**:
-- Add recurring event support
+- Add recurring event support ✅ (Complete)
 - Implement notifications
 - Create settings/preferences screen ✅ (Complete)
 - Add travel time calculations (deferred from Phase 6)
@@ -367,9 +367,17 @@ This document is the single source of truth for the project's current status, co
   - Database migration v6 → v7
   - Repository providers for recurrence rules
   - Comprehensive repository tests
+- ✅ Recurrence UI implemented
+  - RecurrencePicker widget for Event Form
+  - Quick select patterns (daily, weekly, biweekly, monthly, yearly)
+  - Custom recurrence dialog with full configuration
+  - Week day selection for weekly patterns
+  - End conditions: never, after occurrences, on date
+  - Human-readable recurrence descriptions
+  - Event Form integration complete
 
 **Features**:
-- [x] Recurrence (Data Layer)
+- [x] Recurrence
   - [x] RecurrenceRules table
   - [x] RecurrenceRule entity
   - [x] RecurrenceRuleRepository
@@ -377,8 +385,9 @@ This document is the single source of truth for the project's current status, co
   - [x] Event entity/table with recurrenceRuleId
   - [x] Database migration
   - [x] Repository tests
-  - [ ] Recurring event UI (picker in event form)
+  - [x] Recurring event UI (RecurrencePicker in event form)
   - [ ] Exception handling for individual occurrences
+  - [ ] Display recurring indicator in event cards
 - [ ] Notifications
   - [ ] Event reminders
   - [ ] Schedule change alerts
@@ -409,6 +418,7 @@ This document is the single source of truth for the project's current status, co
 - lib/data/database/tables/recurrence_rules.dart
 - lib/data/repositories/recurrence_rule_repository.dart
 - lib/presentation/providers/recurrence_providers.dart
+- lib/presentation/widgets/recurrence_picker.dart
 - test/repositories/recurrence_rule_repository_test.dart
 
 **Key Files Modified**:
@@ -420,6 +430,8 @@ This document is the single source of truth for the project's current status, co
 - lib/domain/entities/event.dart - Added recurrenceRuleId field
 - lib/data/repositories/event_repository.dart - Updated mappers for recurrenceRuleId
 - lib/presentation/providers/repository_providers.dart - Added recurrenceRuleRepositoryProvider
+- lib/presentation/providers/event_form_providers.dart - Added recurrenceRuleId support
+- lib/presentation/screens/event_form/event_form_screen.dart - Added RecurrencePicker
 
 **Dependencies**: Phase 6 (complete)
 
@@ -473,14 +485,14 @@ This document is the single source of truth for the project's current status, co
 | **Scheduler Engine** | 🟢 Complete | 100% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption) |
 | **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button, Locations button, Settings button |
 | **Week View** | 🟢 Complete | 100% | 7-day grid, event blocks, category colors, navigation |
-| **Event Form** | 🟢 Complete | 100% | Create, edit, delete, people selection, location selection implemented |
+| **Event Form** | 🟢 Complete | 100% | Create, edit, delete, people selection, location selection, recurrence selection implemented |
 | **Planning Wizard** | 🟢 Complete | 100% | 4-step flow, schedule generation, all strategies available |
 | **Goals Dashboard** | 🟢 Complete | 100% | Progress tracking, status indicators, category grouping, goal CRUD |
 | **Goal Form** | 🟢 Complete | 100% | Create, edit, delete with validation |
 | **People Management** | 🟢 Complete | 100% | Entity, tables, repositories, providers, UI, event form integration complete |
 | **Location Management** | 🟢 Complete | 100% | Entity, table, repository, providers, UI, event form integration complete |
 | **Settings** | 🟢 Complete | 100% | UI and SharedPreferences persistence complete (Phase 7) |
-| **Recurrence** | 🟡 Partial | 60% | Data layer complete (entity, table, repository, enums, tests). UI integration pending (Phase 7) |
+| **Recurrence** | 🟢 Complete | 90% | Data layer + UI complete (entity, table, repository, enums, tests, RecurrencePicker widget). Exception handling pending. |
 | **Travel Time** | ⚪ Planned | 0% | Not started (Phase 7 - deferred from Phase 6) |
 | **Relationship Goals** | ⚪ Planned | 0% | Not started (Phase 7 - deferred from Phase 6) |
 | **Notifications** | ⚪ Planned | 0% | Not started (Phase 7) |

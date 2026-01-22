@@ -33,6 +33,59 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-22 - Recurrence UI Integration
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Analyze dev docs, verify accuracy, and implement RecurrencePicker UI for Event Form integration
+
+**Work Completed**:
+- ✅ Analyzed CHANGELOG.md and ROADMAP.md for accuracy
+  - Verified all documented features match actual codebase state
+  - Confirmed Phase 7 status (Settings + Recurrence Data Layer complete)
+- ✅ Implemented RecurrencePicker UI widget (Phase 7)
+  - Created recurrence_picker.dart with full UI functionality
+  - Quick select patterns: Daily, Weekly, Every 2 weeks, Monthly, Yearly
+  - Custom recurrence dialog with:
+    - Frequency selection (daily, weekly, monthly, yearly)
+    - Interval selection (every N days/weeks/months/years)
+    - Week day selection for weekly recurrence
+    - End type: Never, After occurrences, On date
+    - Date picker for end date
+    - Occurrences picker for count-based end
+  - Display selected recurrence with human-readable description
+  - Clear/remove recurrence option
+- ✅ Updated EventFormState with recurrenceRuleId field
+- ✅ Updated EventForm provider with updateRecurrence method
+- ✅ Integrated RecurrencePicker into Event Form screen
+  - Added Recurrence section after Location
+  - Connected to form state and provider
+- ✅ Updated save method to include recurrenceRuleId
+- ✅ Updated initializeForEdit to load existing recurrence
+
+**Technical Decisions**:
+- RecurrencePicker follows same pattern as LocationPicker for consistency
+- Quick patterns create new RecurrenceRule entities and save them to the database
+- Custom dialog allows full control over recurrence parameters
+- Used dynamic return type from bottom sheet to support both clear ('') and RecurrenceRule selection
+
+**Files Added**:
+- lib/presentation/widgets/recurrence_picker.dart
+
+**Files Modified**:
+- lib/presentation/providers/event_form_providers.dart - Added recurrenceRuleId to state, copyWith, and save
+- lib/presentation/screens/event_form/event_form_screen.dart - Added RecurrencePicker integration
+- dev-docs/ROADMAP.md - Updated Phase 7 status
+- dev-docs/CHANGELOG.md - Added this session entry
+
+**Next Steps**:
+1. Run build_runner to generate provider code
+2. Test RecurrencePicker functionality in Event Form
+3. Consider adding recurrence display in event cards/day view
+4. Continue Phase 7 with notifications or travel time
+
+---
+
 ### Session: 2026-01-22 - Recurrence Data Layer Implementation
 
 **Author**: AI Assistant (GitHub Copilot)

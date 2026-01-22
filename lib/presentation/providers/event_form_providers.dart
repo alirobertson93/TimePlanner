@@ -15,6 +15,7 @@ class EventFormState {
     this.description = '',
     this.categoryId,
     this.locationId,
+    this.recurrenceRuleId,
     this.timingType = TimingType.fixed,
     this.startDate,
     this.startTime,
@@ -33,6 +34,7 @@ class EventFormState {
   final String description;
   final String? categoryId;
   final String? locationId;
+  final String? recurrenceRuleId;
   final TimingType timingType;
   final DateTime? startDate;
   final TimeOfDay? startTime;
@@ -51,6 +53,7 @@ class EventFormState {
     String? description,
     String? categoryId,
     String? locationId,
+    String? recurrenceRuleId,
     TimingType? timingType,
     DateTime? startDate,
     TimeOfDay? startTime,
@@ -69,6 +72,7 @@ class EventFormState {
       description: description ?? this.description,
       categoryId: categoryId ?? this.categoryId,
       locationId: locationId ?? this.locationId,
+      recurrenceRuleId: recurrenceRuleId ?? this.recurrenceRuleId,
       timingType: timingType ?? this.timingType,
       startDate: startDate ?? this.startDate,
       startTime: startTime ?? this.startTime,
@@ -193,6 +197,7 @@ class EventForm extends _$EventForm {
       description: event.description ?? '',
       categoryId: event.categoryId,
       locationId: event.locationId,
+      recurrenceRuleId: event.recurrenceRuleId,
       timingType: event.timingType,
       startDate: event.startTime,
       startTime: event.startTime != null
@@ -258,6 +263,10 @@ class EventForm extends _$EventForm {
     state = state.copyWith(locationId: locationId);
   }
 
+  void updateRecurrence(String? recurrenceRuleId) {
+    state = state.copyWith(recurrenceRuleId: recurrenceRuleId);
+  }
+
   /// Save the event
   Future<bool> save() async {
     final validationError = state.validate();
@@ -312,6 +321,7 @@ class EventForm extends _$EventForm {
             : null,
         categoryId: state.categoryId,
         locationId: state.locationId,
+        recurrenceRuleId: state.recurrenceRuleId,
         status: EventStatus.pending,
         createdAt: createdAt,
         updatedAt: now,
