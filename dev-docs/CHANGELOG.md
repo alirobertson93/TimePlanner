@@ -33,6 +33,87 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-23 - Travel Time Manual Entry Feature (Phase 7)
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Implement manual travel time entry as requested by user - two methods: dedicated Locations menu and prompts on event entry
+
+**User Requirements** (from issue):
+1. **Dedicated Locations Menu**: User can manually assign travel times between two locations
+2. **Event Entry Prompt**: When consecutive events have different locations, prompt for travel time if not set
+3. **Future GPS**: Not needed now, planned for future
+
+**Work Completed**:
+- ✅ **Travel Time Data Layer**
+  - Created `TravelTimePair` domain entity
+  - Created `TravelTimePairs` database table (stores fromLocationId, toLocationId, travelTimeMinutes, updatedAt)
+  - Created `TravelTimePairRepository` with bidirectional CRUD operations
+  - Added database migration v9 → v10
+  - Added repository provider and Riverpod providers
+  - Wrote comprehensive repository tests
+
+- ✅ **Travel Time Management UI (Locations Menu)**
+  - Created `TravelTimesScreen` with full CRUD for travel times
+  - Added "Manage Travel Times" button (car icon) in Locations screen app bar
+  - Added `/travel-times` route
+  - Travel time form dialog (select from/to locations, enter minutes)
+  - List view showing all travel time pairs (grouped to avoid A→B and B→A duplicates)
+  - Edit and delete functionality with confirmation
+
+- ✅ **Travel Time Prompt Feature**
+  - Created `TravelTimePromptDialog` widget
+  - Integrated into EventFormScreen save flow
+  - After saving an event with a location, checks for consecutive events on same day
+  - If adjacent events have different locations and no travel time set, prompts user
+  - Stores bidirectionally (same time for A→B and B→A)
+
+- ✅ **Documentation**
+  - Created `dev-docs/TRAVEL_TIME_ANALYSIS.md` with analysis of existing design
+  - Updated ROADMAP.md with clarified travel time feature requirements
+  - Confirmed data model design supports manual entry (no changes needed)
+
+**Technical Decisions**:
+- Bidirectional storage: When user enters travel time for A→B, we store both A→B and B→A with same duration
+- Unique pair display: In list view, we show each location pair only once (not duplicated)
+- Non-blocking: Travel time check failures don't block event save
+- Day-based check: Only checks events on the same day as the saved event
+
+**Files Added**:
+- lib/domain/entities/travel_time_pair.dart
+- lib/data/database/tables/travel_time_pairs.dart
+- lib/data/repositories/travel_time_pair_repository.dart
+- lib/presentation/providers/travel_time_providers.dart
+- lib/presentation/screens/travel_times/travel_times_screen.dart
+- lib/presentation/widgets/travel_time_prompt.dart
+- test/repositories/travel_time_pair_repository_test.dart
+- dev-docs/TRAVEL_TIME_ANALYSIS.md
+
+**Files Modified**:
+- lib/data/database/app_database.dart - Added TravelTimePairs table, migration v9→v10
+- lib/presentation/providers/repository_providers.dart - Added travelTimePairRepositoryProvider
+- lib/presentation/screens/locations/locations_screen.dart - Added "Manage Travel Times" button
+- lib/presentation/screens/event_form/event_form_screen.dart - Added travel time prompt after save
+- lib/app/router.dart - Added /travel-times route
+- dev-docs/ROADMAP.md - Updated travel time feature status
+
+**Phase 7 Status Update**:
+- ✅ Relationship Goals - **COMPLETE**
+- ✅ Travel Time Manual Entry - **CORE COMPLETE** (scheduler integration is future work)
+- ⏳ System Notifications - Pending
+
+**What's Left for Travel Time**:
+- Scheduler integration (use stored travel times to block slots) - marked as future work
+- GPS-based estimation - explicitly marked as future enhancement
+
+**Next Steps**:
+1. Run `flutter pub run build_runner build` to generate updated code
+2. Test travel time management UI end-to-end
+3. Test event save travel time prompt flow
+4. Consider implementing System Notifications next
+
+---
+
 ### Session: 2026-01-23 - Relationship Goals Feature (Phase 7)
 
 **Author**: AI Assistant (GitHub Copilot)

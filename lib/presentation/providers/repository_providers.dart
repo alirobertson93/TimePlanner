@@ -6,6 +6,7 @@ import '../../data/repositories/event_people_repository.dart';
 import '../../data/repositories/location_repository.dart';
 import '../../data/repositories/recurrence_rule_repository.dart';
 import '../../data/repositories/notification_repository.dart';
+import '../../data/repositories/travel_time_pair_repository.dart';
 import 'database_provider.dart';
 
 /// Provider for the event repository
@@ -46,4 +47,9 @@ final recurrenceRuleRepositoryProvider = Provider<RecurrenceRuleRepository>((ref
 /// Provider for the notification repository
 final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
   return NotificationRepository(ref.watch(databaseProvider));
+});
+
+/// Provider for the travel time pair repository
+final travelTimePairRepositoryProvider = Provider<TravelTimePairRepository>((ref) {
+  return TravelTimePairRepository(ref.watch(databaseProvider));
 });

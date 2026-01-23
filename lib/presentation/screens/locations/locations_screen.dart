@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 import '../../../domain/entities/location.dart';
 import '../../providers/location_providers.dart';
@@ -23,6 +24,13 @@ class _LocationsScreenState extends ConsumerState<LocationsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Locations'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.directions_car),
+            tooltip: 'Manage Travel Times',
+            onPressed: () => context.pushNamed('travel_times'),
+          ),
+        ],
       ),
       body: Column(
         children: [

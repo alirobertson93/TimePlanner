@@ -7,6 +7,7 @@ import '../../providers/repository_providers.dart';
 import '../../widgets/people_picker.dart';
 import '../../widgets/location_picker.dart';
 import '../../widgets/recurrence_picker.dart';
+import '../../widgets/travel_time_prompt.dart';
 import '../../../domain/enums/timing_type.dart';
 
 // Type aliases for clarity
@@ -80,7 +81,18 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
                 : () async {
                     final success = await formNotifier.save();
                     if (success && context.mounted) {
-                      context.pop();
+                      // Check for missing travel times if the event has a location
+                      if (formState.locationId != null) {
+                        await _checkAndPromptForTravelTimes(
+                          context,
+                          ref,
+                          formState.locationId!,
+                          formState.startDate,
+                        );
+                      }
+                      if (context.mounted) {
+                        context.pop();
+                      }
                     }
                   },
             child: formState.isSaving
@@ -484,5 +496,69 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
       // Return default color on parse error
     }
     return Colors.grey;
+  }
+
+  /// Checks for adjacent events with different locations and prompts for travel time if needed
+  Future<void> _checkAndPromptForTravelTimes(
+    BuildContext context,
+    WidgetRef ref,
+    String currentLocationId,
+    DateTime? eventDate,
+  ) async {
+    if (eventDate == null) return;
+
+    try {
+      final eventRepo = ref.read(eventRepositoryProvider);
+      final travelTimeRepo = ref.read(travelTimePairRepositoryProvider);
+
+      // Get events for the same day (end of day is last microsecond of the day)
+      final startOfDay = DateTime(eventDate.year, eventDate.month, eventDate.day);
+      final endOfDay = startOfDay.add(const Duration(days: 1)).subtract(const Duration(microseconds: 1));
+      
+      final dayEvents = await eventRepo.getEventsInRange(startOfDay, endOfDay);
+      
+      // Filter events with locations and sort by time
+      final eventsWithLocations = dayEvents
+          .where((e) => e.locationId != null && e.startTime != null)
+          .toList()
+        ..sort((a, b) => a.startTime!.compareTo(b.startTime!));
+
+      if (eventsWithLocations.length < 2) return;
+
+      // Check for adjacent events with different locations
+      final checkedPairs = <String>{};
+      for (int i = 0; i < eventsWithLocations.length - 1; i++) {
+        final currentEvent = eventsWithLocations[i];
+        final nextEvent = eventsWithLocations[i + 1];
+
+        // Skip if same location
+        if (currentEvent.locationId == nextEvent.locationId) continue;
+
+        // Create canonical key to avoid duplicate checks
+        final ids = [currentEvent.locationId!, nextEvent.locationId!]..sort();
+        final pairKey = '${ids[0]}_${ids[1]}';
+        
+        if (checkedPairs.contains(pairKey)) continue;
+        checkedPairs.add(pairKey);
+
+        // Check if travel time exists
+        final existingTravelTime = await travelTimeRepo.getByLocationPairBidirectional(
+          currentEvent.locationId!,
+          nextEvent.locationId!,
+        );
+
+        if (existingTravelTime == null && context.mounted) {
+          // Prompt user for travel time
+          await TravelTimePromptDialog.show(
+            context: context,
+            fromLocationId: currentEvent.locationId!,
+            toLocationId: nextEvent.locationId!,
+          );
+        }
+      }
+    } catch (e) {
+      // Don't block the save operation if travel time check fails
+      debugPrint('Error checking travel times: $e');
+    }
   }
 }
