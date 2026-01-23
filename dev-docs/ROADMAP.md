@@ -12,6 +12,12 @@ This document is the single source of truth for the project's current status, co
 
 **Active Work**: Phase 8 - Onboarding ✅ Complete, Performance/Accessibility ⏳ Pending
 
+**Environment Requirements**: Phase 8 remaining work (Performance, Accessibility, Launch Prep) requires Flutter SDK for:
+- Running tests (`flutter test`)
+- Performance profiling
+- Building the app (`flutter build`)
+- Code generation (`flutter pub run build_runner`)
+
 ## Completed Phases
 
 ### Phase 1: Foundation ✅ (Complete)
@@ -590,6 +596,30 @@ This document is the single source of truth for the project's current status, co
 **Dependencies**: All previous phases (complete)
 
 **Estimated Effort**: 3-4 development sessions remaining
+
+## Next Development Session Guide
+
+**Prerequisites** (requires Flutter SDK):
+1. Run `flutter pub run build_runner build --delete-conflicting-outputs`
+2. Run `flutter test` to verify test suite (30+ tests)
+
+**Phase 8 Performance Work**:
+1. Profile schedule generation (current: unknown, target: <2s for 50+ events)
+2. Profile database queries in Day View and Week View
+3. Test with large dataset (100+ events)
+4. Optimize any slow queries or UI rendering
+
+**Phase 8 Accessibility Work**:
+1. Add semantic labels to all interactive widgets
+2. Verify color contrast meets WCAG 2.1 AA (4.5:1 ratio)
+3. Ensure touch targets are minimum 48dp
+4. Test with screen reader (VoiceOver/TalkBack)
+
+**Phase 8 Launch Preparation**:
+1. Create app store screenshots and descriptions
+2. Write user documentation/help screens
+3. Draft privacy policy and terms of service
+4. Set up beta testing program
 
 ## Component Completion Summary
 
