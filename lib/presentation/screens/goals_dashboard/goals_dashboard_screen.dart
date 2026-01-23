@@ -385,14 +385,14 @@ class GoalsDashboardScreen extends ConsumerWidget {
                           const SizedBox(height: 4),
                           Row(
                             children: [
-                              if (goalProgress.goal.type == GoalType.person)
+                              if (goalProgress.goal.type == GoalType.person) ...[
                                 Icon(
                                   Icons.person_outline,
                                   size: 14,
                                   color: indicatorColor,
                                 ),
-                              if (goalProgress.goal.type == GoalType.person)
                                 const SizedBox(width: 4),
+                              ],
                               Text(
                                 targetName!,
                                 style: Theme.of(context).textTheme.bodySmall?.copyWith(

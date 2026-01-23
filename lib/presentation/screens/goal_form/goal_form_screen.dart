@@ -379,7 +379,7 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
                             radius: 12,
                             backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                             child: Text(
-                              person.name.isNotEmpty ? person.name[0].toUpperCase() : '?',
+                              person.name.trim().isNotEmpty ? person.name.trim()[0].toUpperCase() : '?',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Theme.of(context).colorScheme.onPrimaryContainer,
