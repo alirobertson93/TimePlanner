@@ -139,7 +139,10 @@ class EventFactory {
         return 'End time must be after start time';
       }
     } else {
-      // Flexible event
+      // Flexible event - validate duration values
+      if (durationHours < 0 || durationMinutes < 0) {
+        return 'Duration values cannot be negative';
+      }
       if (durationHours == 0 && durationMinutes == 0) {
         return 'Duration must be greater than 0';
       }
