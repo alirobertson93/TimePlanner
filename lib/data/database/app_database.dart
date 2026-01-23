@@ -34,7 +34,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration {
@@ -72,6 +72,10 @@ class AppDatabase extends _$AppDatabase {
         // Migration from version 7 to 8: Add Notifications table
         if (from <= 7) {
           await m.createTable(notifications);
+        }
+        // Migration from version 8 to 9: Add personId column to Goals table for relationship goals
+        if (from <= 8) {
+          await m.addColumn(goals, goals.personId);
         }
       },
     );

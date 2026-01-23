@@ -199,6 +199,121 @@ void main() {
       expect(workGoals.first.categoryId, equals('cat_work'));
     });
 
+    test('save and getById returns relationship goal with personId', () async {
+      // Arrange
+      final relationshipGoal = Goal(
+        id: 'goal_relationship',
+        title: 'Spend time with John',
+        type: GoalType.person,
+        metric: GoalMetric.hours,
+        targetValue: 5,
+        period: GoalPeriod.week,
+        personId: 'person_john',
+        debtStrategy: DebtStrategy.ignore,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      // Act
+      await repository.save(relationshipGoal);
+      final retrieved = await repository.getById('goal_relationship');
+
+      // Assert
+      expect(retrieved, isNotNull);
+      expect(retrieved!.id, equals('goal_relationship'));
+      expect(retrieved.title, equals('Spend time with John'));
+      expect(retrieved.type, equals(GoalType.person));
+      expect(retrieved.personId, equals('person_john'));
+      expect(retrieved.categoryId, isNull);
+    });
+
+    test('getByPerson returns goals for specific person', () async {
+      // Arrange
+      final personGoal1 = Goal(
+        id: 'goal_1',
+        title: 'Spend time with John',
+        type: GoalType.person,
+        metric: GoalMetric.hours,
+        targetValue: 5,
+        period: GoalPeriod.week,
+        personId: 'person_john',
+        debtStrategy: DebtStrategy.ignore,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      final personGoal2 = Goal(
+        id: 'goal_2',
+        title: 'Spend time with Jane',
+        type: GoalType.person,
+        metric: GoalMetric.hours,
+        targetValue: 3,
+        period: GoalPeriod.week,
+        personId: 'person_jane',
+        debtStrategy: DebtStrategy.ignore,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      final categoryGoal = Goal(
+        id: 'goal_3',
+        title: 'Work Goal',
+        type: GoalType.category,
+        metric: GoalMetric.hours,
+        targetValue: 40,
+        period: GoalPeriod.week,
+        categoryId: 'cat_work',
+        debtStrategy: DebtStrategy.ignore,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      // Act
+      await repository.save(personGoal1);
+      await repository.save(personGoal2);
+      await repository.save(categoryGoal);
+      final johnGoals = await repository.getByPerson('person_john');
+
+      // Assert
+      expect(johnGoals.length, equals(1));
+      expect(johnGoals.first.id, equals('goal_1'));
+      expect(johnGoals.first.personId, equals('person_john'));
+      expect(johnGoals.first.type, equals(GoalType.person));
+    });
+
+    test('relationship goal with all properties', () async {
+      // Arrange
+      final now = DateTime.now();
+      final goal = Goal(
+        id: 'goal_full',
+        title: 'Relationship Goal',
+        type: GoalType.person,
+        metric: GoalMetric.events,
+        targetValue: 4,
+        period: GoalPeriod.month,
+        personId: 'person_test',
+        debtStrategy: DebtStrategy.carryForward,
+        isActive: true,
+        createdAt: now,
+        updatedAt: now,
+      );
+
+      // Act
+      await repository.save(goal);
+      final retrieved = await repository.getById('goal_full');
+
+      // Assert
+      expect(retrieved, isNotNull);
+      expect(retrieved!.type, equals(GoalType.person));
+      expect(retrieved.metric, equals(GoalMetric.events));
+      expect(retrieved.targetValue, equals(4));
+      expect(retrieved.period, equals(GoalPeriod.month));
+      expect(retrieved.personId, equals('person_test'));
+      expect(retrieved.categoryId, isNull);
+      expect(retrieved.debtStrategy, equals(DebtStrategy.carryForward));
+      expect(retrieved.isActive, isTrue);
+    });
+
     test('watchAll emits updates when goals change', () async {
       // Arrange
       final goal = Goal(

@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import 'categories.dart';
+import 'people.dart';
 
 /// Goals table for tracking user-defined time allocation goals
 @DataClassName('GoalData')
@@ -25,6 +26,9 @@ class Goals extends Table {
 
   /// Related category ID (optional, for category-based goals)
   TextColumn get categoryId => text().nullable().references(Categories, #id)();
+
+  /// Related person ID (optional, for relationship goals - tracking time with specific people)
+  TextColumn get personId => text().nullable().references(People, #id)();
 
   /// Strategy for handling goal debt/shortfall
   IntColumn get debtStrategy => integer()();

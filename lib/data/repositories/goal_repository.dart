@@ -13,6 +13,7 @@ abstract class IGoalRepository {
   Future<void> save(domain.Goal goal);
   Future<void> delete(String id);
   Future<List<domain.Goal>> getByCategory(String categoryId);
+  Future<List<domain.Goal>> getByPerson(String personId);
   Stream<List<domain.Goal>> watchAll();
 }
 
@@ -61,6 +62,16 @@ class GoalRepository implements IGoalRepository {
     return results.map(_mapToEntity).toList();
   }
 
+  /// Retrieves goals for a specific person (relationship goals)
+  Future<List<domain.Goal>> getByPerson(String personId) async {
+    final query = _db.select(_db.goals)
+      ..where((tbl) => 
+          tbl.personId.equals(personId) & tbl.isActive.equals(true));
+
+    final results = await query.get();
+    return results.map(_mapToEntity).toList();
+  }
+
   /// Watches all active goals (reactive stream)
   Stream<List<domain.Goal>> watchAll() {
     final query = _db.select(_db.goals)
@@ -80,6 +91,7 @@ class GoalRepository implements IGoalRepository {
       targetValue: dbGoal.targetValue,
       period: GoalPeriod.fromValue(dbGoal.period),
       categoryId: dbGoal.categoryId,
+      personId: dbGoal.personId,
       debtStrategy: DebtStrategy.fromValue(dbGoal.debtStrategy),
       isActive: dbGoal.isActive,
       createdAt: dbGoal.createdAt,
@@ -97,6 +109,7 @@ class GoalRepository implements IGoalRepository {
       targetValue: Value(goal.targetValue),
       period: Value(goal.period.value),
       categoryId: Value(goal.categoryId),
+      personId: Value(goal.personId),
       debtStrategy: Value(goal.debtStrategy.value),
       isActive: Value(goal.isActive),
       createdAt: Value(goal.createdAt),

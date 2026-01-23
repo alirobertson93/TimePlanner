@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/goal_providers.dart';
 import '../../providers/category_providers.dart';
+import '../../providers/person_providers.dart';
 import '../../../core/utils/color_utils.dart';
 import '../../../domain/enums/goal_period.dart';
+import '../../../domain/enums/goal_type.dart';
 
 /// Goals Dashboard screen showing goal progress
 class GoalsDashboardScreen extends ConsumerWidget {
@@ -287,17 +289,38 @@ class GoalsDashboardScreen extends ConsumerWidget {
     final categoryAsync = goalProgress.goal.categoryId != null
         ? ref.watch(categoryByIdProvider(goalProgress.goal.categoryId!))
         : null;
+    final personAsync = goalProgress.goal.personId != null
+        ? ref.watch(personByIdProvider(goalProgress.goal.personId!))
+        : null;
 
-    // Get category color
-    Color categoryColor = ColorUtils.defaultCategoryColor;
-    String? categoryName;
+    // Get display info based on goal type
+    Color indicatorColor = ColorUtils.defaultCategoryColor;
+    String? targetName;
+    IconData targetIcon = Icons.track_changes;
     
-    if (categoryAsync != null) {
+    // For category goals
+    if (goalProgress.goal.type == GoalType.category && categoryAsync != null) {
       categoryAsync.when(
         data: (category) {
           if (category != null) {
-            categoryName = category.name;
-            categoryColor = ColorUtils.parseHexColor(category.colourHex);
+            targetName = category.name;
+            indicatorColor = ColorUtils.parseHexColor(category.colourHex);
+            targetIcon = Icons.category;
+          }
+        },
+        loading: () {},
+        error: (_, __) {},
+      );
+    }
+    
+    // For relationship goals
+    if (goalProgress.goal.type == GoalType.person && personAsync != null) {
+      personAsync.when(
+        data: (person) {
+          if (person != null) {
+            targetName = person.name;
+            indicatorColor = Theme.of(context).colorScheme.secondary;
+            targetIcon = Icons.person;
           }
         },
         loading: () {},
@@ -335,7 +358,7 @@ class GoalsDashboardScreen extends ConsumerWidget {
                     width: 4,
                     height: 24,
                     decoration: BoxDecoration(
-                      color: categoryColor,
+                      color: indicatorColor,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -346,7 +369,7 @@ class GoalsDashboardScreen extends ConsumerWidget {
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.track_changes, size: 20),
+                            Icon(targetIcon, size: 20),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
@@ -358,13 +381,25 @@ class GoalsDashboardScreen extends ConsumerWidget {
                             ),
                           ],
                         ),
-                        if (categoryName != null) ...[
+                        if (targetName != null) ...[
                           const SizedBox(height: 4),
-                          Text(
-                            categoryName!,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: categoryColor,
-                            ),
+                          Row(
+                            children: [
+                              if (goalProgress.goal.type == GoalType.person) ...[
+                                Icon(
+                                  Icons.person_outline,
+                                  size: 14,
+                                  color: indicatorColor,
+                                ),
+                                const SizedBox(width: 4),
+                              ],
+                              Text(
+                                targetName!,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: indicatorColor,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ],

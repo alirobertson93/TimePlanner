@@ -13,6 +13,7 @@ class Goal {
     required this.targetValue,
     required this.period,
     this.categoryId,
+    this.personId,
     required this.debtStrategy,
     this.isActive = true,
     required this.createdAt,
@@ -26,6 +27,8 @@ class Goal {
   final int targetValue;
   final GoalPeriod period;
   final String? categoryId;
+  /// Related person ID (for relationship goals - tracking time with specific people)
+  final String? personId;
   final DebtStrategy debtStrategy;
   final bool isActive;
   final DateTime createdAt;
@@ -40,6 +43,7 @@ class Goal {
     int? targetValue,
     GoalPeriod? period,
     String? categoryId,
+    String? personId,
     DebtStrategy? debtStrategy,
     bool? isActive,
     DateTime? createdAt,
@@ -53,6 +57,7 @@ class Goal {
       targetValue: targetValue ?? this.targetValue,
       period: period ?? this.period,
       categoryId: categoryId ?? this.categoryId,
+      personId: personId ?? this.personId,
       debtStrategy: debtStrategy ?? this.debtStrategy,
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
@@ -72,6 +77,7 @@ class Goal {
         other.targetValue == targetValue &&
         other.period == period &&
         other.categoryId == categoryId &&
+        other.personId == personId &&
         other.debtStrategy == debtStrategy &&
         other.isActive == isActive &&
         other.createdAt == createdAt &&
@@ -88,6 +94,7 @@ class Goal {
       targetValue,
       period,
       categoryId,
+      personId,
       debtStrategy,
       isActive,
       createdAt,
@@ -97,6 +104,6 @@ class Goal {
 
   @override
   String toString() {
-    return 'Goal(id: $id, title: $title, type: $type, targetValue: $targetValue, period: $period)';
+    return 'Goal(id: $id, title: $title, type: $type, targetValue: $targetValue, period: $period, personId: $personId)';
   }
 }
