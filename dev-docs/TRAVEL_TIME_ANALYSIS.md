@@ -156,15 +156,22 @@ Since the travel time feature is **not yet implemented**, we can implement it co
 
 ### ROADMAP.md - Suggested Update
 
-Change:
-```
-- [ ] Calculate travel time between locations
+In the Phase 7 Travel Time section (around line 445), change:
+```markdown
+- [ ] Travel Time (from Phase 6)
+  - [ ] Calculate travel time between locations
+  - [ ] Auto-schedule travel buffer
+  - [ ] Travel time in schedule generation
 ```
 
 To:
-```
-- [ ] Store and use manual travel time between locations
-- [ ] (Future) GPS-based travel time estimation
+```markdown
+- [ ] Travel Time (from Phase 6)
+  - [ ] Manual travel time entry between locations (via Locations menu)
+  - [ ] Travel time prompt on event reordering (for new location pairs)
+  - [ ] Auto-schedule travel buffer
+  - [ ] Travel time in schedule generation
+  - [ ] (Future) GPS-based travel time estimation
 ```
 
 ### ALGORITHM.md - Suggested Update
