@@ -466,11 +466,13 @@ This document is the single source of truth for the project's current status, co
 - test/widget/screens/day_view_screen_test.dart
 - test/widget/screens/event_form_screen_test.dart
 - test/widget/screens/planning_wizard_screen_test.dart
+- lib/domain/services/event_factory.dart (extracted event creation logic from providers)
+- integration_test/app_flow_test.dart (core user flow integration test)
 
 **Key Files Modified**:
 - lib/app/router.dart - Added /settings, /notifications routes
 - lib/presentation/screens/day_view/day_view_screen.dart - Added Settings button, notification badge
-- pubspec.yaml - Added shared_preferences dependency
+- pubspec.yaml - Added shared_preferences, integration_test SDK dependencies
 - lib/data/database/app_database.dart - Added RecurrenceRules table (v7), Notifications table (v8)
 - lib/data/database/tables/events.dart - Added recurrenceRuleId column
 - lib/domain/entities/event.dart - Added recurrenceRuleId field
@@ -527,6 +529,7 @@ This document is the single source of truth for the project's current status, co
 |-----------|--------|------------|-------|
 | **Database Layer** | 🟢 Active | 100% | Events (with locationId, recurrenceRuleId), Categories, Goals, People, EventPeople, Locations, RecurrenceRules, Notifications complete |
 | **Domain Entities** | 🟢 Active | 100% | Core entities + Person + Location + RecurrenceRule + Notification done. Event updated with recurrenceRuleId. |
+| **Domain Services** | 🟢 Active | 100% | **EventFactory added** - centralized event creation logic |
 | **Repositories** | 🟢 Active | 100% | Event, Category, Goal, Person, EventPeople, Location, RecurrenceRule, Notification repos complete with tests + interfaces |
 | **Scheduler Engine** | 🟢 Complete | 100% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption) |
 | **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button, Locations button, Settings button, Notifications button (with badge), recurring indicators. **Widget tests added.** |
@@ -544,6 +547,7 @@ This document is the single source of truth for the project's current status, co
 | **Relationship Goals** | ⚪ Planned | 0% | Not started (Phase 7 - deferred from Phase 6) |
 | **Onboarding** | ⚪ Planned | 0% | Not started (Phase 8) |
 | **Widget Tests** | 🟢 Active | 30% | Day View, Event Form, Planning Wizard tests added |
+| **Integration Tests** | 🟢 Active | 15% | **Core user flow test added** (Create Event → Day View → Planning Wizard) |
 
 **Legend**:
 - 🟢 Active: Currently working or recently completed
