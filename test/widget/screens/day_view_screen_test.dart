@@ -75,7 +75,8 @@ void main() {
       );
     }
 
-    testWidgets('displays loading indicator while fetching events', (tester) async {
+    testWidgets('displays loading indicator while fetching events',
+        (tester) async {
       // Create a widget that returns loading state
       await tester.pumpWidget(
         ProviderScope(
@@ -130,7 +131,8 @@ void main() {
       expect(find.byIcon(Icons.settings), findsOneWidget);
     });
 
-    testWidgets('displays floating action button for adding events', (tester) async {
+    testWidgets('displays floating action button for adding events',
+        (tester) async {
       await tester.pumpWidget(createTestWidget(events: testEvents));
       await tester.pumpAndSettle();
 
@@ -139,7 +141,8 @@ void main() {
       expect(find.byIcon(Icons.add), findsOneWidget);
     });
 
-    testWidgets('previous day button navigates to previous day', (tester) async {
+    testWidgets('previous day button navigates to previous day',
+        (tester) async {
       await tester.pumpWidget(createTestWidget(events: testEvents));
       await tester.pumpAndSettle();
 
@@ -169,8 +172,10 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('displays notification badge with unread count', (tester) async {
-      await tester.pumpWidget(createTestWidget(events: testEvents, unreadCount: 5));
+    testWidgets('displays notification badge with unread count',
+        (tester) async {
+      await tester
+          .pumpWidget(createTestWidget(events: testEvents, unreadCount: 5));
       await tester.pumpAndSettle();
 
       // Badge should show the count
@@ -178,7 +183,8 @@ void main() {
     });
 
     testWidgets('displays 99+ for large notification counts', (tester) async {
-      await tester.pumpWidget(createTestWidget(events: testEvents, unreadCount: 150));
+      await tester
+          .pumpWidget(createTestWidget(events: testEvents, unreadCount: 150));
       await tester.pumpAndSettle();
 
       // Badge should show 99+ for counts over 99
@@ -186,7 +192,8 @@ void main() {
     });
 
     testWidgets('hides notification badge when count is zero', (tester) async {
-      await tester.pumpWidget(createTestWidget(events: testEvents, unreadCount: 0));
+      await tester
+          .pumpWidget(createTestWidget(events: testEvents, unreadCount: 0));
       await tester.pumpAndSettle();
 
       // No badge number should be visible (but notification icon should still be there)
