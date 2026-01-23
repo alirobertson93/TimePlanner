@@ -4,8 +4,31 @@ import '../../domain/entities/notification.dart' as domain;
 import '../../domain/enums/notification_type.dart';
 import '../../domain/enums/notification_status.dart';
 
+/// Interface for notification repository operations
+abstract class INotificationRepository {
+  Future<List<domain.Notification>> getAll();
+  Future<domain.Notification?> getById(String id);
+  Future<List<domain.Notification>> getPendingToDeliver();
+  Future<List<domain.Notification>> getByStatus(NotificationStatus status);
+  Future<List<domain.Notification>> getByType(NotificationType type);
+  Future<List<domain.Notification>> getByEventId(String eventId);
+  Future<List<domain.Notification>> getByGoalId(String goalId);
+  Future<List<domain.Notification>> getUnread();
+  Future<void> save(domain.Notification notification);
+  Future<void> delete(String id);
+  Future<void> deleteAll();
+  Future<void> deleteByEventId(String eventId);
+  Future<void> deleteByGoalId(String goalId);
+  Future<void> markDelivered(String id);
+  Future<void> markRead(String id);
+  Future<void> markAllRead();
+  Future<void> cancelPendingForEvent(String eventId);
+  Stream<List<domain.Notification>> watchAll();
+  Stream<int> watchUnreadCount();
+}
+
 /// Repository for managing notifications
-class NotificationRepository {
+class NotificationRepository implements INotificationRepository {
   final AppDatabase _db;
 
   NotificationRepository(this._db);

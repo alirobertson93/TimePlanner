@@ -341,10 +341,14 @@ This document is the single source of truth for the project's current status, co
 
 **Goals**:
 - Add recurring event support ✅ (Complete)
-- Implement notifications 🟡 (Data Layer + UI Complete)
+- Implement notifications 🟡 (Data Layer + UI Complete, System Notifications Pending)
 - Create settings/preferences screen ✅ (Complete)
 - Add travel time calculations (deferred from Phase 6)
 - Enable relationship goal tracking (deferred from Phase 6)
+
+**Notifications Clarification**:
+- ✅ **In-app notifications**: Complete (data layer, UI, notification center, badge system)
+- ⏳ **System push notifications**: Pending (flutter_local_notifications integration needed for OS-level alerts)
 
 **What's Working**:
 - ✅ Settings Screen UI implemented
@@ -447,6 +451,9 @@ This document is the single source of truth for the project's current status, co
 - lib/data/repositories/recurrence_rule_repository.dart
 - lib/presentation/providers/recurrence_providers.dart
 - lib/presentation/widgets/recurrence_picker.dart
+- lib/presentation/widgets/recurrence_custom_dialog.dart (extracted from recurrence_picker.dart)
+- lib/presentation/providers/planning_parameters_providers.dart (split from planning_wizard_providers.dart)
+- lib/presentation/providers/schedule_generation_providers.dart (split from planning_wizard_providers.dart)
 - test/repositories/recurrence_rule_repository_test.dart
 - lib/domain/enums/notification_type.dart
 - lib/domain/enums/notification_status.dart
@@ -456,11 +463,16 @@ This document is the single source of truth for the project's current status, co
 - lib/presentation/providers/notification_providers.dart
 - test/repositories/notification_repository_test.dart
 - lib/presentation/screens/notifications/notifications_screen.dart
+- test/widget/screens/day_view_screen_test.dart
+- test/widget/screens/event_form_screen_test.dart
+- test/widget/screens/planning_wizard_screen_test.dart
+- lib/domain/services/event_factory.dart (extracted event creation logic from providers)
+- integration_test/app_flow_test.dart (core user flow integration test)
 
 **Key Files Modified**:
 - lib/app/router.dart - Added /settings, /notifications routes
 - lib/presentation/screens/day_view/day_view_screen.dart - Added Settings button, notification badge
-- pubspec.yaml - Added shared_preferences dependency
+- pubspec.yaml - Added shared_preferences, integration_test SDK dependencies
 - lib/data/database/app_database.dart - Added RecurrenceRules table (v7), Notifications table (v8)
 - lib/data/database/tables/events.dart - Added recurrenceRuleId column
 - lib/domain/entities/event.dart - Added recurrenceRuleId field
@@ -517,22 +529,25 @@ This document is the single source of truth for the project's current status, co
 |-----------|--------|------------|-------|
 | **Database Layer** | 🟢 Active | 100% | Events (with locationId, recurrenceRuleId), Categories, Goals, People, EventPeople, Locations, RecurrenceRules, Notifications complete |
 | **Domain Entities** | 🟢 Active | 100% | Core entities + Person + Location + RecurrenceRule + Notification done. Event updated with recurrenceRuleId. |
-| **Repositories** | 🟢 Active | 100% | Event, Category, Goal, Person, EventPeople, Location, RecurrenceRule, Notification repos complete with tests |
+| **Domain Services** | 🟢 Active | 100% | **EventFactory added** - centralized event creation logic |
+| **Repositories** | 🟢 Active | 100% | Event, Category, Goal, Person, EventPeople, Location, RecurrenceRule, Notification repos complete with tests + interfaces |
 | **Scheduler Engine** | 🟢 Complete | 100% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption) |
-| **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button, Locations button, Settings button, Notifications button (with badge), recurring indicators |
+| **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button, Locations button, Settings button, Notifications button (with badge), recurring indicators. **Widget tests added.** |
 | **Week View** | 🟢 Complete | 100% | 7-day grid, event blocks, category colors, navigation, recurring indicators |
-| **Event Form** | 🟢 Complete | 100% | Create, edit, delete, people selection, location selection, recurrence selection implemented |
-| **Planning Wizard** | 🟢 Complete | 100% | 4-step flow, schedule generation, all strategies available |
+| **Event Form** | 🟢 Complete | 100% | Create, edit, delete, people selection, location selection, recurrence selection implemented. **Widget tests added.** |
+| **Planning Wizard** | 🟢 Complete | 100% | 4-step flow, schedule generation, all strategies available. **Widget tests added. Provider split into 3 focused providers.** |
 | **Goals Dashboard** | 🟢 Complete | 100% | Progress tracking, status indicators, category grouping, goal CRUD |
 | **Goal Form** | 🟢 Complete | 100% | Create, edit, delete with validation |
 | **People Management** | 🟢 Complete | 100% | Entity, tables, repositories, providers, UI, event form integration complete |
 | **Location Management** | 🟢 Complete | 100% | Entity, table, repository, providers, UI, event form integration complete |
 | **Settings** | 🟢 Complete | 100% | UI and SharedPreferences persistence complete (Phase 7) |
-| **Recurrence** | 🟢 Complete | 95% | Data layer + UI complete (entity, table, repository, enums, tests, RecurrencePicker widget, recurring indicators in event cards). Exception handling pending. |
+| **Recurrence** | 🟢 Complete | 95% | Data layer + UI complete. **RecurrenceCustomDialog extracted to separate file.** Exception handling pending. |
 | **Notifications** | 🟢 Active | 85% | Data layer complete + UI complete (NotificationsScreen, notification badge in Day View). System notifications pending. |
 | **Travel Time** | ⚪ Planned | 0% | Not started (Phase 7 - deferred from Phase 6) |
 | **Relationship Goals** | ⚪ Planned | 0% | Not started (Phase 7 - deferred from Phase 6) |
 | **Onboarding** | ⚪ Planned | 0% | Not started (Phase 8) |
+| **Widget Tests** | 🟢 Active | 30% | Day View, Event Form, Planning Wizard tests added |
+| **Integration Tests** | 🟢 Active | 15% | **Core user flow test added** (Create Event → Day View → Planning Wizard) |
 
 **Legend**:
 - 🟢 Active: Currently working or recently completed

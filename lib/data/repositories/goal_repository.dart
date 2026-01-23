@@ -6,8 +6,18 @@ import '../../domain/enums/goal_period.dart';
 import '../../domain/enums/debt_strategy.dart';
 import '../database/app_database.dart';
 
+/// Interface for goal repository operations
+abstract class IGoalRepository {
+  Future<List<domain.Goal>> getAll();
+  Future<domain.Goal?> getById(String id);
+  Future<void> save(domain.Goal goal);
+  Future<void> delete(String id);
+  Future<List<domain.Goal>> getByCategory(String categoryId);
+  Stream<List<domain.Goal>> watchAll();
+}
+
 /// Repository for managing goals in the database
-class GoalRepository {
+class GoalRepository implements IGoalRepository {
   GoalRepository(this._db);
 
   final AppDatabase _db;
