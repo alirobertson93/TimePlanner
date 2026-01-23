@@ -511,9 +511,9 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
       final eventRepo = ref.read(eventRepositoryProvider);
       final travelTimeRepo = ref.read(travelTimePairRepositoryProvider);
 
-      // Get events for the same day
+      // Get events for the same day (end of day is last microsecond of the day)
       final startOfDay = DateTime(eventDate.year, eventDate.month, eventDate.day);
-      final endOfDay = startOfDay.add(const Duration(days: 1));
+      final endOfDay = startOfDay.add(const Duration(days: 1)).subtract(const Duration(microseconds: 1));
       
       final dayEvents = await eventRepo.getEventsInRange(startOfDay, endOfDay);
       

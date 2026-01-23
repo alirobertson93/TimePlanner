@@ -457,6 +457,10 @@ class _TravelTimeFormDialogState extends State<_TravelTimeFormDialog> {
               onChanged: (value) {
                 setState(() {
                   _fromLocationId = value;
+                  // Reset toLocationId if it's now the same as fromLocationId
+                  if (_toLocationId == value) {
+                    _toLocationId = null;
+                  }
                 });
               },
             ),

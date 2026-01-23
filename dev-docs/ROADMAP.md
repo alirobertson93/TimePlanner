@@ -10,7 +10,7 @@ This document is the single source of truth for the project's current status, co
 
 **Overall Progress**: ~100% Core Features Complete
 
-**Active Work**: Phase 7 - Relationship Goals complete. Travel Time feature in progress.
+**Active Work**: Phase 7 - Travel Time manual entry complete. Relationship Goals complete.
 
 ## Completed Phases
 
@@ -337,7 +337,7 @@ This document is the single source of truth for the project's current status, co
 
 **Target**: Late development
 
-**Status**: 90% Complete
+**Status**: 95% Complete
 
 **Goals**:
 - Add recurring event support ✅ (Complete)
@@ -411,6 +411,15 @@ This document is the single source of truth for the project's current status, co
   - Person dropdown for selecting relationship target
   - Progress tracking for time spent with specific people
   - Goals Dashboard displays person name for relationship goals
+- ✅ Travel Time (Manual Entry) implemented
+  - TravelTimePair entity and TravelTimePairs database table
+  - TravelTimePairRepository with bidirectional CRUD operations
+  - Database migration v9 → v10
+  - TravelTimesScreen for managing travel times (accessed via Locations menu)
+  - Travel time form dialog (add/edit/delete)
+  - TravelTimePromptDialog - prompts user when consecutive events have different locations
+  - EventFormScreen integration - checks for missing travel times on save
+  - Bidirectional storage (A→B and B→A stored with same time)
 
 **Features**:
 - [x] Recurrence
@@ -442,14 +451,14 @@ This document is the single source of truth for the project's current status, co
   - [x] Notification preferences UI
   - [x] Theme settings UI
   - [x] Settings persistence (SharedPreferences)
-- [ ] Travel Time (from Phase 6) 🔄 **In Progress**
-  - [ ] TravelTimePair entity and database table
-  - [ ] TravelTimePairRepository with CRUD operations
-  - [ ] Database migration v9 → v10
-  - [ ] Manual travel time entry UI (via Locations menu)
-  - [ ] Travel time prompt on event entry/reordering
-  - [ ] Auto-schedule travel buffer
-  - [ ] Travel time in schedule generation
+- [x] Travel Time (from Phase 6) ✅ **Core Complete**
+  - [x] TravelTimePair entity and database table
+  - [x] TravelTimePairRepository with CRUD operations
+  - [x] Database migration v9 → v10
+  - [x] Manual travel time entry UI (via Locations menu)
+  - [x] Travel time prompt on event entry (for new location pairs)
+  - [ ] Auto-schedule travel buffer (future)
+  - [ ] Travel time in schedule generation (future)
   - [ ] (Future) GPS-based travel time estimation
 - [x] Relationship Goals (from Phase 6)
   - [x] Goals tied to specific people (personId in Goal entity)
@@ -485,18 +494,26 @@ This document is the single source of truth for the project's current status, co
 - test/widget/screens/planning_wizard_screen_test.dart
 - lib/domain/services/event_factory.dart (extracted event creation logic from providers)
 - integration_test/app_flow_test.dart (core user flow integration test)
+- lib/domain/entities/travel_time_pair.dart (Travel Time entity)
+- lib/data/database/tables/travel_time_pairs.dart (Travel Time database table)
+- lib/data/repositories/travel_time_pair_repository.dart (Travel Time repository)
+- lib/presentation/providers/travel_time_providers.dart (Travel Time Riverpod providers)
+- lib/presentation/screens/travel_times/travel_times_screen.dart (Travel Time management UI)
+- lib/presentation/widgets/travel_time_prompt.dart (Travel Time prompt dialog)
+- test/repositories/travel_time_pair_repository_test.dart (Travel Time repository tests)
 
 **Key Files Modified**:
-- lib/app/router.dart - Added /settings, /notifications routes
+- lib/app/router.dart - Added /settings, /notifications, /travel-times routes
 - lib/presentation/screens/day_view/day_view_screen.dart - Added Settings button, notification badge
 - pubspec.yaml - Added shared_preferences, integration_test SDK dependencies
-- lib/data/database/app_database.dart - Added RecurrenceRules table (v7), Notifications table (v8)
+- lib/data/database/app_database.dart - Added RecurrenceRules table (v7), Notifications table (v8), TravelTimePairs table (v10)
 - lib/data/database/tables/events.dart - Added recurrenceRuleId column
 - lib/domain/entities/event.dart - Added recurrenceRuleId field
 - lib/data/repositories/event_repository.dart - Updated mappers for recurrenceRuleId
-- lib/presentation/providers/repository_providers.dart - Added recurrenceRuleRepositoryProvider, notificationRepositoryProvider
+- lib/presentation/providers/repository_providers.dart - Added recurrenceRuleRepositoryProvider, notificationRepositoryProvider, travelTimePairRepositoryProvider
 - lib/presentation/providers/event_form_providers.dart - Added recurrenceRuleId support
-- lib/presentation/screens/event_form/event_form_screen.dart - Added RecurrencePicker
+- lib/presentation/screens/event_form/event_form_screen.dart - Added RecurrencePicker, travel time prompt on save
+- lib/presentation/screens/locations/locations_screen.dart - Added "Manage Travel Times" button
 
 **Dependencies**: Phase 6 (complete)
 
@@ -560,7 +577,7 @@ This document is the single source of truth for the project's current status, co
 | **Settings** | 🟢 Complete | 100% | UI and SharedPreferences persistence complete (Phase 7) |
 | **Recurrence** | 🟢 Complete | 95% | Data layer + UI complete. **RecurrenceCustomDialog extracted to separate file.** Exception handling pending. |
 | **Notifications** | 🟢 Active | 85% | Data layer complete + UI complete (NotificationsScreen, notification badge in Day View). System notifications pending. |
-| **Travel Time** | 🟡 In Progress | 0% | Phase 7 - Starting implementation: manual entry via Locations menu |
+| **Travel Time** | 🟢 Core Complete | 80% | Data layer + UI + event prompts complete. Scheduler integration pending (future). |
 | **Relationship Goals** | 🟢 Complete | 100% | **Fully implemented!** Goal entity with personId, Goal form with type selector, progress tracking via EventPeople, Dashboard display with person info. |
 | **Onboarding** | ⚪ Planned | 0% | Not started (Phase 8) |
 | **Widget Tests** | 🟢 Active | 30% | Day View, Event Form, Planning Wizard tests added |
@@ -605,4 +622,4 @@ Before considering the project "complete":
 
 *For session logs and detailed development history, see [CHANGELOG.md](./CHANGELOG.md)*
 
-*Last updated: 2026-01-22*
+*Last updated: 2026-01-23*
