@@ -29,7 +29,8 @@ class SettingsScreen extends ConsumerWidget {
             icon: Icons.schedule,
             title: 'Time Slot Duration',
             subtitle: settings.timeSlotDurationLabel,
-            onTap: () => _showTimeSlotDurationDialog(context, ref, settings.timeSlotDuration),
+            onTap: () => _showTimeSlotDurationDialog(
+                context, ref, settings.timeSlotDuration),
           ),
           _buildSettingsTile(
             context: context,
@@ -43,7 +44,8 @@ class SettingsScreen extends ConsumerWidget {
             icon: Icons.calendar_today,
             title: 'First Day of Week',
             subtitle: settings.firstDayOfWeekLabel,
-            onTap: () => _showFirstDayOfWeekDialog(context, ref, settings.firstDayOfWeek),
+            onTap: () => _showFirstDayOfWeekDialog(
+                context, ref, settings.firstDayOfWeek),
           ),
 
           const Divider(),
@@ -55,7 +57,8 @@ class SettingsScreen extends ConsumerWidget {
             icon: Icons.timer,
             title: 'Default Event Duration',
             subtitle: settings.defaultEventDurationLabel,
-            onTap: () => _showDefaultDurationDialog(context, ref, settings.defaultEventDuration),
+            onTap: () => _showDefaultDurationDialog(
+                context, ref, settings.defaultEventDuration),
           ),
           _buildSwitchTile(
             context: context,
@@ -97,7 +100,8 @@ class SettingsScreen extends ConsumerWidget {
             icon: Icons.access_time,
             title: 'Default Reminder Time',
             subtitle: settings.defaultReminderLabel,
-            onTap: () => _showReminderTimeDialog(context, ref, settings.defaultReminderMinutes),
+            onTap: () => _showReminderTimeDialog(
+                context, ref, settings.defaultReminderMinutes),
           ),
           _buildSwitchTile(
             context: context,
@@ -178,12 +182,18 @@ class SettingsScreen extends ConsumerWidget {
     String? subtitle,
     required VoidCallback onTap,
   }) {
-    return ListTile(
-      leading: Icon(icon, color: Theme.of(context).colorScheme.onSurfaceVariant),
-      title: Text(title),
-      subtitle: subtitle != null ? Text(subtitle) : null,
-      trailing: const Icon(Icons.chevron_right),
-      onTap: onTap,
+    return Semantics(
+      button: true,
+      label: subtitle != null ? '$title, current value: $subtitle' : title,
+      child: ListTile(
+        leading: Icon(icon,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            semanticLabel: ''),
+        title: Text(title),
+        subtitle: subtitle != null ? Text(subtitle) : null,
+        trailing: const Icon(Icons.chevron_right, semanticLabel: ''),
+        onTap: onTap,
+      ),
     );
   }
 
@@ -195,16 +205,23 @@ class SettingsScreen extends ConsumerWidget {
     required bool value,
     required ValueChanged<bool> onChanged,
   }) {
-    return SwitchListTile(
-      secondary: Icon(icon, color: Theme.of(context).colorScheme.onSurfaceVariant),
-      title: Text(title),
-      subtitle: subtitle != null ? Text(subtitle) : null,
-      value: value,
-      onChanged: onChanged,
+    return Semantics(
+      toggled: value,
+      label: subtitle != null ? '$title, $subtitle' : title,
+      child: SwitchListTile(
+        secondary: Icon(icon,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            semanticLabel: ''),
+        title: Text(title),
+        subtitle: subtitle != null ? Text(subtitle) : null,
+        value: value,
+        onChanged: onChanged,
+      ),
     );
   }
 
-  void _showTimeSlotDurationDialog(BuildContext context, WidgetRef ref, int currentValue) async {
+  void _showTimeSlotDurationDialog(
+      BuildContext context, WidgetRef ref, int currentValue) async {
     final options = [
       (5, '5 minutes'),
       (10, '10 minutes'),
@@ -272,7 +289,8 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  void _showFirstDayOfWeekDialog(BuildContext context, WidgetRef ref, int currentValue) async {
+  void _showFirstDayOfWeekDialog(
+      BuildContext context, WidgetRef ref, int currentValue) async {
     final options = [
       (7, 'Sunday'),
       (1, 'Monday'),
@@ -315,7 +333,8 @@ class SettingsScreen extends ConsumerWidget {
     }
   }
 
-  void _showDefaultDurationDialog(BuildContext context, WidgetRef ref, int currentValue) async {
+  void _showDefaultDurationDialog(
+      BuildContext context, WidgetRef ref, int currentValue) async {
     final options = [
       (15, '15 minutes'),
       (30, '30 minutes'),
@@ -359,7 +378,8 @@ class SettingsScreen extends ConsumerWidget {
     }
   }
 
-  void _showReminderTimeDialog(BuildContext context, WidgetRef ref, int currentValue) async {
+  void _showReminderTimeDialog(
+      BuildContext context, WidgetRef ref, int currentValue) async {
     final options = [
       (0, 'At time of event'),
       (5, '5 minutes before'),
@@ -405,7 +425,8 @@ class SettingsScreen extends ConsumerWidget {
     }
   }
 
-  void _showThemeDialog(BuildContext context, WidgetRef ref, String currentValue) async {
+  void _showThemeDialog(
+      BuildContext context, WidgetRef ref, String currentValue) async {
     final options = [
       ('system', 'System default'),
       ('light', 'Light'),

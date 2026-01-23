@@ -27,7 +27,17 @@ import '../../domain/enums/notification_status.dart';
 part 'app_database.g.dart';
 
 /// Main database class for the TimePlanner app
-@DriftDatabase(tables: [Categories, Events, Goals, People, EventPeople, Locations, RecurrenceRules, Notifications, TravelTimePairs])
+@DriftDatabase(tables: [
+  Categories,
+  Events,
+  Goals,
+  People,
+  EventPeople,
+  Locations,
+  RecurrenceRules,
+  Notifications,
+  TravelTimePairs
+])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -35,7 +45,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration {
@@ -85,6 +95,32 @@ class AppDatabase extends _$AppDatabase {
         // Migration from version 9 to 10: Add TravelTimePairs table for manual travel time entry
         if (from <= 9) {
           await m.createTable(travelTimePairs);
+        }
+        // Migration from version 10 to 11: Add database indexes for performance
+        if (from <= 10) {
+          // Events indexes for common queries
+          await customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_events_start_time ON events (fixed_start_time)');
+          await customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_events_end_time ON events (fixed_end_time)');
+          await customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_events_category ON events (category_id)');
+          await customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_events_status ON events (status)');
+          // Goals indexes
+          await customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_goals_category ON goals (category_id)');
+          await customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_goals_person ON goals (person_id)');
+          await customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_goals_active ON goals (is_active)');
+          // Notifications indexes
+          await customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_notifications_scheduled ON notifications (scheduled_at)');
+          await customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_notifications_status ON notifications (status)');
+          await customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_notifications_event ON notifications (event_id)');
         }
       },
     );

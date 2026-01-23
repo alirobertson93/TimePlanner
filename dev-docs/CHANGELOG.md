@@ -33,6 +33,171 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-23 - Phase 8 Performance Optimization
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Profile and optimize scheduler performance, add database indexes for query optimization, verify color contrast for WCAG compliance
+
+**Work Completed**:
+- ✅ **Scheduler Performance Benchmarking**
+  - Created comprehensive performance test suite (`test/scheduler/scheduler_performance_test.dart`)
+  - Benchmarked EventScheduler with realistic event loads
+  - Results exceeded expectations - all targets met by wide margins:
+    - 10 events: 11ms (target: <500ms) ✅
+    - 25 events: 4ms (target: <1000ms) ✅
+    - 50 events: 5ms (target: <2000ms) ✅
+    - 100 events: 7ms (target: <5000ms) ✅
+    - Mixed events (35 fixed + 30 flexible): 3ms ✅
+    - Grid initialization (1-4 week windows): <1ms ✅
+  - Pure Dart AvailabilityGrid algorithm is highly optimized with O(1) slot access
+
+- ✅ **Database Query Optimization (Schema v11)**
+  - Added 10 strategic indexes across 3 tables for common query patterns:
+  - **Events table** (`lib/data/database/tables/events.dart`):
+    - `idx_events_start_time` - Range queries for schedule views
+    - `idx_events_end_time` - Range queries for schedule views
+    - `idx_events_category` - Category filtering
+    - `idx_events_status` - Status filtering (pending, completed, etc.)
+  - **Goals table** (`lib/data/database/tables/goals.dart`):
+    - `idx_goals_category` - Category filtering on dashboard
+    - `idx_goals_person` - Person-based relationship goal queries
+    - `idx_goals_active` - Active/inactive filtering
+  - **Notifications table** (`lib/data/database/tables/notifications.dart`):
+    - `idx_notifications_scheduled` - Upcoming notification queries
+    - `idx_notifications_status` - Unread/read filtering
+    - `idx_notifications_event` - Event-related notification lookups
+
+- ✅ **Database Migration v10 → v11**
+  - Updated `lib/data/database/app_database.dart` with schemaVersion 11
+  - Added migration that creates all 10 indexes using `CREATE INDEX IF NOT EXISTS`
+  - Ensures existing databases get indexes on upgrade
+
+- ✅ **Code Regeneration**
+  - Ran `dart run build_runner build --delete-conflicting-outputs`
+  - All Drift-generated code updated with index definitions
+
+- ✅ **Color Contrast Verification (WCAG 2.1 AA)**
+  - Audited color scheme for WCAG 2.1 AA compliance (4.5:1 for text, 3:1 for UI)
+  - Updated `lib/core/theme/app_colors.dart`:
+    - `textSecondary`: #757575 → #616161 (~5.9:1 on white, was ~4.6:1)
+    - `textHint`: #9E9E9E → #757575 (~4.6:1 on white, was ~3.5:1)
+    - `primary`: #2196F3 → #1976D2 (for better AppBar contrast)
+    - `accent`: #03DAC6 → #00897B (darker teal)
+    - Status colors: success, warning, error all darkened for text use
+    - Added `successBackground`, `warningBackground`, `errorBackground` for chip/badge backgrounds
+    - Category colors all darkened for 3:1 minimum UI contrast
+  - Updated `lib/core/theme/app_theme.dart`:
+    - Added accessibility documentation
+    - Configured inputDecorationTheme with accessible label/hint styles
+    - Added textSelectionTheme for consistent selection colors
+
+**Test Results**:
+- Performance benchmark tests: 6/6 passing
+- Full test suite: 145 passing, 32 failing (pre-existing issues unrelated to performance work)
+- Static analysis: No errors (only pre-existing warnings/deprecations)
+
+**Key Files Added**:
+- `test/scheduler/scheduler_performance_test.dart` - Performance benchmark test suite
+
+**Key Files Modified**:
+- `lib/data/database/tables/events.dart` - 4 @TableIndex annotations
+- `lib/data/database/tables/goals.dart` - 3 @TableIndex annotations
+- `lib/data/database/tables/notifications.dart` - 3 @TableIndex annotations
+- `lib/data/database/app_database.dart` - Schema v11 with index migration
+- `lib/core/theme/app_colors.dart` - WCAG 2.1 AA compliant colors
+- `lib/core/theme/app_theme.dart` - Accessibility-aware theme configuration
+
+**Next Steps**:
+1. Keyboard navigation support (focus management, tab order)
+2. Launch preparation tasks
+
+---
+
+### Session: 2026-01-23 - Phase 8 Accessibility Implementation
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Implement screen reader support and accessibility improvements as part of Phase 8 Polish & Launch work
+
+**Work Completed**:
+- ✅ **Screen Reader Support (Semantics Widgets)**
+  - Added comprehensive Semantics wrappers to 8 major screens for screen reader accessibility
+  - All interactive elements now have meaningful semantic labels
+  
+- ✅ **EventCard Accessibility** (`lib/presentation/screens/day_view/widgets/event_card.dart`)
+  - Added `_buildSemanticLabel()` method that constructs detailed description
+  - Semantic label includes: event name, time range, category, recurrence status
+  - Card wrapped in Semantics with `excludeSemantics: true` to avoid redundant announcements
+  
+- ✅ **DayViewScreen Accessibility** (`lib/presentation/screens/day_view/day_view_screen.dart`)
+  - FAB wrapped in Semantics with label "Create new event"
+  - Added tooltip for visual users
+  
+- ✅ **EventFormScreen Accessibility** (`lib/presentation/screens/event_form/event_form_screen.dart`)
+  - Save button has semantic label including context (create vs update)
+  - Title TextField has semantic label "Event title, required field"
+  - Event type selector buttons have semantic labels with current selection state
+  
+- ✅ **GoalsDashboardScreen Accessibility** (`lib/presentation/screens/goals_dashboard/goals_dashboard_screen.dart`)
+  - Summary items have semantic labels (e.g., "Active Goals: 5")
+  - Goal cards have comprehensive labels including: title, target, status, progress percentage, and tap hint
+  
+- ✅ **PlanningWizardScreen Accessibility** (`lib/presentation/screens/planning_wizard/planning_wizard_screen.dart`)
+  - Step indicators have semantic labels showing: "Step X of 4: [Title], [completed/current/upcoming]"
+  - Back and Next navigation buttons have semantic labels
+  
+- ✅ **OnboardingScreen Accessibility** (`lib/presentation/screens/onboarding/onboarding_screen.dart`)
+  - Each onboarding page wrapped in Semantics container
+  - Labels include page title and description for screen readers
+  
+- ✅ **SettingsScreen Accessibility** (`lib/presentation/screens/settings/settings_screen.dart`)
+  - Settings tiles include current value in semantic label
+  - Switch tiles announce current on/off state
+  
+- ✅ **NotificationsScreen Accessibility** (`lib/presentation/screens/notifications/notifications_screen.dart`)
+  - Added `_buildNotificationSemanticLabel()` method for comprehensive descriptions
+  - Labels include: unread status, notification type, title, body, time ago, and swipe hint
+  - Notification icons have semantic labels describing notification type
+
+- ✅ **Touch Target Compliance**
+  - Verified all interactive elements use Material components ensuring 48dp minimum touch targets
+  - No additional changes needed as Material widgets handle this by default
+
+**Tests Run**:
+- Ran full test suite via `mcp_dart_sdk_mcp__run_tests`
+- **145 tests passed**
+- **32 tests failed** (pre-existing issues unrelated to accessibility changes):
+  - Foreign key constraint failures in goal_repository_test.dart (test setup issue)
+  - pumpAndSettle timeouts in widget tests (timing issue)
+- Static analysis passed with no errors
+
+**Files Changed**:
+- Modified: `lib/presentation/screens/day_view/widgets/event_card.dart`
+- Modified: `lib/presentation/screens/day_view/day_view_screen.dart`
+- Modified: `lib/presentation/screens/event_form/event_form_screen.dart`
+- Modified: `lib/presentation/screens/goals_dashboard/goals_dashboard_screen.dart`
+- Modified: `lib/presentation/screens/planning_wizard/planning_wizard_screen.dart`
+- Modified: `lib/presentation/screens/onboarding/onboarding_screen.dart`
+- Modified: `lib/presentation/screens/settings/settings_screen.dart`
+- Modified: `lib/presentation/screens/notifications/notifications_screen.dart`
+- Modified: `dev-docs/ROADMAP.md` - Updated Phase 8 from 40% to 60%, added Accessibility section
+
+**Phase 8 Progress**:
+- Onboarding Experience: ✅ Complete
+- System Notifications: ✅ Complete
+- Accessibility: ✅ Screen reader support complete, ⏳ Color contrast verification pending
+- Performance: ⏳ Pending
+- Launch Preparation: ⏳ Pending
+
+**Next Steps**:
+1. Performance profiling and optimization (target: <2s for schedule generation with 50+ events)
+2. Color contrast verification (WCAG 2.1 AA - 4.5:1 ratio)
+3. Keyboard navigation support
+4. Launch preparation (app store assets, documentation, privacy policy)
+
+---
+
 ### Session: 2026-01-23 - Documentation Audit & Next Stage Analysis
 
 **Author**: AI Assistant (GitHub Copilot)

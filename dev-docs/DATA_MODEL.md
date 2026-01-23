@@ -8,7 +8,7 @@ This document defines the complete data model for TimePlanner. The database is i
 
 **Implementation Status**: ⚠️ Partial (see table status below)
 
-**Current Schema Version**: 10
+**Current Schema Version**: 11
 
 **Implemented Tables** (9 total):
 - Events ✅
@@ -89,12 +89,12 @@ class Events extends Table {
 }
 ```
 
-**Indexes**:
+**Indexes** (added in schema v11):
 ```dart
-// Query by date range
-Index on (startTime, endTime) where startTime IS NOT NULL
-Index on (status)
-Index on (categoryId)
+@TableIndex(name: 'idx_events_start_time', columns: {#fixedStartTime})
+@TableIndex(name: 'idx_events_end_time', columns: {#fixedEndTime})
+@TableIndex(name: 'idx_events_category', columns: {#categoryId})
+@TableIndex(name: 'idx_events_status', columns: {#status})
 ```
 
 ---
@@ -318,6 +318,13 @@ class Goals extends Table {
 }
 ```
 
+**Indexes** (added in schema v11):
+```dart
+@TableIndex(name: 'idx_goals_category', columns: {#categoryId})
+@TableIndex(name: 'idx_goals_person', columns: {#personId})
+@TableIndex(name: 'idx_goals_active', columns: {#isActive})
+```
+
 ---
 
 ### 10. EventGoals Table ❌
@@ -532,6 +539,13 @@ class Notifications extends Table {
 }
 ```
 
+**Indexes** (added in schema v11):
+```dart
+@TableIndex(name: 'idx_notifications_scheduled', columns: {#scheduledAt})
+@TableIndex(name: 'idx_notifications_status', columns: {#status})
+@TableIndex(name: 'idx_notifications_event', columns: {#eventId})
+```
+
 **Note**: Added in schema version 8.
 
 ---
@@ -685,7 +699,7 @@ enum NotificationStatus {
 
 ## Database Class Definition
 
-The following shows the actual implemented database schema (version 10):
+The following shows the actual implemented database schema (version 11):
 
 ```dart
 @DriftDatabase(
@@ -754,6 +768,22 @@ class AppDatabase extends _$AppDatabase {
       // Migration from version 9 to 10: Add TravelTimePairs table for manual travel time entry
       if (from <= 9) {
         await m.createTable(travelTimePairs);
+      }
+      // Migration from version 10 to 11: Add indexes for query performance optimization
+      if (from <= 10) {
+        // Events indexes
+        await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_events_start_time ON events (fixed_start_time)');
+        await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_events_end_time ON events (fixed_end_time)');
+        await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_events_category ON events (category_id)');
+        await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_events_status ON events (status)');
+        // Goals indexes
+        await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_goals_category ON goals (category_id)');
+        await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_goals_person ON goals (person_id)');
+        await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_goals_active ON goals (is_active)');
+        // Notifications indexes
+        await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_notifications_scheduled ON notifications (scheduled_at)');
+        await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_notifications_status ON notifications (status)');
+        await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_notifications_event ON notifications (event_id)');
       }
     },
   );
@@ -976,8 +1006,14 @@ class EventRepository {
 ### Version 9
 - Added personId column to Goals table (for relationship goals)
 
-### Version 10 (Current)
+### Version 10
 - Added TravelTimePairs table
+
+### Version 11 (Current)
+- Added database indexes for query performance optimization:
+  - Events table: idx_events_start_time, idx_events_end_time, idx_events_category, idx_events_status
+  - Goals table: idx_goals_category, idx_goals_person, idx_goals_active
+  - Notifications table: idx_notifications_scheduled, idx_notifications_status, idx_notifications_event
 
 ### Important: Foreign Key Support
 

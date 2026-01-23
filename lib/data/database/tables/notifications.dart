@@ -4,6 +4,9 @@ import '../../../domain/enums/notification_status.dart';
 
 /// Notifications table definition
 /// Stores scheduled and delivered notifications for events, goals, etc.
+@TableIndex(name: 'idx_notifications_scheduled', columns: {#scheduledAt})
+@TableIndex(name: 'idx_notifications_status', columns: {#status})
+@TableIndex(name: 'idx_notifications_event', columns: {#eventId})
 class Notifications extends Table {
   /// Primary key
   TextColumn get id => text()();
@@ -33,7 +36,8 @@ class Notifications extends Table {
   DateTimeColumn get readAt => dateTime().nullable()();
 
   /// Current status of the notification
-  IntColumn get status => intEnum<NotificationStatus>().withDefault(const Constant(0))();
+  IntColumn get status =>
+      intEnum<NotificationStatus>().withDefault(const Constant(0))();
 
   /// Creation timestamp
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();

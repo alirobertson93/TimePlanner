@@ -125,11 +125,16 @@ class DayViewScreen extends ConsumerWidget {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.push('/event/new', extra: selectedDate);
-        },
-        child: const Icon(Icons.add),
+      floatingActionButton: Semantics(
+        button: true,
+        label: 'Create new event',
+        child: FloatingActionButton(
+          onPressed: () {
+            context.push('/event/new', extra: selectedDate);
+          },
+          tooltip: 'Create new event',
+          child: const Icon(Icons.add, semanticLabel: 'Add event'),
+        ),
       ),
     );
   }

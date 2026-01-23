@@ -5,6 +5,9 @@ import 'people.dart';
 
 /// Goals table for tracking user-defined time allocation goals
 @DataClassName('GoalData')
+@TableIndex(name: 'idx_goals_category', columns: {#categoryId})
+@TableIndex(name: 'idx_goals_person', columns: {#personId})
+@TableIndex(name: 'idx_goals_active', columns: {#isActive})
 class Goals extends Table {
   /// Primary key
   TextColumn get id => text()();

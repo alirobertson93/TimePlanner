@@ -66,8 +66,11 @@ class GoalsDashboardScreen extends ConsumerWidget {
             Text(
               'Create goals to track your time allocation and stay on target.',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-              ),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.6),
+                  ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -118,10 +121,14 @@ class GoalsDashboardScreen extends ConsumerWidget {
     AsyncValue<GoalsSummary> summaryAsync,
   ) {
     // Group goals by period
-    final weeklyGoals = goals.where((g) => g.goal.period == GoalPeriod.week).toList();
-    final monthlyGoals = goals.where((g) => g.goal.period == GoalPeriod.month).toList();
-    final quarterlyGoals = goals.where((g) => g.goal.period == GoalPeriod.quarter).toList();
-    final yearlyGoals = goals.where((g) => g.goal.period == GoalPeriod.year).toList();
+    final weeklyGoals =
+        goals.where((g) => g.goal.period == GoalPeriod.week).toList();
+    final monthlyGoals =
+        goals.where((g) => g.goal.period == GoalPeriod.month).toList();
+    final quarterlyGoals =
+        goals.where((g) => g.goal.period == GoalPeriod.quarter).toList();
+    final yearlyGoals =
+        goals.where((g) => g.goal.period == GoalPeriod.year).toList();
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -137,7 +144,7 @@ class GoalsDashboardScreen extends ConsumerWidget {
             error: (_, __) => const SizedBox.shrink(),
           ),
           const SizedBox(height: 24),
-          
+
           // Weekly Goals
           if (weeklyGoals.isNotEmpty) ...[
             _buildSectionHeader(context, 'This Week'),
@@ -145,7 +152,7 @@ class GoalsDashboardScreen extends ConsumerWidget {
             ...weeklyGoals.map((goal) => _buildGoalCard(context, ref, goal)),
             const SizedBox(height: 24),
           ],
-          
+
           // Monthly Goals
           if (monthlyGoals.isNotEmpty) ...[
             _buildSectionHeader(context, 'This Month'),
@@ -153,7 +160,7 @@ class GoalsDashboardScreen extends ConsumerWidget {
             ...monthlyGoals.map((goal) => _buildGoalCard(context, ref, goal)),
             const SizedBox(height: 24),
           ],
-          
+
           // Quarterly Goals
           if (quarterlyGoals.isNotEmpty) ...[
             _buildSectionHeader(context, 'This Quarter'),
@@ -161,7 +168,7 @@ class GoalsDashboardScreen extends ConsumerWidget {
             ...quarterlyGoals.map((goal) => _buildGoalCard(context, ref, goal)),
             const SizedBox(height: 24),
           ],
-          
+
           // Yearly Goals
           if (yearlyGoals.isNotEmpty) ...[
             _buildSectionHeader(context, 'This Year'),
@@ -192,8 +199,8 @@ class GoalsDashboardScreen extends ConsumerWidget {
                 Text(
                   'Goal Summary',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ],
             ),
@@ -238,8 +245,11 @@ class GoalsDashboardScreen extends ConsumerWidget {
               Text(
                 '${summary.onTrackPercent.toStringAsFixed(0)}% of goals on track',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                ),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.6),
+                    ),
               ),
             ],
           ],
@@ -255,24 +265,28 @@ class GoalsDashboardScreen extends ConsumerWidget {
     Color color,
     IconData icon,
   ) {
-    return Column(
-      children: [
-        Icon(icon, color: color, size: 28),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: color,
+    return Semantics(
+      label: '$value goals $label',
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 28, semanticLabel: ''),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
           ),
-        ),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -280,12 +294,13 @@ class GoalsDashboardScreen extends ConsumerWidget {
     return Text(
       title,
       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-        fontWeight: FontWeight.bold,
-      ),
+            fontWeight: FontWeight.bold,
+          ),
     );
   }
 
-  Widget _buildGoalCard(BuildContext context, WidgetRef ref, GoalProgress goalProgress) {
+  Widget _buildGoalCard(
+      BuildContext context, WidgetRef ref, GoalProgress goalProgress) {
     final categoryAsync = goalProgress.goal.categoryId != null
         ? ref.watch(categoryByIdProvider(goalProgress.goal.categoryId!))
         : null;
@@ -297,7 +312,7 @@ class GoalsDashboardScreen extends ConsumerWidget {
     Color indicatorColor = ColorUtils.defaultCategoryColor;
     String? targetName;
     IconData targetIcon = Icons.track_changes;
-    
+
     // For category goals
     if (goalProgress.goal.type == GoalType.category && categoryAsync != null) {
       categoryAsync.when(
@@ -312,7 +327,7 @@ class GoalsDashboardScreen extends ConsumerWidget {
         error: (_, __) {},
       );
     }
-    
+
     // For relationship goals
     if (goalProgress.goal.type == GoalType.person && personAsync != null) {
       personAsync.when(
@@ -342,125 +357,149 @@ class GoalsDashboardScreen extends ConsumerWidget {
         break;
     }
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: () => context.push('/goal/${goalProgress.goal.id}/edit'),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 4,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: indicatorColor,
-                      borderRadius: BorderRadius.circular(2),
+    // Build semantic label for screen readers
+    String semanticLabel = goalProgress.goal.title;
+    if (targetName != null) {
+      semanticLabel += ', for $targetName';
+    }
+    semanticLabel += ', ${goalProgress.statusText}';
+    semanticLabel += ', ${goalProgress.progressPercentText} complete';
+    semanticLabel += '. Tap to edit.';
+
+    return Semantics(
+      button: true,
+      label: semanticLabel,
+      excludeSemantics: true,
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 12),
+        child: InkWell(
+          onTap: () => context.push('/goal/${goalProgress.goal.id}/edit'),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 4,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: indicatorColor,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(targetIcon, size: 20),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                goalProgress.goal.title,
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        if (targetName != null) ...[
-                          const SizedBox(height: 4),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Row(
                             children: [
-                              if (goalProgress.goal.type == GoalType.person) ...[
-                                Icon(
-                                  Icons.person_outline,
-                                  size: 14,
-                                  color: indicatorColor,
-                                ),
-                                const SizedBox(width: 4),
-                              ],
-                              Text(
-                                targetName!,
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: indicatorColor,
+                              Icon(targetIcon, size: 20),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  goalProgress.goal.title,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                 ),
                               ),
                             ],
                           ),
+                          if (targetName != null) ...[
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                if (goalProgress.goal.type ==
+                                    GoalType.person) ...[
+                                  Icon(
+                                    Icons.person_outline,
+                                    size: 14,
+                                    color: indicatorColor,
+                                  ),
+                                  const SizedBox(width: 4),
+                                ],
+                                Text(
+                                  targetName!,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.copyWith(
+                                        color: indicatorColor,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: statusColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: statusColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            goalProgress.statusIcon,
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            goalProgress.statusText,
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: statusColor,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                          ),
+                        ],
+                      ),
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          goalProgress.statusIcon,
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          goalProgress.statusText,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: statusColor,
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Text(
+                      goalProgress.progressText,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w500,
                           ),
-                        ),
-                      ],
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Text(
-                    goalProgress.progressText,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
+                    const Spacer(),
+                    Text(
+                      goalProgress.progressPercentText,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: statusColor,
+                          ),
                     ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    goalProgress.progressPercentText,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: statusColor,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: LinearProgressIndicator(
-                  value: goalProgress.progressPercent,
-                  backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-                  valueColor: AlwaysStoppedAnimation<Color>(statusColor),
-                  minHeight: 8,
+                  ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: goalProgress.progressPercent,
+                    backgroundColor:
+                        Theme.of(context).colorScheme.surfaceVariant,
+                    valueColor: AlwaysStoppedAnimation<Color>(statusColor),
+                    minHeight: 8,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

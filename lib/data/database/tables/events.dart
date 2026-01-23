@@ -6,6 +6,10 @@ import 'locations.dart';
 import 'recurrence_rules.dart';
 
 /// Events table definition
+@TableIndex(name: 'idx_events_start_time', columns: {#fixedStartTime})
+@TableIndex(name: 'idx_events_end_time', columns: {#fixedEndTime})
+@TableIndex(name: 'idx_events_category', columns: {#categoryId})
+@TableIndex(name: 'idx_events_status', columns: {#status})
 class Events extends Table {
   TextColumn get id => text()();
   TextColumn get name => text().withLength(min: 1, max: 200)();
@@ -14,18 +18,15 @@ class Events extends Table {
   DateTimeColumn get fixedStartTime => dateTime().nullable()();
   DateTimeColumn get fixedEndTime => dateTime().nullable()();
   IntColumn get durationMinutes => integer().nullable()();
-  TextColumn get categoryId =>
-      text().nullable().references(Categories, #id)();
-  TextColumn get locationId =>
-      text().nullable().references(Locations, #id)();
+  TextColumn get categoryId => text().nullable().references(Categories, #id)();
+  TextColumn get locationId => text().nullable().references(Locations, #id)();
+
   /// Reference to the recurrence rule for repeating events
   TextColumn get recurrenceRuleId =>
       text().nullable().references(RecurrenceRules, #id)();
   BoolColumn get appCanMove => boolean().withDefault(const Constant(true))();
-  BoolColumn get appCanResize =>
-      boolean().withDefault(const Constant(true))();
-  BoolColumn get isUserLocked =>
-      boolean().withDefault(const Constant(false))();
+  BoolColumn get appCanResize => boolean().withDefault(const Constant(true))();
+  BoolColumn get isUserLocked => boolean().withDefault(const Constant(false))();
   IntColumn get status =>
       intEnum<EventStatus>().withDefault(const Constant(0))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();

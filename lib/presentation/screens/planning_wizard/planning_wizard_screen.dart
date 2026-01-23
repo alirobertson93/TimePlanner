@@ -44,12 +44,12 @@ class _PlanningWizardScreenState extends ConsumerState<PlanningWizardScreen> {
         children: [
           // Progress indicator
           _buildStepIndicator(wizardState.currentStep),
-          
+
           // Step content
           Expanded(
             child: _buildStepContent(wizardState.currentStep),
           ),
-          
+
           // Navigation buttons
           _buildNavigationButtons(context, wizardState),
         ],
@@ -73,23 +73,26 @@ class _PlanningWizardScreenState extends ConsumerState<PlanningWizardScreen> {
   }
 
   Widget _buildStepIndicator(int currentStep) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          for (int i = 0; i < 4; i++) ...[
-            if (i > 0)
-              Expanded(
-                child: Container(
-                  height: 2,
-                  color: i <= currentStep
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.surfaceContainerHighest,
+    return Semantics(
+      label: 'Step ${currentStep + 1} of 4: ${_getStepTitle(currentStep)}',
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            for (int i = 0; i < 4; i++) ...[
+              if (i > 0)
+                Expanded(
+                  child: Container(
+                    height: 2,
+                    color: i <= currentStep
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.surfaceContainerHighest,
+                  ),
                 ),
-              ),
-            _buildStepCircle(i, currentStep),
+              _buildStepCircle(i, currentStep),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -98,36 +101,45 @@ class _PlanningWizardScreenState extends ConsumerState<PlanningWizardScreen> {
     final isCompleted = step < currentStep;
     final isCurrent = step == currentStep;
     final theme = Theme.of(context);
+    final stepTitle = _getStepTitle(step);
 
-    return Container(
-      width: 32,
-      height: 32,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: isCompleted || isCurrent
-            ? theme.colorScheme.primary
-            : theme.colorScheme.surfaceContainerHighest,
-        border: isCurrent
-            ? Border.all(color: theme.colorScheme.primary, width: 2)
-            : null,
-      ),
-      child: Center(
-        child: isCompleted
-            ? Icon(
-                Icons.check,
-                size: 18,
-                color: theme.colorScheme.onPrimary,
-              )
-            : Text(
-                '${step + 1}',
-                style: TextStyle(
-                  color: isCurrent
-                      ? theme.colorScheme.onPrimary
-                      : theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
+    return Semantics(
+      label: isCompleted
+          ? 'Step ${step + 1}: $stepTitle, completed'
+          : isCurrent
+              ? 'Step ${step + 1}: $stepTitle, current step'
+              : 'Step ${step + 1}: $stepTitle',
+      child: Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: isCompleted || isCurrent
+              ? theme.colorScheme.primary
+              : theme.colorScheme.surfaceContainerHighest,
+          border: isCurrent
+              ? Border.all(color: theme.colorScheme.primary, width: 2)
+              : null,
+        ),
+        child: Center(
+          child: isCompleted
+              ? Icon(
+                  Icons.check,
+                  size: 18,
+                  color: theme.colorScheme.onPrimary,
+                  semanticLabel: 'Completed',
+                )
+              : Text(
+                  '${step + 1}',
+                  style: TextStyle(
+                    color: isCurrent
+                        ? theme.colorScheme.onPrimary
+                        : theme.colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }
@@ -170,52 +182,68 @@ class _PlanningWizardScreenState extends ConsumerState<PlanningWizardScreen> {
             // Back button
             if (wizardState.canGoBack)
               Expanded(
-                child: OutlinedButton(
-                  onPressed: () {
-                    ref.read(planningWizardProvider.notifier).previousStep();
-                  },
-                  child: const Text('Back'),
+                child: Semantics(
+                  button: true,
+                  label: 'Go back to previous step',
+                  child: OutlinedButton(
+                    onPressed: () {
+                      ref.read(planningWizardProvider.notifier).previousStep();
+                    },
+                    child: const Text('Back'),
+                  ),
                 ),
               )
             else
               const Spacer(),
-            
+
             const SizedBox(width: 16),
-            
+
             // Next/Generate/Accept button
             Expanded(
-              child: FilledButton(
-                onPressed: wizardState.isGenerating
-                    ? null
-                    : () async {
-                        if (isGeneratingStep) {
-                          await ref
-                              .read(planningWizardProvider.notifier)
-                              .generateSchedule();
-                        } else if (isLastStep) {
-                          final success = await ref
-                              .read(planningWizardProvider.notifier)
-                              .acceptSchedule();
-                          if (success && context.mounted) {
-                            _showSuccessAndNavigate(context);
+              child: Semantics(
+                button: true,
+                label: wizardState.isGenerating
+                    ? 'Generating schedule, please wait'
+                    : isGeneratingStep
+                        ? 'Generate schedule'
+                        : isLastStep
+                            ? 'Accept and save schedule'
+                            : 'Continue to next step',
+                child: FilledButton(
+                  onPressed: wizardState.isGenerating
+                      ? null
+                      : () async {
+                          if (isGeneratingStep) {
+                            await ref
+                                .read(planningWizardProvider.notifier)
+                                .generateSchedule();
+                          } else if (isLastStep) {
+                            final success = await ref
+                                .read(planningWizardProvider.notifier)
+                                .acceptSchedule();
+                            if (success && context.mounted) {
+                              _showSuccessAndNavigate(context);
+                            }
+                          } else if (wizardState.canProceed) {
+                            ref
+                                .read(planningWizardProvider.notifier)
+                                .nextStep();
                           }
-                        } else if (wizardState.canProceed) {
-                          ref.read(planningWizardProvider.notifier).nextStep();
-                        }
-                      },
-                child: wizardState.isGenerating
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(
-                        isGeneratingStep
-                            ? 'Generate Schedule'
-                            : isLastStep
-                                ? 'Accept Schedule'
-                                : 'Next',
-                      ),
+                        },
+                  child: wizardState.isGenerating
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(
+                          isGeneratingStep
+                              ? 'Generate Schedule'
+                              : isLastStep
+                                  ? 'Accept Schedule'
+                                  : 'Next',
+                        ),
+                ),
               ),
             ),
           ],

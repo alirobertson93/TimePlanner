@@ -104,14 +104,16 @@ class NotificationsScreen extends ConsumerWidget {
           Text(
             'No notifications',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                 ),
           ),
           const SizedBox(height: 8),
           Text(
             'You\'re all caught up!',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
                 ),
           ),
         ],
@@ -134,7 +136,7 @@ class NotificationsScreen extends ConsumerWidget {
       itemBuilder: (context, index) {
         final date = sortedDates[index];
         final dateNotifications = groupedNotifications[date]!;
-        
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -149,7 +151,8 @@ class NotificationsScreen extends ConsumerWidget {
               ),
             ),
             ...dateNotifications.map(
-              (notification) => _buildNotificationTile(context, ref, notification),
+              (notification) =>
+                  _buildNotificationTile(context, ref, notification),
             ),
           ],
         );
@@ -180,7 +183,7 @@ class NotificationsScreen extends ConsumerWidget {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
-    
+
     if (date == today) {
       return 'Today';
     } else if (date == yesterday) {
@@ -196,97 +199,141 @@ class NotificationsScreen extends ConsumerWidget {
     domain.Notification notification,
   ) {
     final isUnread = notification.status == NotificationStatus.delivered ||
-                     notification.status == NotificationStatus.pending;
+        notification.status == NotificationStatus.pending;
+    final semanticLabel =
+        _buildNotificationSemanticLabel(notification, isUnread);
 
-    return Dismissible(
-      key: Key(notification.id),
-      direction: DismissDirection.endToStart,
-      background: Container(
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 16),
-        color: Colors.red,
-        child: const Icon(Icons.delete, color: Colors.white),
-      ),
-      onDismissed: (_) async {
-        await ref.read(notificationRepositoryProvider).delete(notification.id);
-        _refreshNotifications(ref);
-      },
-      child: ListTile(
-        leading: _buildNotificationIcon(notification),
-        title: Text(
-          notification.title,
-          style: TextStyle(
-            fontWeight: isUnread ? FontWeight.bold : FontWeight.normal,
-          ),
+    return Semantics(
+      button: true,
+      label: semanticLabel,
+      child: Dismissible(
+        key: Key(notification.id),
+        direction: DismissDirection.endToStart,
+        background: Container(
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.only(right: 16),
+          color: Colors.red,
+          child: const Icon(Icons.delete,
+              color: Colors.white, semanticLabel: 'Delete'),
         ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (notification.body != null && notification.body!.isNotEmpty) ...[
+        confirmDismiss: (_) async {
+          return true;
+        },
+        onDismissed: (_) async {
+          await ref
+              .read(notificationRepositoryProvider)
+              .delete(notification.id);
+          _refreshNotifications(ref);
+        },
+        child: ListTile(
+          leading: _buildNotificationIcon(notification),
+          title: Text(
+            notification.title,
+            style: TextStyle(
+              fontWeight: isUnread ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (notification.body != null &&
+                  notification.body!.isNotEmpty) ...[
+                Text(
+                  notification.body!,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+              const SizedBox(height: 4),
               Text(
-                notification.body!,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+                DateFormat.jm().format(notification.scheduledAt),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.5),
+                    ),
               ),
             ],
-            const SizedBox(height: 4),
-            Text(
-              DateFormat.jm().format(notification.scheduledAt),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+          ),
+          trailing: isUnread
+              ? Semantics(
+                  label: 'Unread',
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      shape: BoxShape.circle,
+                    ),
                   ),
-            ),
-          ],
+                )
+              : null,
+          onTap: () => _handleNotificationTap(context, ref, notification),
         ),
-        trailing: isUnread
-            ? Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  shape: BoxShape.circle,
-                ),
-              )
-            : null,
-        onTap: () => _handleNotificationTap(context, ref, notification),
       ),
     );
+  }
+
+  String _buildNotificationSemanticLabel(
+      domain.Notification notification, bool isUnread) {
+    final buffer = StringBuffer();
+    if (isUnread) {
+      buffer.write('Unread. ');
+    }
+    buffer.write(notification.title);
+    if (notification.body != null && notification.body!.isNotEmpty) {
+      buffer.write('. ${notification.body}');
+    }
+    buffer.write('. ${DateFormat.jm().format(notification.scheduledAt)}');
+    buffer.write('. Tap to view details. Swipe left to delete.');
+    return buffer.toString();
   }
 
   Widget _buildNotificationIcon(domain.Notification notification) {
     IconData icon;
     Color color;
+    String semanticLabel;
 
     switch (notification.type) {
       case NotificationType.eventReminder:
         icon = Icons.alarm;
         color = Colors.blue;
+        semanticLabel = 'Event reminder';
         break;
       case NotificationType.scheduleChange:
         icon = Icons.schedule;
         color = Colors.orange;
+        semanticLabel = 'Schedule change';
         break;
       case NotificationType.goalProgress:
         icon = Icons.trending_up;
         color = Colors.green;
+        semanticLabel = 'Goal progress';
         break;
       case NotificationType.conflictWarning:
         icon = Icons.warning;
         color = Colors.amber;
+        semanticLabel = 'Conflict warning';
         break;
       case NotificationType.goalAtRisk:
         icon = Icons.error;
         color = Colors.red;
+        semanticLabel = 'Goal at risk';
         break;
       case NotificationType.goalCompleted:
         icon = Icons.check_circle;
         color = Colors.green;
+        semanticLabel = 'Goal completed';
         break;
     }
 
-    return CircleAvatar(
-      backgroundColor: color.withOpacity(0.2),
-      child: Icon(icon, color: color),
+    return Semantics(
+      label: semanticLabel,
+      child: CircleAvatar(
+        backgroundColor: color.withOpacity(0.2),
+        child: Icon(icon, color: color, semanticLabel: ''),
+      ),
     );
   }
 

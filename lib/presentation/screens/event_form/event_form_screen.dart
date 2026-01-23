@@ -75,33 +75,42 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
       appBar: AppBar(
         title: Text(formState.isEditMode ? 'Edit Event' : 'New Event'),
         actions: [
-          TextButton(
-            onPressed: formState.isSaving || !formState.isValid
-                ? null
-                : () async {
-                    final success = await formNotifier.save();
-                    if (success && context.mounted) {
-                      // Check for missing travel times if the event has a location
-                      if (formState.locationId != null) {
-                        await _checkAndPromptForTravelTimes(
-                          context,
-                          ref,
-                          formState.locationId!,
-                          formState.startDate,
-                        );
+          Semantics(
+            button: true,
+            label: formState.isSaving
+                ? 'Saving event'
+                : (formState.isEditMode
+                    ? 'Save changes to event'
+                    : 'Save new event'),
+            enabled: !formState.isSaving && formState.isValid,
+            child: TextButton(
+              onPressed: formState.isSaving || !formState.isValid
+                  ? null
+                  : () async {
+                      final success = await formNotifier.save();
+                      if (success && context.mounted) {
+                        // Check for missing travel times if the event has a location
+                        if (formState.locationId != null) {
+                          await _checkAndPromptForTravelTimes(
+                            context,
+                            ref,
+                            formState.locationId!,
+                            formState.startDate,
+                          );
+                        }
+                        if (context.mounted) {
+                          context.pop();
+                        }
                       }
-                      if (context.mounted) {
-                        context.pop();
-                      }
-                    }
-                  },
-            child: formState.isSaving
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Save'),
+                    },
+              child: formState.isSaving
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Save'),
+            ),
           ),
         ],
       ),
@@ -143,14 +152,18 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
           const SizedBox(height: 16),
 
           // Title field
-          TextField(
-            controller: _titleController,
-            decoration: const InputDecoration(
-              labelText: 'Title *',
-              border: OutlineInputBorder(),
-              hintText: 'Enter event title',
+          Semantics(
+            textField: true,
+            label: 'Event title, required field',
+            child: TextField(
+              controller: _titleController,
+              decoration: const InputDecoration(
+                labelText: 'Title *',
+                border: OutlineInputBorder(),
+                hintText: 'Enter event title',
+              ),
+              onChanged: formNotifier.updateTitle,
             ),
-            onChanged: formNotifier.updateTitle,
           ),
           const SizedBox(height: 16),
 
@@ -228,28 +241,36 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
           const SizedBox(height: 16),
 
           // Event Type segmented button
-          Text(
-            'Event Type',
-            style: Theme.of(context).textTheme.bodyMedium,
+          Semantics(
+            label: 'Event type selection',
+            child: Text(
+              'Event Type',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
           ),
           const SizedBox(height: 8),
-          SegmentedButton<TimingType>(
-            segments: const [
-              ButtonSegment<TimingType>(
-                value: TimingType.fixed,
-                label: Text('Fixed Time'),
-                icon: Icon(Icons.schedule),
-              ),
-              ButtonSegment<TimingType>(
-                value: TimingType.flexible,
-                label: Text('Flexible'),
-                icon: Icon(Icons.timelapse),
-              ),
-            ],
-            selected: {formState.timingType},
-            onSelectionChanged: (Set<TimingType> selected) {
-              formNotifier.updateTimingType(selected.first);
-            },
+          Semantics(
+            container: true,
+            label:
+                'Select event type: ${formState.timingType == TimingType.fixed ? "Fixed time selected" : "Flexible selected"}',
+            child: SegmentedButton<TimingType>(
+              segments: const [
+                ButtonSegment<TimingType>(
+                  value: TimingType.fixed,
+                  label: Text('Fixed Time'),
+                  icon: Icon(Icons.schedule, semanticLabel: 'Fixed time event'),
+                ),
+                ButtonSegment<TimingType>(
+                  value: TimingType.flexible,
+                  label: Text('Flexible'),
+                  icon: Icon(Icons.timelapse, semanticLabel: 'Flexible event'),
+                ),
+              ],
+              selected: {formState.timingType},
+              onSelectionChanged: (Set<TimingType> selected) {
+                formNotifier.updateTimingType(selected.first);
+              },
+            ),
           ),
           const SizedBox(height: 24),
 
@@ -297,7 +318,8 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
                       );
                       if (time != null) {
                         formNotifier.updateStartTime(
-                          form_providers.TimeOfDay(hour: time.hour, minute: time.minute),
+                          form_providers.TimeOfDay(
+                              hour: time.hour, minute: time.minute),
                         );
                       }
                     },
@@ -353,7 +375,8 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
                       );
                       if (time != null) {
                         formNotifier.updateEndTime(
-                          form_providers.TimeOfDay(hour: time.hour, minute: time.minute),
+                          form_providers.TimeOfDay(
+                              hour: time.hour, minute: time.minute),
                         );
                       }
                     },
@@ -485,7 +508,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
     if (hexString == null || hexString.isEmpty) {
       return Colors.grey; // Default color
     }
-    
+
     try {
       // Remove any non-hex characters
       final cleanHex = hexString.replaceAll(RegExp(r'[^0-9A-Fa-f]'), '');
@@ -512,11 +535,14 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
       final travelTimeRepo = ref.read(travelTimePairRepositoryProvider);
 
       // Get events for the same day (end of day is last microsecond of the day)
-      final startOfDay = DateTime(eventDate.year, eventDate.month, eventDate.day);
-      final endOfDay = startOfDay.add(const Duration(days: 1)).subtract(const Duration(microseconds: 1));
-      
+      final startOfDay =
+          DateTime(eventDate.year, eventDate.month, eventDate.day);
+      final endOfDay = startOfDay
+          .add(const Duration(days: 1))
+          .subtract(const Duration(microseconds: 1));
+
       final dayEvents = await eventRepo.getEventsInRange(startOfDay, endOfDay);
-      
+
       // Filter events with locations and sort by time
       final eventsWithLocations = dayEvents
           .where((e) => e.locationId != null && e.startTime != null)
@@ -537,12 +563,13 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
         // Create canonical key to avoid duplicate checks
         final ids = [currentEvent.locationId!, nextEvent.locationId!]..sort();
         final pairKey = '${ids[0]}_${ids[1]}';
-        
+
         if (checkedPairs.contains(pairKey)) continue;
         checkedPairs.add(pairKey);
 
         // Check if travel time exists
-        final existingTravelTime = await travelTimeRepo.getByLocationPairBidirectional(
+        final existingTravelTime =
+            await travelTimeRepo.getByLocationPairBidirectional(
           currentEvent.locationId!,
           nextEvent.locationId!,
         );
