@@ -600,7 +600,7 @@ This document is the single source of truth for the project's current status, co
 ## Next Development Session Guide
 
 **Prerequisites** (requires Flutter SDK):
-1. Run `flutter pub run build_runner build --delete-conflicting-outputs`
+1. Run `dart run build_runner build --delete-conflicting-outputs`
 2. Run `flutter test` to verify test suite (30+ tests)
 
 **Phase 8 Performance Work**:
