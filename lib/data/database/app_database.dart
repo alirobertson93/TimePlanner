@@ -14,6 +14,7 @@ import 'tables/event_people.dart';
 import 'tables/locations.dart';
 import 'tables/recurrence_rules.dart';
 import 'tables/notifications.dart';
+import 'tables/travel_time_pairs.dart';
 
 // Import enums so the generated .g.dart file can access them
 import '../../domain/enums/timing_type.dart';
@@ -26,7 +27,7 @@ import '../../domain/enums/notification_status.dart';
 part 'app_database.g.dart';
 
 /// Main database class for the TimePlanner app
-@DriftDatabase(tables: [Categories, Events, Goals, People, EventPeople, Locations, RecurrenceRules, Notifications])
+@DriftDatabase(tables: [Categories, Events, Goals, People, EventPeople, Locations, RecurrenceRules, Notifications, TravelTimePairs])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -34,7 +35,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration {
@@ -76,6 +77,10 @@ class AppDatabase extends _$AppDatabase {
         // Migration from version 8 to 9: Add personId column to Goals table for relationship goals
         if (from <= 8) {
           await m.addColumn(goals, goals.personId);
+        }
+        // Migration from version 9 to 10: Add TravelTimePairs table for manual travel time entry
+        if (from <= 9) {
+          await m.createTable(travelTimePairs);
         }
       },
     );

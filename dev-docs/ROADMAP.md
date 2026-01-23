@@ -10,7 +10,7 @@ This document is the single source of truth for the project's current status, co
 
 **Overall Progress**: ~100% Core Features Complete
 
-**Active Work**: Phase 7 - Relationship Goals complete. Next: system notifications (flutter_local_notifications) or travel time.
+**Active Work**: Phase 7 - Relationship Goals complete. Travel Time feature in progress.
 
 ## Completed Phases
 
@@ -442,10 +442,15 @@ This document is the single source of truth for the project's current status, co
   - [x] Notification preferences UI
   - [x] Theme settings UI
   - [x] Settings persistence (SharedPreferences)
-- [ ] Travel Time (from Phase 6)
-  - [ ] Calculate travel time between locations
+- [ ] Travel Time (from Phase 6) 🔄 **In Progress**
+  - [ ] TravelTimePair entity and database table
+  - [ ] TravelTimePairRepository with CRUD operations
+  - [ ] Database migration v9 → v10
+  - [ ] Manual travel time entry UI (via Locations menu)
+  - [ ] Travel time prompt on event entry/reordering
   - [ ] Auto-schedule travel buffer
   - [ ] Travel time in schedule generation
+  - [ ] (Future) GPS-based travel time estimation
 - [x] Relationship Goals (from Phase 6)
   - [x] Goals tied to specific people (personId in Goal entity)
   - [x] Track time with each person (via EventPeople junction)
@@ -555,7 +560,7 @@ This document is the single source of truth for the project's current status, co
 | **Settings** | 🟢 Complete | 100% | UI and SharedPreferences persistence complete (Phase 7) |
 | **Recurrence** | 🟢 Complete | 95% | Data layer + UI complete. **RecurrenceCustomDialog extracted to separate file.** Exception handling pending. |
 | **Notifications** | 🟢 Active | 85% | Data layer complete + UI complete (NotificationsScreen, notification badge in Day View). System notifications pending. |
-| **Travel Time** | ⚪ Planned | 0% | Not started (Phase 7 - deferred from Phase 6) |
+| **Travel Time** | 🟡 In Progress | 0% | Phase 7 - Starting implementation: manual entry via Locations menu |
 | **Relationship Goals** | 🟢 Complete | 100% | **Fully implemented!** Goal entity with personId, Goal form with type selector, progress tracking via EventPeople, Dashboard display with person info. |
 | **Onboarding** | ⚪ Planned | 0% | Not started (Phase 8) |
 | **Widget Tests** | 🟢 Active | 30% | Day View, Event Form, Planning Wizard tests added |

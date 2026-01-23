@@ -11,6 +11,7 @@ import '../presentation/screens/people/people_screen.dart';
 import '../presentation/screens/locations/locations_screen.dart';
 import '../presentation/screens/settings/settings_screen.dart';
 import '../presentation/screens/notifications/notifications_screen.dart';
+import '../presentation/screens/travel_times/travel_times_screen.dart';
 
 /// Application router configuration
 class AppRouter {
@@ -92,6 +93,11 @@ class AppRouter {
         path: '/notifications',
         name: 'notifications',
         builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: '/travel-times',
+        name: 'travel_times',
+        builder: (context, state) => const TravelTimesScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
