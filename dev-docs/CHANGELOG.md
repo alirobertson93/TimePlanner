@@ -2268,12 +2268,23 @@ Track technical debt to address later.
 
 ### Medium Priority
 
-**TD-001: Test Coverage**
+**TD-001: Test Coverage** ✅ Largely Resolved
 - **Issue**: Repository tests incomplete
 - **Impact**: Risk of bugs in data layer
 - **Effort**: 2-3 hours
 - **Plan**: Add integration tests for all repositories
-- **Status**: Open
+- **Status**: **LARGELY RESOLVED** - All repositories now have tests:
+  - event_repository_test.dart ✅
+  - category_repository_test.dart ✅
+  - goal_repository_test.dart ✅
+  - person_repository_test.dart ✅
+  - event_people_repository_test.dart ✅
+  - location_repository_test.dart ✅
+  - recurrence_rule_repository_test.dart ✅
+  - notification_repository_test.dart ✅
+  - travel_time_pair_repository_test.dart ✅
+  - Widget tests: day_view_screen_test.dart, event_form_screen_test.dart, planning_wizard_screen_test.dart ✅
+  - Integration test: app_flow_test.dart ✅
 
 **TD-002: Error Handling**
 - **Issue**: Limited error handling in repositories
@@ -2284,12 +2295,12 @@ Track technical debt to address later.
 
 ### Low Priority
 
-**TD-003: Code Generation Documentation**
+**TD-003: Code Generation Documentation** ✅ Resolved
 - **Issue**: No docs on when to run build_runner
 - **Impact**: Minor, developers can figure it out
 - **Effort**: 30 minutes
 - **Plan**: Add note to README
-- **Status**: Open
+- **Status**: **RESOLVED** - README already has comprehensive build_runner documentation in the "Code Generation" section (lines 124-135)
 
 **TD-004: CategoryRepository File Location**
 - **Issue**: CategoryRepository is defined in event_repository.dart instead of its own file
