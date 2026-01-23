@@ -713,6 +713,10 @@ class AppDatabase extends _$AppDatabase {
       await m.createAll();
       await _seedDefaultCategories();
     },
+    beforeOpen: (details) async {
+      // Enable foreign key constraints (required for cascade deletes)
+      await customStatement('PRAGMA foreign_keys = ON');
+    },
     onUpgrade: (Migrator m, int from, int to) async {
       // Migration from version 1 to 2: Add Goals table
       if (from == 1) {
@@ -944,9 +948,46 @@ class EventRepository {
 ## Migration Strategy
 
 ### Version 1 (Initial Schema)
-- All 15 tables created
+- Events, Categories tables created
 - Default categories seeded
-- Indexes created
+
+### Version 2
+- Added Goals table
+
+### Version 3
+- Added People table
+
+### Version 4
+- Added EventPeople junction table
+
+### Version 5
+- Added Locations table
+
+### Version 6
+- Added locationId column to Events table
+
+### Version 7
+- Added RecurrenceRules table
+- Added recurrenceRuleId column to Events table
+
+### Version 8
+- Added Notifications table
+
+### Version 9
+- Added personId column to Goals table (for relationship goals)
+
+### Version 10 (Current)
+- Added TravelTimePairs table
+
+### Important: Foreign Key Support
+
+SQLite doesn't enable foreign key constraints by default. To enable cascade deletes and other foreign key features, the database must execute `PRAGMA foreign_keys = ON` on every connection using the `beforeOpen` callback:
+
+```dart
+beforeOpen: (details) async {
+  await customStatement('PRAGMA foreign_keys = ON');
+},
+```
 
 ### Future Migrations
 
@@ -954,6 +995,14 @@ When adding fields:
 ```dart
 @override
 MigrationStrategy get migration => MigrationStrategy(
+  onCreate: (Migrator m) async {
+    await m.createAll();
+    await _seedDefaultCategories();
+  },
+  beforeOpen: (details) async {
+    // Enable foreign key constraints (required for cascade deletes)
+    await customStatement('PRAGMA foreign_keys = ON');
+  },
   onUpgrade: (Migrator m, int from, int to) async {
     if (from == 1) {
       // Add new column with default value

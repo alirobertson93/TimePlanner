@@ -6,11 +6,11 @@ This document is the single source of truth for the project's current status, co
 
 ## Current Status
 
-**Project Phase**: Phase 7 Nearly Complete - Advanced Features (System Notifications Pending)
+**Project Phase**: Phase 8 In Progress - Polish & Launch
 
-**Overall Progress**: ~100% Core Features Complete
+**Overall Progress**: ~100% Core Features Complete, Onboarding Implemented
 
-**Active Work**: Phase 7 - Travel Time manual entry ✅, Relationship Goals ✅, System Notifications ⏳ (pending flutter_local_notifications)
+**Active Work**: Phase 8 - Onboarding ✅ Complete, Performance/Accessibility ⏳ Pending
 
 ## Completed Phases
 
@@ -333,22 +333,22 @@ This document is the single source of truth for the project's current status, co
 
 ## Upcoming Phases
 
-### Phase 7: Advanced Features 🟡 (In Progress)
+### Phase 7: Advanced Features ✅ (Complete)
 
 **Target**: Late development
 
-**Status**: 98% Complete
+**Status**: 100% Complete
 
 **Goals**:
 - Add recurring event support ✅ (Complete)
-- Implement notifications 🟡 (Data Layer + UI Complete, System Notifications Pending)
+- Implement notifications ✅ (Complete - Data Layer, UI, and System Notifications)
 - Create settings/preferences screen ✅ (Complete)
 - Add travel time manual entry ✅ (Complete)
 - Enable relationship goal tracking ✅ (Complete)
 
-**Notifications Clarification**:
+**Notifications**:
 - ✅ **In-app notifications**: Complete (data layer, UI, notification center, badge system)
-- ⏳ **System push notifications**: Pending (flutter_local_notifications integration needed for OS-level alerts)
+- ✅ **System push notifications**: Complete (flutter_local_notifications integrated for OS-level alerts)
 
 **What's Working**:
 - ✅ Settings Screen UI implemented
@@ -519,22 +519,41 @@ This document is the single source of truth for the project's current status, co
 
 **Estimated Effort**: 4-5 development sessions
 
-### Phase 8: Polish & Launch (Low Priority)
+### Phase 8: Polish & Launch 🟡 (In Progress)
 
 **Target**: Pre-release
 
+**Status**: 40% Complete
+
 **Goals**:
-- Add onboarding experience
+- Add onboarding experience ✅
 - Optimize performance
 - Ensure accessibility
 - Prepare for launch
 
+**What's Working**:
+- ✅ **Onboarding Experience** implemented
+  - OnboardingService - Manages onboarding state with SharedPreferences, supports versioned re-onboarding
+  - OnboardingScreen - 5-page welcome wizard with:
+    - Welcome, Smart Scheduling, Track Your Goals, Plan Ahead, Stay Notified pages
+    - Skip button, page indicators, back/next navigation
+    - Option to install sample data at completion
+  - SampleDataService - Generates sample locations, people, goals, and events
+  - onboarding_providers.dart - Providers for onboarding and sample data services
+  - Router auto-redirects first-time users to onboarding
+- ✅ **System Notifications** integrated (from Phase 7)
+  - flutter_local_notifications package added
+  - NotificationService - Wraps flutter_local_notifications plugin
+  - NotificationSchedulerService - Bridges repository with system notifications
+  - iOS AppDelegate.swift updated for notification permissions
+  - timezone package for scheduled notifications
+
 **Features**:
-- [ ] Onboarding
-  - [ ] Welcome wizard
-  - [ ] Feature tutorials
-  - [ ] Sample data setup
-  - [ ] First-time user guidance
+- [x] Onboarding
+  - [x] Welcome wizard (5-page flow)
+  - [x] Feature tutorials (built into wizard pages)
+  - [x] Sample data setup (optional at completion)
+  - [x] First-time user guidance (auto-redirect via router)
 - [ ] Performance
   - [ ] Profiling and optimization
   - [ ] Database query optimization
@@ -553,18 +572,33 @@ This document is the single source of truth for the project's current status, co
   - [ ] Privacy policy
   - [ ] Terms of service
 
-**Dependencies**: All previous phases
+**Key Files Added**:
+- lib/domain/services/onboarding_service.dart
+- lib/domain/services/sample_data_service.dart
+- lib/domain/services/notification_service.dart
+- lib/domain/services/notification_scheduler_service.dart
+- lib/presentation/screens/onboarding/onboarding_screen.dart
+- lib/presentation/providers/onboarding_providers.dart
+- lib/presentation/providers/notification_service_provider.dart
 
-**Estimated Effort**: 4-6 development sessions
+**Key Files Modified**:
+- lib/app/router.dart - Added /onboarding route, auto-redirect for first-time users
+- lib/main.dart - Added timezone initialization and notification service init
+- pubspec.yaml - Added flutter_local_notifications: ^18.0.1 and timezone: ^0.10.0
+- ios/Runner/AppDelegate.swift - Added notification permission setup
+
+**Dependencies**: All previous phases (complete)
+
+**Estimated Effort**: 3-4 development sessions remaining
 
 ## Component Completion Summary
 
 | Component | Status | Completion | Notes |
 |-----------|--------|------------|-------|
-| **Database Layer** | 🟢 Active | 100% | Events (with locationId, recurrenceRuleId), Categories, Goals (with personId), People, EventPeople, Locations, RecurrenceRules, Notifications, TravelTimePairs complete. Schema v10. |
-| **Domain Entities** | 🟢 Active | 100% | Core entities + Person + Location + RecurrenceRule + Notification + TravelTimePair done. Event updated with recurrenceRuleId. **Goal updated with personId for relationship goals.** |
-| **Domain Services** | 🟢 Active | 100% | **EventFactory added** - centralized event creation logic |
-| **Repositories** | 🟢 Active | 100% | Event, Category, Goal, Person, EventPeople, Location, RecurrenceRule, Notification, TravelTimePair repos complete with tests + interfaces. **GoalRepository updated with getByPerson().** |
+| **Database Layer** | 🟢 Complete | 100% | Events (with locationId, recurrenceRuleId), Categories, Goals (with personId), People, EventPeople, Locations, RecurrenceRules, Notifications, TravelTimePairs complete. Schema v10. **Foreign keys enabled for cascade deletes.** |
+| **Domain Entities** | 🟢 Complete | 100% | Core entities + Person + Location + RecurrenceRule + Notification + TravelTimePair done. Event updated with recurrenceRuleId. **Goal updated with personId for relationship goals.** |
+| **Domain Services** | 🟢 Complete | 100% | EventFactory, **NotificationService**, **NotificationSchedulerService**, **OnboardingService**, **SampleDataService** - centralized service logic |
+| **Repositories** | 🟢 Complete | 100% | Event, Category, Goal, Person, EventPeople, Location, RecurrenceRule, Notification, TravelTimePair repos complete with tests + interfaces. **GoalRepository updated with getByPerson().** |
 | **Scheduler Engine** | 🟢 Complete | 100% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption) |
 | **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button, Locations button, Settings button, Notifications button (with badge), recurring indicators. **Widget tests added.** |
 | **Week View** | 🟢 Complete | 100% | 7-day grid, event blocks, category colors, navigation, recurring indicators |
@@ -576,10 +610,10 @@ This document is the single source of truth for the project's current status, co
 | **Location Management** | 🟢 Complete | 100% | Entity, table, repository, providers, UI, event form integration complete |
 | **Settings** | 🟢 Complete | 100% | UI and SharedPreferences persistence complete (Phase 7) |
 | **Recurrence** | 🟢 Complete | 95% | Data layer + UI complete. **RecurrenceCustomDialog extracted to separate file.** Exception handling pending. |
-| **Notifications** | 🟢 Active | 85% | Data layer complete + UI complete (NotificationsScreen, notification badge in Day View). System notifications pending. |
+| **Notifications** | 🟢 Complete | 100% | **Fully implemented!** Data layer + UI + System notifications via flutter_local_notifications. NotificationSchedulerService bridges repository with OS-level alerts. |
 | **Travel Time** | 🟢 Complete | 100% | **Fully implemented!** Data layer + Travel Times Screen + event prompts complete. Scheduler integration is deferred (future enhancement). |
 | **Relationship Goals** | 🟢 Complete | 100% | **Fully implemented!** Goal entity with personId, Goal form with type selector, progress tracking via EventPeople, Dashboard display with person info. |
-| **Onboarding** | ⚪ Planned | 0% | Not started (Phase 8) |
+| **Onboarding** | 🟢 Complete | 100% | **Fully implemented!** OnboardingService, OnboardingScreen (5-page wizard), SampleDataService, auto-redirect via router. |
 | **Widget Tests** | 🟢 Active | 30% | Day View, Event Form, Planning Wizard tests added |
 | **Integration Tests** | 🟢 Active | 15% | **Core user flow test added** (Create Event → Day View → Planning Wizard) |
 

@@ -44,6 +44,10 @@ class AppDatabase extends _$AppDatabase {
         await m.createAll();
         await _seedDefaultCategories();
       },
+      beforeOpen: (details) async {
+        // Enable foreign key constraints (required for cascade deletes)
+        await customStatement('PRAGMA foreign_keys = ON');
+      },
       onUpgrade: (Migrator m, int from, int to) async {
         // Migration from version 1 to 2: Add Goals table
         if (from == 1) {
