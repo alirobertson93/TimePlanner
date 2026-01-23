@@ -51,7 +51,7 @@ void main() {
       return ProviderScope(
         overrides: [
           // Override the selected date
-          selectedDateProvider.overrideWith((ref) => SelectedDate()),
+          selectedDateProvider.overrideWith(() => SelectedDate()),
           // Override events to return test events
           eventsForDateProvider(selectedDate ?? testDate).overrideWith(
             (ref) => Stream.value(events),
@@ -80,7 +80,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            selectedDateProvider.overrideWith((ref) => SelectedDate()),
+            selectedDateProvider.overrideWith(() => SelectedDate()),
             eventsForDateProvider(testDate).overrideWith(
               (ref) => const Stream<List<Event>>.empty(),
             ),
@@ -199,7 +199,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            selectedDateProvider.overrideWith((ref) => SelectedDate()),
+            selectedDateProvider.overrideWith(() => SelectedDate()),
             eventsForDateProvider(testDate).overrideWith(
               (ref) => Stream.error('Test error'),
             ),
