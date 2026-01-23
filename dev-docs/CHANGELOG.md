@@ -33,6 +33,71 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-23 - Relationship Goals Feature (Phase 7)
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Implement Relationship Goals feature from Phase 7 ROADMAP - Goals tied to specific people
+
+**Work Completed**:
+- ✅ **Relationship Goals Data Layer**
+  - Updated `Goal` entity with new `personId` field
+  - Updated `Goals` database table with `personId` column (references People table)
+  - Added database migration v8 → v9 for the new column
+  - Updated `GoalRepository` with `personId` mapping and `getByPerson()` method
+  - Updated `IGoalRepository` interface with `getByPerson()` method signature
+  
+- ✅ **Relationship Goals Form**
+  - Updated `GoalFormState` with `personId` field and validation
+  - Added `updatePerson()` method to `GoalForm` provider
+  - Updated `GoalFormScreen` with Goal Type selector (Category/Person toggle)
+  - Added Person dropdown for selecting relationship target
+  - Conditional UI: shows category picker for category goals, person picker for relationship goals
+  
+- ✅ **Relationship Goals Progress Tracking**
+  - Updated `goalsWithProgressProvider` to track time spent with specific people
+  - Uses `EventPeopleRepository.getEventIdsForPerson()` to find events with the target person
+  - Calculates progress based on time/events that include the selected person
+  
+- ✅ **Relationship Goals Dashboard Display**
+  - Updated `GoalsDashboardScreen` to display person name for relationship goals
+  - Shows person icon for relationship goals vs category icon for category goals
+  - Color coding uses secondary theme color for relationship goals
+  
+- ✅ **Tests**
+  - Added tests for relationship goals in `goal_repository_test.dart`
+  - Tests for saving/retrieving goals with personId
+  - Tests for `getByPerson()` method
+
+**Technical Decisions**:
+- Used `GoalType.person` enum (already existed but unused) for relationship goals
+- Person selection uses same pattern as category selection for consistency
+- Progress calculation leverages existing `EventPeople` junction table
+- UI uses `SegmentedButton` for goal type selection (Material 3 pattern)
+
+**Files Modified**:
+- lib/domain/entities/goal.dart - Added `personId` field
+- lib/data/database/tables/goals.dart - Added `personId` column
+- lib/data/database/app_database.dart - Migration v8 → v9
+- lib/data/repositories/goal_repository.dart - Added `getByPerson()`, updated mappers
+- lib/presentation/providers/goal_form_providers.dart - Added person support
+- lib/presentation/providers/goal_providers.dart - Updated progress calculation
+- lib/presentation/screens/goal_form/goal_form_screen.dart - Added person picker UI
+- lib/presentation/screens/goals_dashboard/goals_dashboard_screen.dart - Updated display
+- test/repositories/goal_repository_test.dart - Added relationship goal tests
+
+**Phase 7 Status Update**:
+- ✅ Relationship Goals - **COMPLETE**
+- ⏳ Travel Time - Pending
+- ⏳ System Notifications - Pending
+
+**Next Steps**:
+1. Run `flutter pub run build_runner build` to generate updated code
+2. Test relationship goals feature end-to-end
+3. Consider implementing Travel Time or System Notifications next
+
+---
+
 ### Session: 2026-01-23 - Integration Tests + Event Factory (Final Audit Items)
 
 **Author**: AI Assistant (GitHub Copilot)

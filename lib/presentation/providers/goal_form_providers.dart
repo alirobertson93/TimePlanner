@@ -19,6 +19,7 @@ class GoalFormState {
     this.targetValue = 10,
     this.period = GoalPeriod.week,
     this.categoryId,
+    this.personId,
     this.debtStrategy = DebtStrategy.ignore,
     this.isActive = true,
     this.isEditMode = false,
@@ -33,6 +34,7 @@ class GoalFormState {
   final int targetValue;
   final GoalPeriod period;
   final String? categoryId;
+  final String? personId;
   final DebtStrategy debtStrategy;
   final bool isActive;
   final bool isEditMode;
@@ -48,6 +50,8 @@ class GoalFormState {
     GoalPeriod? period,
     String? categoryId,
     bool clearCategoryId = false,
+    String? personId,
+    bool clearPersonId = false,
     DebtStrategy? debtStrategy,
     bool? isActive,
     bool? isEditMode,
@@ -63,6 +67,7 @@ class GoalFormState {
       targetValue: targetValue ?? this.targetValue,
       period: period ?? this.period,
       categoryId: clearCategoryId ? null : (categoryId ?? this.categoryId),
+      personId: clearPersonId ? null : (personId ?? this.personId),
       debtStrategy: debtStrategy ?? this.debtStrategy,
       isActive: isActive ?? this.isActive,
       isEditMode: isEditMode ?? this.isEditMode,
@@ -83,6 +88,10 @@ class GoalFormState {
 
     if (type == GoalType.category && categoryId == null) {
       return 'Please select a category for this goal';
+    }
+
+    if (type == GoalType.person && personId == null) {
+      return 'Please select a person for this relationship goal';
     }
 
     return null;
@@ -157,6 +166,7 @@ class GoalForm extends _$GoalForm {
       targetValue: goal.targetValue,
       period: goal.period,
       categoryId: goal.categoryId,
+      personId: goal.personId,
       debtStrategy: goal.debtStrategy,
       isActive: goal.isActive,
       isEditMode: true,
@@ -170,9 +180,12 @@ class GoalForm extends _$GoalForm {
 
   void updateType(GoalType type) {
     state = state.copyWith(type: type, clearError: true);
-    // Clear category if switching away from category type
+    // Clear category/person based on type
     if (type != GoalType.category) {
       state = state.copyWith(clearCategoryId: true);
+    }
+    if (type != GoalType.person) {
+      state = state.copyWith(clearPersonId: true);
     }
   }
 
@@ -193,6 +206,14 @@ class GoalForm extends _$GoalForm {
       state = state.copyWith(clearCategoryId: true, clearError: true);
     } else {
       state = state.copyWith(categoryId: categoryId, clearError: true);
+    }
+  }
+
+  void updatePerson(String? personId) {
+    if (personId == null) {
+      state = state.copyWith(clearPersonId: true, clearError: true);
+    } else {
+      state = state.copyWith(personId: personId, clearError: true);
     }
   }
 
@@ -236,6 +257,7 @@ class GoalForm extends _$GoalForm {
         targetValue: state.targetValue,
         period: state.period,
         categoryId: state.type == GoalType.category ? state.categoryId : null,
+        personId: state.type == GoalType.person ? state.personId : null,
         debtStrategy: state.debtStrategy,
         isActive: state.isActive,
         createdAt: createdAt,

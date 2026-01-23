@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/goal.dart';
 import '../../domain/entities/event.dart';
+import '../../domain/enums/goal_type.dart';
 import '../../domain/enums/goal_metric.dart';
 import '../../domain/enums/goal_period.dart';
 import '../../domain/enums/event_status.dart';
@@ -98,6 +99,7 @@ class GoalProgress {
 Future<List<GoalProgress>> goalsWithProgress(GoalsWithProgressRef ref) async {
   final goalRepository = ref.watch(goalRepositoryProvider);
   final eventRepository = ref.watch(eventRepositoryProvider);
+  final eventPeopleRepository = ref.watch(eventPeopleRepositoryProvider);
 
   // Get all active goals
   final goals = await goalRepository.getAll();
@@ -109,13 +111,24 @@ Future<List<GoalProgress>> goalsWithProgress(GoalsWithProgressRef ref) async {
     // Calculate period boundaries
     final (periodStart, periodEnd) = _getPeriodBoundaries(now, goal.period);
     
-    // Get events in the period that match the goal's category
+    // Get events in the period
     final events = await eventRepository.getEventsInRange(periodStart, periodEnd);
     
-    // Filter events by category if goal has one
-    final relevantEvents = goal.categoryId != null
-        ? events.where((e) => e.categoryId == goal.categoryId).toList()
-        : events;
+    // Filter events based on goal type
+    List<Event> relevantEvents;
+    
+    if (goal.type == GoalType.category && goal.categoryId != null) {
+      // Category goals: filter by category
+      relevantEvents = events.where((e) => e.categoryId == goal.categoryId).toList();
+    } else if (goal.type == GoalType.person && goal.personId != null) {
+      // Relationship goals: filter events by associated person
+      // Get event IDs for this person
+      final eventIdsForPerson = await eventPeopleRepository.getEventIdsForPerson(goal.personId!);
+      relevantEvents = events.where((e) => eventIdsForPerson.contains(e.id)).toList();
+    } else {
+      // Fallback: all events (for custom goals or invalid data)
+      relevantEvents = events;
+    }
     
     // Calculate current value based on metric
     final currentValue = _calculateProgress(relevantEvents, goal.metric);

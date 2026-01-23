@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../providers/goal_form_providers.dart';
 import '../../providers/repository_providers.dart';
 import '../../providers/goal_providers.dart';
+import '../../providers/person_providers.dart';
 import '../../../domain/enums/goal_type.dart';
 import '../../../domain/enums/goal_metric.dart';
 import '../../../domain/enums/goal_period.dart';
@@ -65,6 +66,7 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
     final formState = ref.watch(goalFormProvider);
     final formNotifier = ref.read(goalFormProvider.notifier);
     final categoriesAsync = ref.watch(categoryRepositoryProvider).getAll();
+    final peopleAsync = ref.watch(allPeopleProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -255,9 +257,9 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
 
           const SizedBox(height: 24),
 
-          // Category Section
+          // Goal Target Section
           Text(
-            'Category',
+            'Goal Target',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w500,
                 ),
@@ -265,54 +267,150 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
           const Divider(height: 16),
           const SizedBox(height: 16),
 
-          // Goal type (simplified - just category for now)
+          // Goal type selector
           Text(
-            'Track time spent on:',
+            'Track time spent:',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 8),
+          
+          SegmentedButton<GoalType>(
+            segments: const [
+              ButtonSegment<GoalType>(
+                value: GoalType.category,
+                label: Text('By Category'),
+                icon: Icon(Icons.category),
+              ),
+              ButtonSegment<GoalType>(
+                value: GoalType.person,
+                label: Text('With Person'),
+                icon: Icon(Icons.person),
+              ),
+            ],
+            selected: {formState.type},
+            onSelectionChanged: (Set<GoalType> selected) {
+              formNotifier.updateType(selected.first);
+            },
+          ),
+          const SizedBox(height: 16),
 
-          // Category dropdown
-          FutureBuilder<List<dynamic>>(
-            future: categoriesAsync,
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return const SizedBox(
-                  height: 56,
-                  child: Center(child: CircularProgressIndicator()),
+          // Category dropdown (shown when type is category)
+          if (formState.type == GoalType.category)
+            FutureBuilder<List<dynamic>>(
+              future: categoriesAsync,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const SizedBox(
+                    height: 56,
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                final categories = snapshot.data!;
+                return DropdownButtonFormField<String>(
+                  value: formState.categoryId,
+                  decoration: const InputDecoration(
+                    labelText: 'Category *',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: categories.map((category) {
+                    return DropdownMenuItem<String>(
+                      value: category.id,
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 16,
+                            height: 16,
+                            decoration: BoxDecoration(
+                              color: ColorUtils.parseHexColor(category.colourHex),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Text(category.name),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: formNotifier.updateCategory,
                 );
-              }
+              },
+            ),
 
-              final categories = snapshot.data!;
-              return DropdownButtonFormField<String>(
-                value: formState.categoryId,
-                decoration: const InputDecoration(
-                  labelText: 'Category *',
-                  border: OutlineInputBorder(),
-                ),
-                items: categories.map((category) {
-                  return DropdownMenuItem<String>(
-                    value: category.id,
+          // Person dropdown (shown when type is person/relationship)
+          if (formState.type == GoalType.person)
+            peopleAsync.when(
+              data: (people) {
+                if (people.isEmpty) {
+                  return Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.orange.shade200),
+                    ),
                     child: Row(
                       children: [
-                        Container(
-                          width: 16,
-                          height: 16,
-                          decoration: BoxDecoration(
-                            color: ColorUtils.parseHexColor(category.colourHex),
-                            shape: BoxShape.circle,
+                        Icon(Icons.info_outline, color: Colors.orange.shade700),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'No people added yet. Add people in the People screen first.',
+                            style: TextStyle(color: Colors.orange.shade700),
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        Text(category.name),
                       ],
                     ),
                   );
-                }).toList(),
-                onChanged: formNotifier.updateCategory,
-              );
-            },
-          ),
+                }
+                return DropdownButtonFormField<String>(
+                  value: formState.personId,
+                  decoration: const InputDecoration(
+                    labelText: 'Person *',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.person),
+                  ),
+                  items: people.map((person) {
+                    return DropdownMenuItem<String>(
+                      value: person.id,
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 12,
+                            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                            child: Text(
+                              person.name.isNotEmpty ? person.name[0].toUpperCase() : '?',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Text(person.name),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: formNotifier.updatePerson,
+                );
+              },
+              loading: () => const SizedBox(
+                height: 56,
+                child: Center(child: CircularProgressIndicator()),
+              ),
+              error: (error, _) => Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'Error loading people: $error',
+                  style: TextStyle(color: Colors.red.shade700),
+                ),
+              ),
+            ),
 
           const SizedBox(height: 24),
 
