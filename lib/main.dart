@@ -7,14 +7,14 @@ import 'domain/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize timezone data for scheduled notifications
   tz.initializeTimeZones();
-  
+
   // Initialize the notification service
   final notificationService = NotificationService();
   await notificationService.initialize();
-  
+
   runApp(
     const ProviderScope(
       child: MyApp(),

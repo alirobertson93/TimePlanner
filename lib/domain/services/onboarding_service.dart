@@ -10,7 +10,7 @@ class OnboardingService {
   static const String _onboardingVersionKey = 'onboarding_version';
   static const String _sampleDataInstalledKey = 'sample_data_installed';
   static const String _tutorialSeenKey = 'tutorial_seen';
-  
+
   /// Current onboarding version. Increment to re-show onboarding after major updates.
   static const int currentOnboardingVersion = 1;
 

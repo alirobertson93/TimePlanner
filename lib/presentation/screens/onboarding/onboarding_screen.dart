@@ -19,31 +19,36 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final List<OnboardingPage> _pages = const [
     OnboardingPage(
       title: 'Welcome to TimePlanner',
-      description: 'Your intelligent time planning assistant that helps you organize your schedule and achieve your goals.',
+      description:
+          'Your intelligent time planning assistant that helps you organize your schedule and achieve your goals.',
       icon: Icons.schedule,
       color: Colors.blue,
     ),
     OnboardingPage(
       title: 'Smart Scheduling',
-      description: 'Create events with fixed times or let the app find the perfect slot for flexible tasks.',
+      description:
+          'Create events with fixed times or let the app find the perfect slot for flexible tasks.',
       icon: Icons.auto_fix_high,
       color: Colors.green,
     ),
     OnboardingPage(
       title: 'Track Your Goals',
-      description: 'Set weekly or monthly goals for activities like exercise, reading, or learning. We\'ll help you stay on track.',
+      description:
+          'Set weekly or monthly goals for activities like exercise, reading, or learning. We\'ll help you stay on track.',
       icon: Icons.flag,
       color: Colors.orange,
     ),
     OnboardingPage(
       title: 'Plan Ahead',
-      description: 'Use the Planning Wizard to automatically schedule your flexible events across the week.',
+      description:
+          'Use the Planning Wizard to automatically schedule your flexible events across the week.',
       icon: Icons.auto_awesome,
       color: Colors.purple,
     ),
     OnboardingPage(
       title: 'Stay Notified',
-      description: 'Get reminders for upcoming events and alerts when goals need attention.',
+      description:
+          'Get reminders for upcoming events and alerts when goals need attention.',
       icon: Icons.notifications_active,
       color: Colors.red,
     ),
@@ -73,7 +78,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   Future<void> _completeOnboarding({bool installSampleData = false}) async {
     try {
       final service = ref.read(onboardingServiceProvider);
-      
+
       if (installSampleData) {
         // Show loading indicator
         showDialog(
@@ -83,7 +88,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             child: CircularProgressIndicator(),
           ),
         );
-        
+
         try {
           final sampleService = ref.read(sampleDataServiceProvider);
           await sampleService.generateAllSampleData();
@@ -94,7 +99,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           }
         }
       }
-      
+
       await service.completeOnboarding();
       if (mounted) {
         context.go('/');
@@ -109,12 +114,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   void _showSampleDataDialog() {
     final shouldOffer = ref.read(shouldOfferSampleDataProvider);
-    
+
     if (!shouldOffer) {
       _completeOnboarding();
       return;
     }
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

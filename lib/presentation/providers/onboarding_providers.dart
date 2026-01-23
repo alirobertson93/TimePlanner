@@ -6,7 +6,8 @@ import '../../domain/services/sample_data_service.dart';
 import 'repository_providers.dart';
 
 /// Provider for SharedPreferences (async initialization)
-final sharedPreferencesProvider = FutureProvider<SharedPreferences>((ref) async {
+final sharedPreferencesProvider =
+    FutureProvider<SharedPreferences>((ref) async {
   return await SharedPreferences.getInstance();
 });
 

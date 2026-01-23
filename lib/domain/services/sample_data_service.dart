@@ -164,7 +164,7 @@ class SampleDataService {
   Future<void> _generateEvents() async {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    
+
     // Create events for the next few days
     final events = <Event>[];
 
@@ -197,7 +197,7 @@ class SampleDataService {
 
     // Tomorrow's events
     final tomorrow = today.add(const Duration(days: 1));
-    
+
     events.add(Event(
       id: _uuid.v4(),
       name: 'Project Review',

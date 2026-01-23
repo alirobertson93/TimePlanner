@@ -11,10 +11,11 @@ final notificationServiceProvider = Provider<NotificationService>((ref) {
 
 /// Provider for the notification scheduler service
 /// This bridges the notification repository with the system notification service
-final notificationSchedulerServiceProvider = Provider<NotificationSchedulerService>((ref) {
+final notificationSchedulerServiceProvider =
+    Provider<NotificationSchedulerService>((ref) {
   final notificationRepository = ref.watch(notificationRepositoryProvider);
   final notificationService = ref.watch(notificationServiceProvider);
-  
+
   return NotificationSchedulerService(
     notificationRepository: notificationRepository,
     notificationService: notificationService,

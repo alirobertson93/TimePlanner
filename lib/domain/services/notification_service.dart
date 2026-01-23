@@ -73,7 +73,8 @@ class NotificationService implements INotificationService {
     tz.initializeTimeZones();
 
     // Android initialization settings
-    const androidInitSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidInitSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
     // iOS/macOS initialization settings
     const darwinInitSettings = DarwinInitializationSettings(
@@ -97,7 +98,8 @@ class NotificationService implements INotificationService {
     await _flutterLocalNotificationsPlugin.initialize(
       initSettings,
       onDidReceiveNotificationResponse: _onNotificationResponse,
-      onDidReceiveBackgroundNotificationResponse: _onBackgroundNotificationResponse,
+      onDidReceiveBackgroundNotificationResponse:
+          _onBackgroundNotificationResponse,
     );
 
     // Create notification channel for Android

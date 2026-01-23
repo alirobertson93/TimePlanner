@@ -27,17 +27,19 @@ class NotificationSchedulerService {
 
   /// Schedule all pending notifications from the repository
   Future<void> _schedulePendingNotifications() async {
-    final pendingNotifications = await notificationRepository.getPendingToDeliver();
-    
+    final pendingNotifications =
+        await notificationRepository.getPendingToDeliver();
+
     for (final notification in pendingNotifications) {
       await _scheduleSystemNotification(notification);
     }
   }
 
   /// Schedule a system notification for an app notification
-  Future<void> _scheduleSystemNotification(app.Notification notification) async {
+  Future<void> _scheduleSystemNotification(
+      app.Notification notification) async {
     final now = DateTime.now();
-    
+
     if (notification.scheduledAt.isBefore(now)) {
       // Notification is past due, show immediately
       await notificationService.showNotification(
@@ -46,7 +48,7 @@ class NotificationSchedulerService {
         body: notification.body,
         payload: _buildPayload(notification),
       );
-      
+
       // Mark as delivered in repository
       await notificationRepository.markDelivered(notification.id);
     } else {
@@ -65,7 +67,7 @@ class NotificationSchedulerService {
   Future<void> scheduleNotification(app.Notification notification) async {
     // Save to repository first
     await notificationRepository.save(notification);
-    
+
     // Then schedule with system
     await _scheduleSystemNotification(notification);
   }
@@ -76,7 +78,7 @@ class NotificationSchedulerService {
     await notificationService.cancelNotification(
       NotificationService.notificationIdFromString(notificationId),
     );
-    
+
     // Update status in repository
     final notification = await notificationRepository.getById(notificationId);
     if (notification != null && notification.isPending) {
@@ -89,7 +91,7 @@ class NotificationSchedulerService {
   /// Cancel all notifications for a specific event
   Future<void> cancelNotificationsForEvent(String eventId) async {
     final notifications = await notificationRepository.getByEventId(eventId);
-    
+
     for (final notification in notifications) {
       if (notification.isPending) {
         await cancelNotification(notification.id);
@@ -100,7 +102,7 @@ class NotificationSchedulerService {
   /// Cancel all notifications for a specific goal
   Future<void> cancelNotificationsForGoal(String goalId) async {
     final notifications = await notificationRepository.getByGoalId(goalId);
-    
+
     for (final notification in notifications) {
       if (notification.isPending) {
         await cancelNotification(notification.id);
@@ -120,8 +122,9 @@ class NotificationSchedulerService {
 
   /// Check for notifications that should be delivered now and mark them
   Future<void> _checkAndDeliverNotifications() async {
-    final pendingNotifications = await notificationRepository.getPendingToDeliver();
-    
+    final pendingNotifications =
+        await notificationRepository.getPendingToDeliver();
+
     for (final notification in pendingNotifications) {
       // The system notification service handles the actual delivery timing,
       // but we update our repository when it's time
@@ -133,7 +136,7 @@ class NotificationSchedulerService {
   Future<void> refreshScheduledNotifications() async {
     // Cancel all system notifications
     await notificationService.cancelAllNotifications();
-    
+
     // Re-schedule all pending notifications
     await _schedulePendingNotifications();
   }
