@@ -2352,13 +2352,16 @@ Quick reference to file locations and status.
 | test/repositories/location_repository_test.dart | ✅ Complete | ~8 | 2026-01-21 |
 | test/repositories/recurrence_rule_repository_test.dart | ✅ Complete | ~10 | 2026-01-22 |
 | test/repositories/notification_repository_test.dart | ✅ Complete | ~13 | 2026-01-22 |
+| test/repositories/travel_time_pair_repository_test.dart | ✅ Complete | ~10 | 2026-01-23 |
 | test/scheduler/time_slot_test.dart | ✅ Complete | 10 | - |
 | test/scheduler/availability_grid_test.dart | ✅ Complete | ~5 | - |
 | test/scheduler/balanced_strategy_test.dart | ✅ Complete | ~5 | - |
 | test/scheduler/front_loaded_strategy_test.dart | ✅ Complete | ~5 | 2026-01-20 |
 | test/scheduler/max_free_time_strategy_test.dart | ✅ Complete | ~5 | 2026-01-20 |
 | test/scheduler/least_disruption_strategy_test.dart | ✅ Complete | ~5 | 2026-01-20 |
-| test/widget/*.dart | ❌ Not started | 0 | - |
+| test/widget/screens/day_view_screen_test.dart | ✅ Complete | ~20 | 2026-01-22 |
+| test/widget/screens/event_form_screen_test.dart | ✅ Complete | ~15 | 2026-01-22 |
+| test/widget/screens/planning_wizard_screen_test.dart | ✅ Complete | ~20 | 2026-01-22 |
 
 ---
 
@@ -2462,4 +2465,4 @@ Record important technical decisions for future reference.
 
 *This is a living document. Update after each development session.*
 
-*Last updated: 2026-01-22*
+*Last updated: 2026-01-23*

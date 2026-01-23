@@ -8,27 +8,27 @@ This document defines the complete data model for TimePlanner. The database is i
 
 **Implementation Status**: ⚠️ Partial (see table status below)
 
-**Current Schema Version**: 8
+**Current Schema Version**: 10
 
-**Implemented Tables** (8 total):
+**Implemented Tables** (9 total):
 - Events ✅
 - Categories ✅
-- Goals ✅
+- Goals ✅ (with personId for relationship goals, added v9)
 - People ✅
 - EventPeople ✅
 - Locations ✅
 - RecurrenceRules ✅
 - Notifications ✅
+- TravelTimePairs ✅ (added v10)
 
-**Not Yet Implemented Tables** (8 total):
+**Not Yet Implemented Tables** (7 total):
 - EventConstraints ❌
-- TravelTimePairs ❌
 - EventGoals ❌
 - GoalProgress ❌
 - EventTemplates ❌
 - Schedules ❌
 - ScheduledEvents ❌
-- UserSettings ❌
+- UserSettings ❌ (Note: User settings use SharedPreferences instead)
 
 ## Database Architecture
 
@@ -265,7 +265,7 @@ class Locations extends Table {
 
 ---
 
-### 8. TravelTimePairs Table ❌
+### 8. TravelTimePairs Table ✅
 
 Pre-computed travel times between location pairs.
 
@@ -283,7 +283,7 @@ class TravelTimePairs extends Table {
 }
 ```
 
-**Note**: Travel time is directional but stored bidirectionally. Both (A→B) and (B→A) are stored.
+**Note**: Travel time is directional but stored bidirectionally. Both (A→B) and (B→A) are stored with the same duration. Added in schema version 10.
 
 ---
 
@@ -685,7 +685,7 @@ enum NotificationStatus {
 
 ## Database Class Definition
 
-The following shows the actual implemented database schema (version 8):
+The following shows the actual implemented database schema (version 10):
 
 ```dart
 @DriftDatabase(
@@ -698,13 +698,14 @@ The following shows the actual implemented database schema (version 8):
     Locations,
     RecurrenceRules,
     Notifications,
+    TravelTimePairs,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
   
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 10;
   
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -741,6 +742,14 @@ class AppDatabase extends _$AppDatabase {
       // Migration from version 7 to 8: Add Notifications table
       if (from <= 7) {
         await m.createTable(notifications);
+      }
+      // Migration from version 8 to 9: Add personId column to Goals table for relationship goals
+      if (from <= 8) {
+        await m.addColumn(goals, goals.personId);
+      }
+      // Migration from version 9 to 10: Add TravelTimePairs table for manual travel time entry
+      if (from <= 9) {
+        await m.createTable(travelTimePairs);
       }
     },
   );
@@ -963,4 +972,4 @@ if (from < 2) {
 
 ---
 
-*Last updated: 2026-01-22*
+*Last updated: 2026-01-23*
