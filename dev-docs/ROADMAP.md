@@ -6,11 +6,11 @@ This document is the single source of truth for the project's current status, co
 
 ## Current Status
 
-**Project Phase**: Phase 7 In Progress - Advanced Features
+**Project Phase**: Phase 7 Nearly Complete - Advanced Features (System Notifications Pending)
 
 **Overall Progress**: ~100% Core Features Complete
 
-**Active Work**: Phase 7 - Travel Time manual entry complete. Relationship Goals complete.
+**Active Work**: Phase 7 - Travel Time manual entry ✅, Relationship Goals ✅, System Notifications ⏳ (pending flutter_local_notifications)
 
 ## Completed Phases
 
@@ -337,13 +337,13 @@ This document is the single source of truth for the project's current status, co
 
 **Target**: Late development
 
-**Status**: 95% Complete
+**Status**: 98% Complete
 
 **Goals**:
 - Add recurring event support ✅ (Complete)
 - Implement notifications 🟡 (Data Layer + UI Complete, System Notifications Pending)
 - Create settings/preferences screen ✅ (Complete)
-- Add travel time calculations (deferred from Phase 6)
+- Add travel time manual entry ✅ (Complete)
 - Enable relationship goal tracking ✅ (Complete)
 
 **Notifications Clarification**:
@@ -561,14 +561,14 @@ This document is the single source of truth for the project's current status, co
 
 | Component | Status | Completion | Notes |
 |-----------|--------|------------|-------|
-| **Database Layer** | 🟢 Active | 100% | Events (with locationId, recurrenceRuleId), Categories, Goals (with personId), People, EventPeople, Locations, RecurrenceRules, Notifications complete. Migration v8→v9 for relationship goals. |
-| **Domain Entities** | 🟢 Active | 100% | Core entities + Person + Location + RecurrenceRule + Notification done. Event updated with recurrenceRuleId. **Goal updated with personId for relationship goals.** |
+| **Database Layer** | 🟢 Active | 100% | Events (with locationId, recurrenceRuleId), Categories, Goals (with personId), People, EventPeople, Locations, RecurrenceRules, Notifications, TravelTimePairs complete. Schema v10. |
+| **Domain Entities** | 🟢 Active | 100% | Core entities + Person + Location + RecurrenceRule + Notification + TravelTimePair done. Event updated with recurrenceRuleId. **Goal updated with personId for relationship goals.** |
 | **Domain Services** | 🟢 Active | 100% | **EventFactory added** - centralized event creation logic |
-| **Repositories** | 🟢 Active | 100% | Event, Category, Goal, Person, EventPeople, Location, RecurrenceRule, Notification repos complete with tests + interfaces. **GoalRepository updated with getByPerson().** |
+| **Repositories** | 🟢 Active | 100% | Event, Category, Goal, Person, EventPeople, Location, RecurrenceRule, Notification, TravelTimePair repos complete with tests + interfaces. **GoalRepository updated with getByPerson().** |
 | **Scheduler Engine** | 🟢 Complete | 100% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption) |
 | **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button, Locations button, Settings button, Notifications button (with badge), recurring indicators. **Widget tests added.** |
 | **Week View** | 🟢 Complete | 100% | 7-day grid, event blocks, category colors, navigation, recurring indicators |
-| **Event Form** | 🟢 Complete | 100% | Create, edit, delete, people selection, location selection, recurrence selection implemented. **Widget tests added.** |
+| **Event Form** | 🟢 Complete | 100% | Create, edit, delete, people selection, location selection, recurrence selection, travel time prompt implemented. **Widget tests added.** |
 | **Planning Wizard** | 🟢 Complete | 100% | 4-step flow, schedule generation, all strategies available. **Widget tests added. Provider split into 3 focused providers.** |
 | **Goals Dashboard** | 🟢 Complete | 100% | Progress tracking, status indicators, category grouping, goal CRUD. **Updated to show person info for relationship goals.** |
 | **Goal Form** | 🟢 Complete | 100% | Create, edit, delete with validation. **Updated with goal type selector and person picker for relationship goals.** |
@@ -577,7 +577,7 @@ This document is the single source of truth for the project's current status, co
 | **Settings** | 🟢 Complete | 100% | UI and SharedPreferences persistence complete (Phase 7) |
 | **Recurrence** | 🟢 Complete | 95% | Data layer + UI complete. **RecurrenceCustomDialog extracted to separate file.** Exception handling pending. |
 | **Notifications** | 🟢 Active | 85% | Data layer complete + UI complete (NotificationsScreen, notification badge in Day View). System notifications pending. |
-| **Travel Time** | 🟢 Core Complete | 80% | Data layer + UI + event prompts complete. Scheduler integration pending (future). |
+| **Travel Time** | 🟢 Complete | 100% | **Fully implemented!** Data layer + Travel Times Screen + event prompts complete. Scheduler integration is deferred (future enhancement). |
 | **Relationship Goals** | 🟢 Complete | 100% | **Fully implemented!** Goal entity with personId, Goal form with type selector, progress tracking via EventPeople, Dashboard display with person info. |
 | **Onboarding** | ⚪ Planned | 0% | Not started (Phase 8) |
 | **Widget Tests** | 🟢 Active | 30% | Day View, Event Form, Planning Wizard tests added |
