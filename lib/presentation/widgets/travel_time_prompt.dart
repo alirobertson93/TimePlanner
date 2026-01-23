@@ -33,10 +33,12 @@ class TravelTimePromptDialog extends ConsumerStatefulWidget {
   }
 
   @override
-  ConsumerState<TravelTimePromptDialog> createState() => _TravelTimePromptDialogState();
+  ConsumerState<TravelTimePromptDialog> createState() =>
+      _TravelTimePromptDialogState();
 }
 
-class _TravelTimePromptDialogState extends ConsumerState<TravelTimePromptDialog> {
+class _TravelTimePromptDialogState
+    extends ConsumerState<TravelTimePromptDialog> {
   final _minutesController = TextEditingController();
   bool _isSaving = false;
   Location? _fromLocation;
@@ -53,7 +55,7 @@ class _TravelTimePromptDialogState extends ConsumerState<TravelTimePromptDialog>
     final locationRepo = ref.read(locationRepositoryProvider);
     final from = await locationRepo.getById(widget.fromLocationId);
     final to = await locationRepo.getById(widget.toLocationId);
-    
+
     if (mounted) {
       setState(() {
         _fromLocation = from;
@@ -101,7 +103,7 @@ class _TravelTimePromptDialogState extends ConsumerState<TravelTimePromptDialog>
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 16),
-            
+
             // Location pair display
             Container(
               padding: const EdgeInsets.all(12),
@@ -123,9 +125,10 @@ class _TravelTimePromptDialogState extends ConsumerState<TravelTimePromptDialog>
                         Text(
                           fromName,
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w500,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                  ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -151,9 +154,10 @@ class _TravelTimePromptDialogState extends ConsumerState<TravelTimePromptDialog>
                         Text(
                           toName,
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w500,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                  ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -164,7 +168,7 @@ class _TravelTimePromptDialogState extends ConsumerState<TravelTimePromptDialog>
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Travel time input
             TextField(
               controller: _minutesController,
@@ -178,7 +182,7 @@ class _TravelTimePromptDialogState extends ConsumerState<TravelTimePromptDialog>
               autofocus: true,
             ),
             const SizedBox(height: 8),
-            
+
             Text(
               'This will be remembered for future scheduling.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -236,7 +240,9 @@ class _TravelTimePromptDialogState extends ConsumerState<TravelTimePromptDialog>
         updatedAt: DateTime.now(),
       );
 
-      await ref.read(travelTimePairRepositoryProvider).saveBidirectional(travelTime);
+      await ref
+          .read(travelTimePairRepositoryProvider)
+          .saveBidirectional(travelTime);
       ref.invalidate(watchAllTravelTimePairsProvider);
       ref.invalidate(allTravelTimePairsProvider);
 
@@ -265,13 +271,14 @@ class _TravelTimePromptDialogState extends ConsumerState<TravelTimePromptDialog>
 /// Service to check for missing travel times between events
 class TravelTimeChecker {
   TravelTimeChecker(this._ref);
-  
+
   final WidgetRef _ref;
 
   /// Checks if travel time exists between two locations (bidirectional)
   Future<bool> hasTravelTime(String locationId1, String locationId2) async {
     final repo = _ref.read(travelTimePairRepositoryProvider);
-    final pair = await repo.getByLocationPairBidirectional(locationId1, locationId2);
+    final pair =
+        await repo.getByLocationPairBidirectional(locationId1, locationId2);
     return pair != null;
   }
 
@@ -281,32 +288,32 @@ class TravelTimeChecker {
     List<({String? locationId, DateTime start, DateTime end})> sortedEvents,
   ) async {
     final missingPairs = <(String, String)>[];
-    
+
     for (int i = 0; i < sortedEvents.length - 1; i++) {
       final currentEvent = sortedEvents[i];
       final nextEvent = sortedEvents[i + 1];
-      
+
       // Skip if either event doesn't have a location
       if (currentEvent.locationId == null || nextEvent.locationId == null) {
         continue;
       }
-      
+
       // Skip if same location
       if (currentEvent.locationId == nextEvent.locationId) {
         continue;
       }
-      
+
       // Check if travel time exists
       final hasTravelTimeSet = await hasTravelTime(
         currentEvent.locationId!,
         nextEvent.locationId!,
       );
-      
+
       if (!hasTravelTimeSet) {
         missingPairs.add((currentEvent.locationId!, nextEvent.locationId!));
       }
     }
-    
+
     return missingPairs;
   }
 }
