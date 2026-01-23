@@ -4,7 +4,6 @@ import '../../domain/entities/location.dart';
 import '../../domain/entities/travel_time_pair.dart';
 import '../providers/repository_providers.dart';
 import '../providers/travel_time_providers.dart';
-import '../providers/location_providers.dart';
 
 /// Dialog to prompt user for travel time between two locations
 class TravelTimePromptDialog extends ConsumerStatefulWidget {
