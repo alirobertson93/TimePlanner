@@ -142,18 +142,14 @@ class SettingsScreen extends ConsumerWidget {
             icon: Icons.description,
             title: 'Terms of Service',
             subtitle: null,
-            onTap: () {
-              // TODO: Show terms of service
-            },
+            onTap: () => _showTermsOfServiceDialog(context),
           ),
           _buildSettingsTile(
             context: context,
             icon: Icons.privacy_tip,
             title: 'Privacy Policy',
             subtitle: null,
-            onTap: () {
-              // TODO: Show privacy policy
-            },
+            onTap: () => _showPrivacyPolicyDialog(context),
           ),
 
           const SizedBox(height: 24),
@@ -467,5 +463,216 @@ class SettingsScreen extends ConsumerWidget {
     if (result != null) {
       ref.read(settingsProvider.notifier).setThemeMode(result);
     }
+  }
+
+  void _showTermsOfServiceDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.description,
+                color: Theme.of(context).colorScheme.primary),
+            const SizedBox(width: 8),
+            const Expanded(
+              child: Text('Terms of Service'),
+            ),
+          ],
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Last Updated: 2026-01-24',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+                const SizedBox(height: 16),
+                _buildLegalSection(context, 'Agreement to Terms',
+                    'By downloading, installing, or using TimePlanner ("App"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, do not use the App.'),
+                _buildLegalSection(context, 'Description of Service',
+                    'TimePlanner is a smart time planning application that helps you:\n• Manage events and appointments\n• Set and track personal and professional goals\n• Generate optimized schedules using intelligent algorithms\n• Organize contacts and locations associated with your activities'),
+                _buildLegalSection(context, 'Use License',
+                    'We grant you a limited, non-exclusive, non-transferable, revocable license to download, install, and use the App on your personal device(s) for personal, non-commercial purposes.\n\nYou may NOT:\n• Copy, modify, or distribute the App\n• Reverse engineer, decompile, or disassemble the App\n• Use the App for any illegal purpose'),
+                _buildLegalSection(context, 'User Content and Data',
+                    'You retain all rights to the data you enter into the App. This data is stored locally on your device. You are solely responsible for maintaining backups of your data.'),
+                _buildLegalSection(context, 'Disclaimer of Warranties',
+                    'THE APP IS PROVIDED "AS IS" WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.'),
+                _buildLegalSection(context, 'Limitation of Liability',
+                    'TO THE MAXIMUM EXTENT PERMITTED BY LAW, WE SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING FROM YOUR USE OF THE APP.'),
+                _buildLegalSection(context, 'Contact',
+                    'For questions about these Terms, please contact us at:\nEmail: legal@timeplanner.app'),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPrivacyPolicyDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.privacy_tip,
+                color: Theme.of(context).colorScheme.primary),
+            const SizedBox(width: 8),
+            const Expanded(
+              child: Text('Privacy Policy'),
+            ),
+          ],
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Last Updated: 2026-01-24',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+                const SizedBox(height: 16),
+                _buildLegalSection(context, 'Introduction',
+                    'Welcome to TimePlanner. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application.\n\nPlease read this Privacy Policy carefully. By using the App, you agree to the collection and use of information in accordance with this policy.'),
+                _buildLegalSection(context, 'Information Stored Locally',
+                    'TimePlanner is designed with a privacy-first, offline-first architecture. All your data is stored locally on your device:\n• Events and Calendar Data\n• Categories\n• Goals\n• People\n• Locations\n• Preferences\n\nThis data never leaves your device unless you explicitly export it.'),
+                _buildLegalSection(context, 'Information We Do NOT Collect',
+                    '• We do NOT collect personal identification information\n• We do NOT track your location\n• We do NOT collect analytics\n• We do NOT sell or share your data\n• We do NOT use advertising or ad tracking'),
+                _buildLegalSection(context, 'Data Storage and Security',
+                    'All data is stored in a SQLite database on your device. This data is protected by your device\'s security (passcode, biometrics), not accessible to other apps, and not transmitted over the internet.'),
+                _buildLegalSection(context, 'Your Data Rights',
+                    'Since all data is stored locally, you have complete control:\n• View all your data within the App\n• Edit or update any data\n• Delete individual items\n• Uninstalling the App removes all data'),
+                _buildLegalSection(context, 'Contact',
+                    'If you have questions about this Privacy Policy, please contact us at:\nEmail: privacy@timeplanner.app'),
+                const SizedBox(height: 16),
+                _buildSummaryTable(context),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLegalSection(
+      BuildContext context, String title, String content) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            content,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryTable(BuildContext context) {
+    final rows = [
+      ('Data Storage', '100% local on your device'),
+      ('Data Transmission', 'None - offline-first'),
+      ('Analytics', 'None'),
+      ('Advertising', 'None'),
+      ('Third-party Sharing', 'None'),
+      ('User Control', 'Complete - you own your data'),
+    ];
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outlineVariant,
+        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(7)),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Category',
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    'How We Handle It',
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ...rows.map((row) => Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                    ),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        row.$1,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        row.$2,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+        ],
+      ),
+    );
   }
 }
