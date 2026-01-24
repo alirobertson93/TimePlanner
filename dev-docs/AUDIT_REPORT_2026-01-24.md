@@ -189,6 +189,7 @@ Event forms include validation for:
 Drift ORM is used correctly, which parameterizes queries. However, some raw SQL exists in migrations:
 
 ```dart
+// Index name: idx_events_start_time, Column: fixed_start_time
 await customStatement('CREATE INDEX IF NOT EXISTS idx_events_start_time ON events (fixed_start_time)');
 ```
 

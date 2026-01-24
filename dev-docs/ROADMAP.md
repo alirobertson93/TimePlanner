@@ -743,8 +743,8 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 | **Integration Tests** | 🟡 Partial | 15% | **Core user flow test added** (Create Event → Day View → Planning Wizard). **Audit: Needs more critical flow coverage** |
 
 **Legend**:
-- 🟢 Active: Currently working or recently completed
-- 🟡 Partial: Some work done, needs completion
+- 🟢 Complete: Feature fully implemented (100% or 95%+ with minor gaps)
+- 🟡 Partial: Some work done, needs additional effort (below target coverage)
 - ⚪ Planned: Not started, planned for future phase
 
 ## Blockers
