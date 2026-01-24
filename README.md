@@ -84,6 +84,12 @@ flutter test --coverage
 
 Detailed development documentation is available in the [`dev-docs/`](./dev-docs/) folder:
 
+**For Users**:
+- **[USER_GUIDE.md](./dev-docs/USER_GUIDE.md)** - How to use TimePlanner
+- **[PRIVACY_POLICY.md](./dev-docs/PRIVACY_POLICY.md)** - Privacy policy
+- **[TERMS_OF_SERVICE.md](./dev-docs/TERMS_OF_SERVICE.md)** - Terms of service
+
+**For Developers**:
 - **[DEVELOPER_GUIDE.md](./dev-docs/DEVELOPER_GUIDE.md)** - Start here for development workflow
 - **[ROADMAP.md](./dev-docs/ROADMAP.md)** - Project status and upcoming features
 - **[ARCHITECTURE.md](./dev-docs/ARCHITECTURE.md)** - Code structure and patterns

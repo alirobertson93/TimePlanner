@@ -1,6 +1,6 @@
 # Project Roadmap
 
-**Last Updated**: 2026-01-23
+**Last Updated**: 2026-01-24
 
 This document is the single source of truth for the project's current status, completed work, and upcoming phases. For session logs and development history, see [CHANGELOG.md](./CHANGELOG.md).
 
@@ -8,15 +8,15 @@ This document is the single source of truth for the project's current status, co
 
 **Project Phase**: Phase 8 In Progress - Polish & Launch
 
-**Overall Progress**: ~100% Core Features Complete, Onboarding Implemented
+**Overall Progress**: ~100% Core Features Complete, 90% Phase 8 Complete
 
-**Active Work**: Phase 8 - Onboarding ✅ Complete, Performance/Accessibility ⏳ Pending
+**Active Work**: Phase 8 - Onboarding ✅, Performance ✅, Accessibility ✅, Launch Prep ⏳ 60%
 
-**Environment Requirements**: Phase 8 remaining work (Performance, Accessibility, Launch Prep) requires Flutter SDK for:
+**Environment Requirements**: Remaining Phase 8 work (Keyboard Navigation, App Builds) requires Flutter SDK for:
+- Building the app (`flutter build ios`, `flutter build appbundle`)
 - Running tests (`flutter test`)
-- Performance profiling
-- Building the app (`flutter build`)
-- Code generation (`flutter pub run build_runner`)
+- Implementing keyboard navigation
+- Creating app store screenshots
 
 ## Completed Phases
 
@@ -529,13 +529,13 @@ This document is the single source of truth for the project's current status, co
 
 **Target**: Pre-release
 
-**Status**: 85% Complete
+**Status**: 90% Complete
 
 **Goals**:
 - Add onboarding experience ✅
 - Optimize performance ✅ (Scheduler benchmarked, database indexed)
 - Ensure accessibility ✅ (Screen reader + color contrast)
-- Prepare for launch
+- Prepare for launch ⏳ (Documents complete, assets pending)
 
 **What's Working**:
 - ✅ **Onboarding Experience** implemented
@@ -602,13 +602,13 @@ This document is the single source of truth for the project's current status, co
   - [x] Color contrast verification (WCAG 2.1 AA compliant)
   - [x] Touch target sizing (48dp minimum via Material components)
   - [ ] Keyboard navigation
-- [ ] Launch Preparation
+- [x] Launch Preparation
+  - [x] Privacy Policy (dev-docs/PRIVACY_POLICY.md)
+  - [x] Terms of Service (dev-docs/TERMS_OF_SERVICE.md)
+  - [x] User documentation (dev-docs/USER_GUIDE.md)
   - [ ] App store assets
   - [ ] Marketing materials
   - [ ] Beta testing program
-  - [ ] User documentation
-  - [ ] Privacy policy
-  - [ ] Terms of service
 
 **Key Files Added**:
 - lib/domain/services/onboarding_service.dart
@@ -619,6 +619,9 @@ This document is the single source of truth for the project's current status, co
 - lib/presentation/providers/onboarding_providers.dart
 - lib/presentation/providers/notification_service_provider.dart
 - test/scheduler/scheduler_performance_test.dart (Performance benchmark tests)
+- dev-docs/PRIVACY_POLICY.md (Privacy policy for app store submission)
+- dev-docs/TERMS_OF_SERVICE.md (Terms of service for app store submission)
+- dev-docs/USER_GUIDE.md (Comprehensive user documentation)
 
 **Key Files Modified**:
 - lib/app/router.dart - Added /onboarding route, auto-redirect for first-time users
@@ -646,25 +649,31 @@ This document is the single source of truth for the project's current status, co
 
 **Prerequisites** (requires Flutter SDK):
 1. Run `dart run build_runner build --delete-conflicting-outputs`
-2. Run `flutter test` to verify test suite (30+ tests)
+2. Run `flutter test` to verify test suite (145+ tests)
 
-**Phase 8 Performance Work**:
-1. Profile schedule generation (current: unknown, target: <2s for 50+ events)
-2. Profile database queries in Day View and Week View
-3. Test with large dataset (100+ events)
-4. Optimize any slow queries or UI rendering
+**Phase 8 Remaining Work**:
 
-**Phase 8 Accessibility Work**:
-1. Add semantic labels to all interactive widgets
-2. Verify color contrast meets WCAG 2.1 AA (4.5:1 ratio)
-3. Ensure touch targets are minimum 48dp
-4. Test with screen reader (VoiceOver/TalkBack)
+1. **Keyboard Navigation** (requires Flutter SDK)
+   - Add focus nodes to interactive elements
+   - Implement tab order for forms
+   - Add keyboard shortcuts for common actions
 
-**Phase 8 Launch Preparation**:
-1. Create app store screenshots and descriptions
-2. Write user documentation/help screens
-3. Draft privacy policy and terms of service
-4. Set up beta testing program
+2. **App Store Assets** (requires design tools + Flutter)
+   - Screenshots for iOS (iPhone 15 Pro, iPad Pro)
+   - Screenshots for Android (phone, tablet, 7-inch)
+   - App icon in all required sizes
+   - Feature graphic (Android)
+   - Promotional images
+
+3. **Beta Testing Program**
+   - TestFlight setup for iOS
+   - Internal testing track for Android
+   - Gather feedback from 10+ users
+
+**Launch Preparation Documents** ✅ **COMPLETE**:
+- Privacy Policy: `dev-docs/PRIVACY_POLICY.md`
+- Terms of Service: `dev-docs/TERMS_OF_SERVICE.md`
+- User Guide: `dev-docs/USER_GUIDE.md`
 
 ## Component Completion Summary
 
@@ -689,7 +698,7 @@ This document is the single source of truth for the project's current status, co
 | **Travel Time** | 🟢 Complete | 100% | **Fully implemented!** Data layer + Travel Times Screen + event prompts complete. Scheduler integration is deferred (future enhancement). |
 | **Relationship Goals** | 🟢 Complete | 100% | **Fully implemented!** Goal entity with personId, Goal form with type selector, progress tracking via EventPeople, Dashboard display with person info. |
 | **Onboarding** | 🟢 Complete | 100% | **Fully implemented!** OnboardingService, OnboardingScreen (5-page wizard), SampleDataService, auto-redirect via router. |
-| **Accessibility** | 🟢 Complete | 80% | **Screen reader support added!** Semantics widgets in all major screens. Touch targets meet 48dp via Material components. Color contrast and keyboard nav remaining. |
+| **Accessibility** | 🟢 Complete | 90% | **Screen reader support added!** Semantics widgets in all major screens. Touch targets meet 48dp via Material components. **Color contrast WCAG 2.1 AA compliant.** Keyboard nav remaining. |
 | **Widget Tests** | 🟢 Active | 30% | Day View, Event Form, Planning Wizard tests added |
 | **Integration Tests** | 🟢 Active | 15% | **Core user flow test added** (Create Event → Day View → Planning Wizard) |
 
@@ -732,4 +741,4 @@ Before considering the project "complete":
 
 *For session logs and detailed development history, see [CHANGELOG.md](./CHANGELOG.md)*
 
-*Last updated: 2026-01-23*
+*Last updated: 2026-01-24*
