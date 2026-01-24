@@ -668,8 +668,7 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 
 **Medium Priority**:
 - Router duplication (`router.dart` has legacy static router + provider-based)
-- TODOs in production code (3 remaining: work hours config, legal doc linking)
-- Legal documents not linked in Settings screen
+- TODOs in production code (2 remaining: work hours config)
 
 **Low Priority**:
 - Outdated documentation (IMPLEMENTATION_SUMMARY.md, BUILD_INSTRUCTIONS.md)
@@ -677,7 +676,7 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 - Travel time in schedule generation (feature gap)
 
 ### Recommended Actions
-1. Link Privacy Policy and Terms of Service in Settings screen (App Store requirement)
+1. ~~Link Privacy Policy and Terms of Service in Settings screen (App Store requirement)~~ ✅ **DONE**
 2. Archive/update IMPLEMENTATION_SUMMARY.md and BUILD_INSTRUCTIONS.md
 3. Expand widget test coverage
 4. Implement centralized error handling service
@@ -711,8 +710,8 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
    - Gather feedback from 10+ users
 
 **Launch Preparation Documents** ✅ **COMPLETE**:
-- Privacy Policy: `dev-docs/PRIVACY_POLICY.md`
-- Terms of Service: `dev-docs/TERMS_OF_SERVICE.md`
+- Privacy Policy: `dev-docs/PRIVACY_POLICY.md` (accessible in Settings screen)
+- Terms of Service: `dev-docs/TERMS_OF_SERVICE.md` (accessible in Settings screen)
 - User Guide: `dev-docs/USER_GUIDE.md`
 
 ## Component Completion Summary

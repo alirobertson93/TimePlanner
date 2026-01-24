@@ -33,6 +33,50 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-24 - Add Privacy Policy and Terms of Service to Settings
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Make Privacy Policy and Terms of Service accessible to users from within the app's Settings screen
+
+**Work Completed**:
+- ✅ **Implemented Terms of Service Dialog**
+  - Added `_showTermsOfServiceDialog` method in settings_screen.dart
+  - Displays scrollable dialog with key sections from TERMS_OF_SERVICE.md
+  - Includes: Agreement to Terms, Description of Service, Use License, User Content and Data, Disclaimer of Warranties, Limitation of Liability, Contact
+  - Styled with Material Design patterns consistent with existing dialogs
+
+- ✅ **Implemented Privacy Policy Dialog**
+  - Added `_showPrivacyPolicyDialog` method in settings_screen.dart
+  - Displays scrollable dialog with key sections from PRIVACY_POLICY.md
+  - Includes: Introduction, Information Stored Locally, Information We Do NOT Collect, Data Storage and Security, Your Data Rights, Contact
+  - Added summary table showing privacy practices at a glance
+
+- ✅ **Helper Widgets Created**
+  - `_buildLegalSection` - Reusable widget for section title and content
+  - `_buildSummaryTable` - Privacy summary table for quick reference
+
+- ✅ **Removed TODO Comments**
+  - Removed TODO at line 146 (Terms of Service)
+  - Removed TODO at line 155 (Privacy Policy)
+  - Wired onTap handlers to new dialog methods
+
+**Key Files Modified**:
+- `lib/presentation/screens/settings/settings_screen.dart` - Added legal document dialogs (+213 lines)
+
+**Testing Notes**:
+- Visual testing recommended to verify dialog appearance and scrolling behavior
+- Flutter SDK required for full testing (not available in current environment)
+
+**Related to Audit Findings**:
+- Addresses high-priority recommendation: "Link legal documents in Settings screen (required for App Store)"
+
+**Next Steps**:
+- Update ROADMAP.md to mark legal docs linking as complete
+- Continue with remaining Phase 8 launch preparation tasks
+
+---
+
 ### Session: 2026-01-24 - Comprehensive Codebase Audit
 
 **Author**: AI Assistant (GitHub Copilot)
