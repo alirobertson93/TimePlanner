@@ -92,7 +92,7 @@ This changelog serves multiple purposes:
   - Updated Success Criteria checklist (widget test coverage marked complete)
 
 **Key Files Added**:
-- test/widget/screens/week_view_screen_test.dart (130 tests cases covering week view)
+- test/widget/screens/week_view_screen_test.dart (11 test cases covering week view)
 - test/widget/screens/goals_dashboard_screen_test.dart (16 test cases covering goals dashboard)
 - test/widget/screens/settings_screen_test.dart (22 test cases covering settings)
 - test/widget/screens/notifications_screen_test.dart (18 test cases covering notifications)
