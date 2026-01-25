@@ -194,7 +194,7 @@ void main() {
         status: EventStatus.pending,
         duration: const Duration(hours: 1),
         schedulingConstraint: SchedulingConstraint(
-          preferredDays: [3], // Wednesday only (in constraint format, 0=Sun, 3=Wed)
+          preferredDays: [3], // Wednesday only (in constraint format, 0=Sun, 1=Mon, ..., 6=Sat)
           dayConstraintStrength: SchedulingPreferenceStrength.locked,
         ),
         createdAt: DateTime.now(),
@@ -205,8 +205,8 @@ void main() {
 
       expect(slots, isNotNull);
       expect(slots!.isNotEmpty, isTrue);
-      // Wednesday is Jan 15, 2026 in the grid
-      expect(slots.first.start.day, equals(15));
+      // Wednesday is Jan 14, 2026 in the grid (Jan 13 is Tuesday)
+      expect(slots.first.start.day, equals(14));
     });
 
     test('schedules event without constraints normally', () {

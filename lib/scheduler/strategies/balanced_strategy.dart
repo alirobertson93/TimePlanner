@@ -1,5 +1,6 @@
 import 'package:time_planner/domain/entities/event.dart';
 import 'package:time_planner/domain/entities/goal.dart';
+import 'package:time_planner/domain/entities/scheduling_constraint.dart';
 import 'package:time_planner/domain/enums/scheduling_preference_strength.dart';
 import '../models/availability_grid.dart';
 import '../models/time_slot.dart';
@@ -292,33 +293,33 @@ class BalancedStrategy implements SchedulingStrategy {
   }
 
   /// Get effective start hour considering constraints
-  int _getEffectiveStartHour(dynamic constraint) {
-    if (constraint?.notBeforeTime != null) {
-      return constraint.notBeforeTime ~/ 60;
+  int _getEffectiveStartHour(SchedulingConstraint? constraint) {
+    if (constraint != null && constraint.notBeforeTime != null) {
+      return constraint.notBeforeTime! ~/ 60;
     }
     return defaultWorkStartHour;
   }
 
   /// Get effective start minute considering constraints
-  int _getEffectiveStartMinute(dynamic constraint) {
-    if (constraint?.notBeforeTime != null) {
-      return constraint.notBeforeTime % 60;
+  int _getEffectiveStartMinute(SchedulingConstraint? constraint) {
+    if (constraint != null && constraint.notBeforeTime != null) {
+      return constraint.notBeforeTime! % 60;
     }
     return 0;
   }
 
   /// Get effective end hour considering constraints
-  int _getEffectiveEndHour(dynamic constraint) {
-    if (constraint?.notAfterTime != null) {
-      return constraint.notAfterTime ~/ 60;
+  int _getEffectiveEndHour(SchedulingConstraint? constraint) {
+    if (constraint != null && constraint.notAfterTime != null) {
+      return constraint.notAfterTime! ~/ 60;
     }
     return defaultWorkEndHour;
   }
 
   /// Get effective end minute considering constraints
-  int _getEffectiveEndMinute(dynamic constraint) {
-    if (constraint?.notAfterTime != null) {
-      return constraint.notAfterTime % 60;
+  int _getEffectiveEndMinute(SchedulingConstraint? constraint) {
+    if (constraint != null && constraint.notAfterTime != null) {
+      return constraint.notAfterTime! % 60;
     }
     return 0;
   }

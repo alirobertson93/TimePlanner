@@ -164,8 +164,8 @@ void main() {
           updatedAt: DateTime.now(),
         );
 
-        // Schedule on Saturday (day 6, but DateTime.weekday uses 6 for Saturday)
-        // Jan 18, 2026 is a Sunday
+        // Schedule on Sunday (Jan 18, 2026 is a Sunday)
+        // DateTime.weekday == 7 for Sunday, which converts to 0 in constraint format
         final slots = [
           TimeSlot(DateTime(2026, 1, 18, 10, 0)),
         ];
