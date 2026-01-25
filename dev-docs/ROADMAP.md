@@ -8,9 +8,9 @@ This document is the single source of truth for the project's current status, co
 
 **Project Phase**: Phase 9 In Progress - Enhanced Goals System
 
-**Overall Progress**: ~100% Core Features Complete, ~98% Phase 8 Complete, Phase 9 Started
+**Overall Progress**: ~100% Core Features Complete, ~98% Phase 8 Complete, Phase 9A Started
 
-**Active Work**: Phase 9A - Foundation (Location Goals, Event Goals, Basic Matching) ⏳ 20%
+**Active Work**: Phase 9A - Foundation (Location Goals, Event Goals, Basic Matching) ⏳ 85%
 
 **Recent Update (2026-01-25)**: 
 - ✅ **CRITICAL: Recurring Events Now Working**: Implemented RecurrenceService to expand recurring events. Events from onboarding wizard and Plan Week wizard now populate correctly across all dates according to their recurrence rules.
@@ -763,7 +763,7 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 
 ### Phase 9: Enhanced Goals System ⏳ (In Progress)
 
-**Status**: Phase A In Progress - Foundation (20%)
+**Status**: Phase A In Progress - Foundation (85%)
 
 **Goal**: Expand goal types to support 4 ways of associating goals with events:
 1. **Event itself** (e.g., "Guitar Practice" - a specific recurring activity)
@@ -773,35 +773,44 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 
 **Overview**: The current goal system supports category-based and person-based goals. Phase 9 adds location-based and event-based goals, enabling users to track time spent at specific locations or on specific recurring activities.
 
-#### Phase A: Foundation ⏳ (In Progress)
+#### Phase A: Foundation ⏳ (In Progress - 85%)
 
 **Focus**: Core infrastructure for location and event goals
 
-**What's Being Added**:
+**What's Complete**:
 - ✅ Documentation updates (ROADMAP, DATA_MODEL, PRD, ALGORITHM)
-- ⏳ Schema migration (v11 → v12)
-  - Add `locationId` field to Goals table
-  - Add `eventTitle` field to Goals table
-  - Add index on `locationId`
-- ⏳ GoalType enum extension
-  - Add `GoalType.location`
-  - Add `GoalType.event`
-- ⏳ Goal entity updates
-  - Add `locationId` property
-  - Add `eventTitle` property
-  - Update `copyWith`, equality, hashCode
-- ⏳ Goal repository updates
-  - Add `getByLocation(String locationId)` method
-  - Add `getByEventTitle(String eventTitle)` method
-  - Update mappers for new fields
-- ⏳ Goal progress calculation
-  - Location goals: calculate time spent at that location
-  - Event goals: calculate time spent on events matching title
-- ⏳ Goal form UI updates
-  - Location picker for location goals
-  - Event title field for event goals
-  - Updated validation and save logic
-- ⏳ Tests for new functionality
+- ✅ Schema migration (v11 → v12)
+  - ✅ Add `locationId` field to Goals table
+  - ✅ Add `eventTitle` field to Goals table
+  - ✅ Add index on `locationId`
+- ✅ GoalType enum extension
+  - ✅ Add `GoalType.location`
+  - ✅ Add `GoalType.event`
+- ✅ Goal entity updates
+  - ✅ Add `locationId` property
+  - ✅ Add `eventTitle` property
+  - ✅ Update `copyWith`, equality, hashCode
+- ✅ Goal repository updates
+  - ✅ Add `getByLocation(String locationId)` method
+  - ✅ Add `getByEventTitle(String eventTitle)` method
+  - ✅ Update mappers for new fields
+- ✅ Goal progress calculation
+  - ✅ Location goals: calculate time spent at that location
+  - ✅ Event goals: calculate time spent on events matching title
+- ✅ Goal form provider updates
+  - ✅ Add locationId and eventTitle to state
+  - ✅ Update validation logic
+  - ✅ Update save/generate title logic
+- ✅ Tests for new functionality
+  - ✅ Repository tests for location and event goals
+
+**Remaining Work**:
+- [ ] Run code generation (requires Flutter SDK)
+- [ ] Goal form UI updates
+  - [ ] Location picker for location goals
+  - [ ] Event title field for event goals
+  - [ ] Show/hide fields based on goal type
+- [ ] Run tests to ensure no regressions
 
 **Technical Notes**:
 - Current schema version: 11
