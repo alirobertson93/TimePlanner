@@ -33,6 +33,91 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-25 - Recurring Events & Week View Menu Fix
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Fix critical bugs with recurring events not populating, week view menu visibility, and goal period label display.
+
+**Work Completed**:
+
+**Issue 1 & 3: Recurring Events Don't Populate (CRITICAL)** ✅ **IMPLEMENTED**
+
+- ✅ Created `lib/domain/services/recurrence_service.dart` - Service for expanding recurring events
+  - `expandRecurringEvent()` - Generates individual event instances from recurrence rules
+  - Handles weekly recurrence with `byWeekDay` constraints (0=Sunday, 6=Saturday)
+  - Supports all end conditions: never, after N occurrences, on specific date
+  - Handles events that started before the query range but continue into it
+  - Properly preserves event duration across all instances
+  - `expandEvents()` - Batch expansion for multiple events
+
+- ✅ Updated `lib/presentation/providers/event_providers.dart`
+  - `eventsForDateProvider` now expands recurring events for the selected date
+  - `eventsForWeekProvider` now expands recurring events for the selected week
+  - Both providers look back 1 year to catch recurring events that started in the past
+  - Fetches recurrence rules from repository and caches them for expansion
+
+- ✅ Updated `lib/presentation/providers/planning_wizard_providers.dart`
+  - `generateSchedule()` now uses recurrence-aware event fetching
+  - Planning wizard properly includes recurring event instances in scheduling
+  - Same 1-year lookback to capture all relevant recurring events
+
+**Issue 2: Week View Ellipsis Menu Not Visible** ✅ **IMPLEMENTED**
+
+- ✅ Updated `lib/presentation/screens/week_view/week_view_screen.dart`
+  - Added missing import for `notification_providers.dart`
+  - Updated `_buildAppBarActions` to match day view structure
+  - Added Plan Week button (core priority)
+  - Added Goals button (normal priority)
+  - Added People, Locations, Notifications, Settings (low priority - overflow menu)
+  - Notifications now show unread count badge
+  - All actions now properly appear in ellipsis menu on narrow screens
+
+**Issue 4: Goals Display "per day" Instead of "per week"** ✅ **IMPLEMENTED**
+
+- ✅ Fixed `lib/presentation/screens/planning_wizard/steps/goals_review_step.dart`
+  - Corrected `_getPeriodLabel()` method to match `GoalPeriod` enum values
+  - Case 0: 'week' (was incorrectly 'day')
+  - Case 1: 'month' (was incorrectly 'week')
+  - Case 2: 'quarter' (was incorrectly 'month')
+  - Case 3: 'year' (was missing)
+  - Goals now display correct period labels in Plan Week wizard
+
+**Testing**:
+- ✅ Created `test/domain/services/recurrence_service_test.dart`
+  - Tests for weekly recurrence with specific days (Mon, Wed, Fri)
+  - Tests for daily recurrence
+  - Tests for end date and occurrence count conditions
+  - Tests for events that started before query range
+  - Tests for duration preservation across instances
+  - Tests for interval > 1 (every N days)
+  - Tests for expandEvents with mixed recurring/non-recurring events
+
+**Key Files Added**:
+- `lib/domain/services/recurrence_service.dart`
+- `test/domain/services/recurrence_service_test.dart`
+
+**Key Files Modified**:
+- `lib/presentation/providers/event_providers.dart`
+- `lib/presentation/providers/planning_wizard_providers.dart`
+- `lib/presentation/screens/week_view/week_view_screen.dart`
+- `lib/presentation/screens/planning_wizard/steps/goals_review_step.dart`
+- `dev-docs/CHANGELOG.md`
+- `dev-docs/ROADMAP.md`
+
+**Technical Notes**:
+- The recurrence service uses a 1-year lookback window to catch recurring events that started in the past
+- Weekly recurrence properly converts between DateTime.weekday (1-7, Mon-Sun) and byWeekDay (0-6, Sun-Sat)
+- Code generation for providers (.g.dart files) happens during build via build_runner
+- All .g.dart files are gitignored as per project convention
+
+**Next Steps**:
+- CI/CD will run code generation and tests automatically
+- Manual testing recommended for onboarding wizard and Plan Week wizard
+- Consider adding integration tests for full recurring event flow
+
+---
+
 ### Session: 2026-01-25 - App Bar Overflow Menu & Goals Conceptual Model Implementation
 
 **Author**: AI Assistant (GitHub Copilot)
