@@ -2,11 +2,13 @@ import 'package:drift/drift.dart';
 
 import 'categories.dart';
 import 'people.dart';
+import 'locations.dart';
 
 /// Goals table for tracking user-defined time allocation goals
 @DataClassName('GoalData')
 @TableIndex(name: 'idx_goals_category', columns: {#categoryId})
 @TableIndex(name: 'idx_goals_person', columns: {#personId})
+@TableIndex(name: 'idx_goals_location', columns: {#locationId})
 @TableIndex(name: 'idx_goals_active', columns: {#isActive})
 class Goals extends Table {
   /// Primary key
@@ -15,7 +17,7 @@ class Goals extends Table {
   /// Goal title/name
   TextColumn get title => text()();
 
-  /// Goal type (category, person, custom)
+  /// Goal type (category, person, location, event, custom)
   IntColumn get type => integer()();
 
   /// Metric to track (hours, events, completions)
@@ -32,6 +34,13 @@ class Goals extends Table {
 
   /// Related person ID (optional, for relationship goals - tracking time with specific people)
   TextColumn get personId => text().nullable().references(People, #id)();
+
+  /// Related location ID (optional, for location-based goals - tracking time at specific locations)
+  TextColumn get locationId =>
+      text().nullable().references(Locations, #id)();
+
+  /// Event title (optional, for event-type goals - matches event names, case-insensitive)
+  TextColumn get eventTitle => text().nullable()();
 
   /// Strategy for handling goal debt/shortfall
   IntColumn get debtStrategy => integer()();
