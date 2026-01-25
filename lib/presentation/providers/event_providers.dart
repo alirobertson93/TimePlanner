@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/event.dart';
+import '../../domain/entities/recurrence_rule.dart';
 import '../../domain/services/recurrence_service.dart';
 import '../../core/utils/date_utils.dart';
 import 'repository_providers.dart';
@@ -26,7 +27,7 @@ Stream<List<Event>> eventsForDate(EventsForDateRef ref, DateTime date) async* {
       .map((e) => e.recurrenceRuleId!)
       .toSet();
   
-  final recurrenceRulesMap = <String, dynamic>{};
+  final recurrenceRulesMap = <String, RecurrenceRule>{};
   for (final ruleId in recurrenceRuleIds) {
     final rule = await recurrenceRepository.getById(ruleId);
     if (rule != null) {
@@ -105,7 +106,7 @@ Stream<List<Event>> eventsForWeek(EventsForWeekRef ref, DateTime weekStart) asyn
       .map((e) => e.recurrenceRuleId!)
       .toSet();
   
-  final recurrenceRulesMap = <String, dynamic>{};
+  final recurrenceRulesMap = <String, RecurrenceRule>{};
   for (final ruleId in recurrenceRuleIds) {
     final rule = await recurrenceRepository.getById(ruleId);
     if (rule != null) {

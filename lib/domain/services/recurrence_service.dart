@@ -12,6 +12,10 @@ import '../enums/recurrence_end_type.dart';
 class RecurrenceService {
   RecurrenceService._();
 
+  /// Maximum number of instances to generate for a single recurring event.
+  /// This prevents infinite loops for events with 'never' end type.
+  static const int maxInstancesPerEvent = 1000;
+
   /// Expands a recurring event into individual instances within a date range.
   /// 
   /// Takes an event with a recurrence rule and generates all occurrences that
@@ -77,7 +81,7 @@ class RecurrenceService {
       currentDate = _getNextOccurrenceDate(currentDate, rule);
       
       // Safety check to prevent infinite loops
-      if (instances.length > 1000) {
+      if (instances.length >= maxInstancesPerEvent) {
         break;
       }
     }

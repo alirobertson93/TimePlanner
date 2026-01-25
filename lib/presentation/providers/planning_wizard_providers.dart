@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/event.dart';
 import '../../domain/entities/goal.dart';
+import '../../domain/entities/recurrence_rule.dart';
 import '../../domain/services/recurrence_service.dart';
 import '../../scheduler/event_scheduler.dart';
 import '../../scheduler/models/schedule_request.dart';
@@ -232,7 +233,7 @@ class PlanningWizard extends _$PlanningWizard {
           .map((e) => e.recurrenceRuleId!)
           .toSet();
       
-      final recurrenceRulesMap = <String, dynamic>{};
+      final recurrenceRulesMap = <String, RecurrenceRule>{};
       for (final ruleId in recurrenceRuleIds) {
         final rule = await recurrenceRepository.getById(ruleId);
         if (rule != null) {
