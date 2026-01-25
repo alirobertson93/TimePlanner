@@ -33,6 +33,54 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-25 - Fix Onboarding Wizard Bugs + Add Replay Option
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Fix onboarding wizard not running on first install and add a "Replay Onboarding" option in Settings
+
+**Work Completed**:
+
+- ✅ **Bug 1: Fixed app using wrong router** (`lib/app/app.dart`)
+  - Converted `MyApp` from `StatelessWidget` to `ConsumerWidget` (Riverpod)
+  - Now uses `ref.watch(routerProvider)` which contains the onboarding redirect logic
+  - Previously was using legacy static `AppRouter.router` with no redirect logic
+
+- ✅ **Bug 2: Fixed loading state returning false** (`lib/presentation/providers/onboarding_providers.dart`)
+  - Changed `needsOnboardingProvider` loading state from `false` to `true`
+  - Ensures onboarding is shown by default until SharedPreferences confirms it's completed
+  - Previously, app would briefly skip onboarding on fresh installs during loading
+
+- ✅ **Bug 3: Removed legacy static router** (`lib/app/router.dart`)
+  - Deleted duplicate static `GoRouter get router` (was lines 143-239)
+  - This legacy router had no onboarding redirect and caused the bug
+  - Kept `createRouter(Ref ref)` method and `routerProvider` which have proper redirect logic
+
+- ✅ **Feature: Added "Replay Onboarding" option** (`lib/presentation/screens/settings/settings_screen.dart`)
+  - Added ListTile in About section with play_circle_outline icon
+  - Shows confirmation dialog explaining data won't be affected
+  - On confirmation, resets onboarding state via OnboardingService and navigates to `/onboarding`
+
+- ✅ **Added tests for Replay Onboarding feature** (`test/widget/screens/settings_screen_test.dart`)
+  - Test for displaying the setting and subtitle
+  - Test for the play_circle_outline icon
+  - Test for confirmation dialog appearing on tap
+  - Test for Cancel button closing dialog
+
+**Key Files Modified**:
+- `lib/app/app.dart` - Converted to ConsumerWidget, use routerProvider
+- `lib/app/router.dart` - Removed legacy static router
+- `lib/presentation/providers/onboarding_providers.dart` - Fixed loading state
+- `lib/presentation/screens/settings/settings_screen.dart` - Added Replay Onboarding feature
+- `test/widget/screens/settings_screen_test.dart` - Added tests for new feature
+
+**Testing Notes**:
+- Flutter SDK not available in environment for `flutter analyze` or `flutter test`
+- Code structure and syntax verified via file review
+- Tests added following existing patterns in the codebase
+
+---
+
 ### Session: 2026-01-25 - Standardize Error Handling
 
 **Author**: AI Assistant (GitHub Copilot)

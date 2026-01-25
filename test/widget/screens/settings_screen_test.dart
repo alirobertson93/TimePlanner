@@ -262,5 +262,48 @@ void main() {
       await tester.tap(switches.first);
       await tester.pumpAndSettle();
     });
+
+    testWidgets('displays Replay Onboarding setting', (tester) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Replay Onboarding'), findsOneWidget);
+      expect(find.text('See the welcome wizard again'), findsOneWidget);
+    });
+
+    testWidgets('displays play_circle_outline icon for Replay Onboarding', (tester) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.play_circle_outline), findsOneWidget);
+    });
+
+    testWidgets('tapping Replay Onboarding opens confirmation dialog', (tester) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Replay Onboarding'));
+      await tester.pumpAndSettle();
+
+      // Dialog should appear with title and content
+      expect(find.text('Replay Onboarding?'), findsOneWidget);
+      expect(find.text('This will show the welcome wizard again. Your data will not be affected.'), findsOneWidget);
+      expect(find.text('Cancel'), findsOneWidget);
+      expect(find.text('Show Wizard'), findsOneWidget);
+    });
+
+    testWidgets('Cancel button closes Replay Onboarding dialog', (tester) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Replay Onboarding'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      // Dialog should be closed
+      expect(find.text('Replay Onboarding?'), findsNothing);
+    });
   });
 }

@@ -28,7 +28,7 @@ final needsOnboardingProvider = Provider<bool>((ref) {
       final service = OnboardingService(prefs);
       return !service.isOnboardingComplete;
     },
-    loading: () => false, // Don't show onboarding while loading
+    loading: () => true, // Assume onboarding needed until confirmed complete
     error: (_, __) => false,
   );
 });

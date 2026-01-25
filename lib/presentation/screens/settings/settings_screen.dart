@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../providers/onboarding_providers.dart';
 import '../../providers/settings_providers.dart';
 
 /// Screen for managing user preferences and settings
@@ -150,6 +151,13 @@ class SettingsScreen extends ConsumerWidget {
             title: 'Privacy Policy',
             subtitle: null,
             onTap: () => _showPrivacyPolicyDialog(context),
+          ),
+          _buildSettingsTile(
+            context: context,
+            icon: Icons.play_circle_outline,
+            title: 'Replay Onboarding',
+            subtitle: 'See the welcome wizard again',
+            onTap: () => _showReplayOnboardingDialog(context, ref),
           ),
 
           const SizedBox(height: 24),
@@ -569,6 +577,34 @@ class SettingsScreen extends ConsumerWidget {
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showReplayOnboardingDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Replay Onboarding?'),
+        content: const Text(
+            'This will show the welcome wizard again. Your data will not be affected.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              final service = ref.read(onboardingServiceProvider);
+              await service.resetOnboarding();
+              if (context.mounted) {
+                context.go('/onboarding');
+              }
+            },
+            child: const Text('Show Wizard'),
           ),
         ],
       ),

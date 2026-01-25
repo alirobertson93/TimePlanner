@@ -554,6 +554,8 @@ This document is the single source of truth for the project's current status, co
   - SampleDataService - Generates sample locations, people, goals, and events
   - onboarding_providers.dart - Providers for onboarding and sample data services
   - Router auto-redirects first-time users to onboarding
+  - **Bug fixes (2026-01-25)**: App now uses `routerProvider` with redirect logic (was using legacy static router), loading state defaults to `true` (was `false`), removed duplicate legacy router
+  - **Replay Onboarding** feature added to Settings screen with confirmation dialog
 - ✅ **System Notifications** integrated (from Phase 7)
   - flutter_local_notifications package added
   - NotificationService - Wraps flutter_local_notifications plugin
@@ -598,7 +600,8 @@ This document is the single source of truth for the project's current status, co
   - [x] Welcome wizard (5-page flow)
   - [x] Feature tutorials (built into wizard pages)
   - [x] Sample data setup (optional at completion)
-  - [x] First-time user guidance (auto-redirect via router)
+  - [x] First-time user guidance (auto-redirect via router) **Bug fixed: App was using wrong router**
+  - [x] Replay Onboarding from Settings (**NEW**: Users can re-run wizard anytime)
 - [x] Performance
   - [x] Profiling and optimization (scheduler benchmarks: <10ms for 100 events)
   - [x] Database query optimization (10 indexes added in schema v11)
@@ -738,12 +741,12 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 | **Goal Form** | 🟢 Complete | 100% | Create, edit, delete with validation. **Updated with goal type selector and person picker for relationship goals.** |
 | **People Management** | 🟢 Complete | 100% | Entity, tables, repositories, providers, UI, event form integration complete |
 | **Location Management** | 🟢 Complete | 100% | Entity, table, repository, providers, UI, event form integration complete |
-| **Settings** | 🟢 Complete | 100% | UI and SharedPreferences persistence complete (Phase 7) |
+| **Settings** | 🟢 Complete | 100% | UI and SharedPreferences persistence complete (Phase 7). **Added Replay Onboarding feature.** |
 | **Recurrence** | 🟢 Complete | 95% | Data layer + UI complete. **RecurrenceCustomDialog extracted to separate file.** Exception handling pending. |
 | **Notifications** | 🟢 Complete | 100% | **Fully implemented!** Data layer + UI + System notifications via flutter_local_notifications. NotificationSchedulerService bridges repository with OS-level alerts. |
 | **Travel Time** | 🟢 Complete | 100% | **Fully implemented!** Data layer + Travel Times Screen + event prompts complete. Scheduler integration is deferred (future enhancement). |
 | **Relationship Goals** | 🟢 Complete | 100% | **Fully implemented!** Goal entity with personId, Goal form with type selector, progress tracking via EventPeople, Dashboard display with person info. |
-| **Onboarding** | 🟢 Complete | 100% | **Fully implemented!** OnboardingService, OnboardingScreen (5-page wizard), SampleDataService, auto-redirect via router. |
+| **Onboarding** | 🟢 Complete | 100% | **Fully implemented!** OnboardingService, OnboardingScreen (5-page wizard), SampleDataService, auto-redirect via router. **Bug fixes: App now uses correct routerProvider, loading state defaults to true. Added Replay Onboarding in Settings.** |
 | **Accessibility** | 🟢 Complete | 90% | **Screen reader support added!** Semantics widgets in all major screens. Touch targets meet 48dp via Material components. **Color contrast WCAG 2.1 AA compliant.** Keyboard nav remaining. |
 | **Widget Tests** | 🟢 Complete | 100% | **All 10 screen tests implemented!** Day View, Event Form, Planning Wizard, Week View, Goals Dashboard, Settings, Notifications, People, Locations, Onboarding tests added. |
 | **Integration Tests** | 🟡 Partial | 15% | **Core user flow test added** (Create Event → Day View → Planning Wizard). **Audit: Needs more critical flow coverage** |
