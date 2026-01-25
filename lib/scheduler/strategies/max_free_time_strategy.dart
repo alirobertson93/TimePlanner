@@ -1,7 +1,9 @@
 import 'package:time_planner/domain/entities/event.dart';
 import 'package:time_planner/domain/entities/goal.dart';
+import 'package:time_planner/domain/enums/scheduling_preference_strength.dart';
 import '../models/availability_grid.dart';
 import '../models/time_slot.dart';
+import '../services/constraint_checker.dart';
 import 'scheduling_strategy.dart';
 
 /// Strategy that maximizes contiguous free time blocks
@@ -10,6 +12,10 @@ import 'scheduling_strategy.dart';
 /// - Minimize fragmentation of free time
 /// - Create larger blocks of uninterrupted time for deep work
 /// - Cluster events together rather than spreading them out
+///
+/// Now respects scheduling constraints:
+/// - Locked constraints: only considers placements within constraint window
+/// - Strong/Weak constraints: adds penalty to fragmentation score
 class MaxFreeTimeStrategy implements SchedulingStrategy {
   // Default work hours (9 AM to 5 PM)
   static const int defaultWorkStartHour = 9;
@@ -17,6 +23,11 @@ class MaxFreeTimeStrategy implements SchedulingStrategy {
   
   /// Penalty score for creating small unusable fragments
   static const double smallFragmentPenalty = 0.5;
+
+  final ConstraintChecker _constraintChecker;
+
+  MaxFreeTimeStrategy({ConstraintChecker? constraintChecker})
+      : _constraintChecker = constraintChecker ?? const ConstraintChecker();
 
   @override
   String get name => 'max_free_time';
@@ -29,36 +40,50 @@ class MaxFreeTimeStrategy implements SchedulingStrategy {
   ) {
     final duration = event.effectiveDuration;
     final slotsNeeded = TimeSlot.durationToSlots(duration);
+    final constraint = event.schedulingConstraint;
+    final isLockedConstraint = constraint?.timeConstraintStrength == SchedulingPreferenceStrength.locked;
 
     // Find all possible placement windows
-    final possiblePlacements = _findAllPossiblePlacements(grid, slotsNeeded);
+    final possiblePlacements = _findAllPossiblePlacements(grid, event, slotsNeeded);
 
     if (possiblePlacements.isEmpty) {
       // Fallback: search entire window for any available slots
-      return grid.findAvailableSlots(duration);
+      return _findFallbackSlots(grid, event, duration, isLockedConstraint);
     }
 
-    // Choose the placement that results in the least fragmentation
+    // Choose the placement that results in the least fragmentation + constraint penalty
     List<TimeSlot>? bestPlacement;
-    double lowestFragmentation = double.infinity;
+    double lowestScore = double.infinity;
 
     for (final placement in possiblePlacements) {
-      final fragmentation = _calculateFragmentation(placement, grid, slotsNeeded);
-      if (fragmentation < lowestFragmentation) {
-        lowestFragmentation = fragmentation;
+      // Calculate combined score: fragmentation + constraint penalty
+      final fragmentationScore = _calculateFragmentation(placement, grid, slotsNeeded);
+      final constraintPenalty = _constraintChecker.calculatePenaltyScore(event, placement);
+      
+      // Skip if locked constraint is violated
+      if (constraintPenalty == double.infinity) {
+        continue;
+      }
+
+      final totalScore = fragmentationScore + constraintPenalty;
+      if (totalScore < lowestScore) {
+        lowestScore = totalScore;
         bestPlacement = placement;
       }
     }
 
-    return bestPlacement;
+    return bestPlacement ?? _findFallbackSlots(grid, event, duration, isLockedConstraint);
   }
 
-  /// Find all possible placements within work hours
+  /// Find all possible placements within work hours, considering constraints
   List<List<TimeSlot>> _findAllPossiblePlacements(
     AvailabilityGrid grid,
+    Event event,
     int slotsNeeded,
   ) {
     final placements = <List<TimeSlot>>[];
+    final constraint = event.schedulingConstraint;
+    final isLockedDayConstraint = constraint?.dayConstraintStrength == SchedulingPreferenceStrength.locked;
     
     var currentDay = DateTime(
       grid.windowStart.year,
@@ -72,7 +97,16 @@ class MaxFreeTimeStrategy implements SchedulingStrategy {
     );
 
     while (!currentDay.isAfter(windowEndDay)) {
-      final dayPlacements = _findPlacementsInDay(currentDay, grid, slotsNeeded);
+      // Check day constraint if present and locked
+      if (isLockedDayConstraint && constraint!.hasDayConstraints) {
+        final dayOfWeek = currentDay.weekday == 7 ? 0 : currentDay.weekday;
+        if (!constraint.preferredDays!.contains(dayOfWeek)) {
+          currentDay = currentDay.add(const Duration(days: 1));
+          continue;
+        }
+      }
+
+      final dayPlacements = _findPlacementsInDay(currentDay, grid, event, slotsNeeded);
       placements.addAll(dayPlacements);
       currentDay = currentDay.add(const Duration(days: 1));
     }
@@ -84,10 +118,28 @@ class MaxFreeTimeStrategy implements SchedulingStrategy {
   List<List<TimeSlot>> _findPlacementsInDay(
     DateTime day,
     AvailabilityGrid grid,
+    Event event,
     int slotsNeeded,
   ) {
-    final dayStart = DateTime(day.year, day.month, day.day, defaultWorkStartHour, 0);
-    final dayEnd = DateTime(day.year, day.month, day.day, defaultWorkEndHour, 0);
+    final constraint = event.schedulingConstraint;
+    final isLockedTimeConstraint = constraint?.timeConstraintStrength == SchedulingPreferenceStrength.locked;
+    
+    // Calculate effective work hours considering constraints
+    final effectiveStartHour = constraint?.notBeforeTime != null 
+        ? constraint!.notBeforeTime! ~/ 60 
+        : defaultWorkStartHour;
+    final effectiveStartMinute = constraint?.notBeforeTime != null 
+        ? constraint!.notBeforeTime! % 60 
+        : 0;
+    final effectiveEndHour = constraint?.notAfterTime != null 
+        ? constraint!.notAfterTime! ~/ 60 
+        : defaultWorkEndHour;
+    final effectiveEndMinute = constraint?.notAfterTime != null 
+        ? constraint!.notAfterTime! % 60 
+        : 0;
+
+    final dayStart = DateTime(day.year, day.month, day.day, effectiveStartHour, effectiveStartMinute);
+    final dayEnd = DateTime(day.year, day.month, day.day, effectiveEndHour, effectiveEndMinute);
 
     // Don't search before the scheduling window starts
     final searchStart = dayStart.isBefore(grid.windowStart) 
@@ -109,7 +161,16 @@ class MaxFreeTimeStrategy implements SchedulingStrategy {
 
         if (candidates.length >= slotsNeeded) {
           // Record this valid placement (take just the slots we need)
-          placements.add(candidates.sublist(candidates.length - slotsNeeded).toList());
+          final placement = candidates.sublist(candidates.length - slotsNeeded).toList();
+          
+          // For locked constraints, only add if satisfies constraints
+          if (isLockedTimeConstraint) {
+            if (_constraintChecker.satisfiesLockedConstraints(event, placement)) {
+              placements.add(placement);
+            }
+          } else {
+            placements.add(placement);
+          }
         }
       } else {
         // Gap found, reset candidates
@@ -173,5 +234,41 @@ class MaxFreeTimeStrategy implements SchedulingStrategy {
     }
 
     return score;
+  }
+
+  /// Fallback to find any available slot
+  List<TimeSlot>? _findFallbackSlots(
+    AvailabilityGrid grid,
+    Event event,
+    Duration duration,
+    bool isLockedConstraint,
+  ) {
+    if (!isLockedConstraint) {
+      return grid.findAvailableSlots(duration);
+    }
+
+    // For locked constraints, search entire grid but filter by constraints
+    final slotsNeeded = TimeSlot.durationToSlots(duration);
+    var current = TimeSlot(TimeSlot.roundDown(grid.windowStart));
+    var candidates = <TimeSlot>[];
+
+    while (current.start.isBefore(grid.windowEnd)) {
+      if (grid.isAvailable(current)) {
+        candidates.add(current);
+
+        if (candidates.length >= slotsNeeded) {
+          final placement = candidates.sublist(candidates.length - slotsNeeded).toList();
+          if (_constraintChecker.satisfiesLockedConstraints(event, placement)) {
+            return placement;
+          }
+        }
+      } else {
+        candidates = [];
+      }
+
+      current = current.next;
+    }
+
+    return null;
   }
 }

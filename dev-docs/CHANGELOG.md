@@ -33,6 +33,111 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-25 (Night) - Scheduler Constraint Integration
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Implement scheduler integration for scheduling constraints (Phase 9C completion).
+
+**Work Completed**:
+
+**Scheduler Engine Updates** ✅ **COMPLETE**
+
+- ✅ Created `ConstraintViolation` model (`lib/scheduler/models/constraint_violation.dart`)
+  - Tracks violation type (scheduled too early/late, wrong day, conflicting constraints)
+  - Includes event info, description, and constraint strength
+  - Calculates penalty scores: Weak=10, Strong=100, Locked=infinity
+  
+- ✅ Created `ConstraintChecker` service (`lib/scheduler/services/constraint_checker.dart`)
+  - `checkConstraints()` - Detects time and day constraint violations
+  - `satisfiesLockedConstraints()` - Quick check for hard constraint compliance
+  - `calculatePenaltyScore()` - Computes total penalty for strategy scoring
+  - Handles conflicting constraints (e.g., notBefore > notAfter)
+
+- ✅ Updated `BalancedStrategy` to respect constraints
+  - Locked constraints = hard rules (reject slots outside window)
+  - Strong constraints = significant penalty (100.0)
+  - Weak constraints = minor penalty (10.0)
+  - Searches within constraint windows first
+  - Respects day constraints for day selection
+
+- ✅ Updated `FrontLoadedStrategy` with same constraint logic
+- ✅ Updated `MaxFreeTimeStrategy` with same constraint logic
+- ✅ Updated `LeastDisruptionStrategy` with same constraint logic
+
+- ✅ Updated `EventScheduler` to track constraint violations
+  - Reports soft constraint warnings in results
+  - Adds locked constraint violations as conflicts for fixed events
+  - Includes `noValidSlots` violation when constrained events can't be scheduled
+
+- ✅ Updated `ScheduleResult` model
+  - Added `constraintViolations` list
+  - Added `hasConstraintWarnings` and `eventsWithConstraintWarnings` getters
+
+- ✅ Updated `Conflict` enum with `constraintViolation` type
+
+**Constraint Visualization** ✅ **COMPLETE**
+
+- ✅ Added schedule icon indicator in `EventCard` for events with constraints
+- ✅ Added schedule icon indicator in `WeekTimeline` for events with constraints
+- ✅ Added constraint info to event card semantic labels for accessibility
+
+**Planning Wizard Updates** ✅ **COMPLETE**
+
+- ✅ Updated `PlanReviewStep` to show constraint warnings
+  - New "Warnings" summary card showing events with constraint issues
+  - Constraint warnings section with violation details
+  - Shows constraint icons on scheduled events with constraints
+  - Shows constraint icons on unscheduled events
+  - Header changes color to orange when there are warnings
+
+**Tests Added** ✅ **COMPLETE**
+
+- ✅ `test/scheduler/constraint_checker_test.dart` - ConstraintChecker unit tests
+  - Tests for notBeforeTime violations
+  - Tests for notAfterTime violations
+  - Tests for conflicting constraints detection
+  - Tests for day constraint violations
+  - Tests for penalty score calculation
+  - Tests for satisfiesLockedConstraints
+
+- ✅ `test/scheduler/balanced_strategy_constraint_test.dart` - Strategy constraint tests
+  - Tests for respecting locked notBeforeTime constraints
+  - Tests for respecting locked notAfterTime constraints
+  - Tests for respecting time window constraints
+  - Tests for impossible constraints returning null
+  - Tests for day constraints
+
+**Files Created**: 4
+- `lib/scheduler/models/constraint_violation.dart`
+- `lib/scheduler/services/constraint_checker.dart`
+- `test/scheduler/constraint_checker_test.dart`
+- `test/scheduler/balanced_strategy_constraint_test.dart`
+
+**Files Modified**: 10
+- `lib/scheduler/strategies/balanced_strategy.dart`
+- `lib/scheduler/strategies/front_loaded_strategy.dart`
+- `lib/scheduler/strategies/max_free_time_strategy.dart`
+- `lib/scheduler/strategies/least_disruption_strategy.dart`
+- `lib/scheduler/event_scheduler.dart`
+- `lib/scheduler/models/schedule_result.dart`
+- `lib/scheduler/models/conflict.dart`
+- `lib/presentation/screens/day_view/widgets/event_card.dart`
+- `lib/presentation/screens/week_view/widgets/week_timeline.dart`
+- `lib/presentation/screens/planning_wizard/steps/plan_review_step.dart`
+
+**Technical Notes**:
+- All 4 scheduling strategies now support constraints identically
+- Constraint checking is performed by a dedicated service for separation of concerns
+- Penalty scoring allows strategies to prefer compliant slots without requiring them (for weak/strong)
+- Locked constraints are hard rules that reject non-compliant slots entirely
+- Visual indicators (schedule icon) appear on event cards with constraints
+- Planning wizard shows constraint warnings clearly to users
+
+**Phase 9C Status**: 100% COMPLETE ✅
+
+---
+
 ### Session: 2026-01-25 (Late Evening) - Analysis & Next Steps
 
 **Author**: AI Assistant (GitHub Copilot)

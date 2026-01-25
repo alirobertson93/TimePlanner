@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../providers/planning_wizard_providers.dart';
 import '../../../../scheduler/models/scheduled_event.dart';
+import '../../../../scheduler/models/schedule_result.dart';
 
 /// Step 4: Review the generated schedule
 class PlanReviewStep extends ConsumerWidget {
@@ -38,6 +39,12 @@ class PlanReviewStep extends ConsumerWidget {
           // Summary cards
           _buildSummaryCards(context, result),
           const SizedBox(height: 24),
+
+          // Constraint warnings (if any)
+          if (result.hasConstraintWarnings) ...[
+            _buildConstraintWarningsSection(context, result),
+            const SizedBox(height: 24),
+          ],
 
           // Scheduled events by day
           if (result.scheduledEvents.isNotEmpty) ...[
@@ -94,14 +101,17 @@ class PlanReviewStep extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, dynamic result) {
+  Widget _buildHeader(BuildContext context, ScheduleResult result) {
     final isSuccess = result.success;
+    final hasWarnings = result.hasConstraintWarnings;
 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: isSuccess
-            ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3)
+            ? hasWarnings 
+                ? Colors.orange.withOpacity(0.1)
+                : Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3)
             : Theme.of(context).colorScheme.errorContainer.withOpacity(0.3),
         borderRadius: BorderRadius.circular(16),
       ),
@@ -111,14 +121,20 @@ class PlanReviewStep extends ConsumerWidget {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: isSuccess
-                  ? Theme.of(context).colorScheme.primary
+                  ? hasWarnings
+                      ? Colors.orange
+                      : Theme.of(context).colorScheme.primary
                   : Theme.of(context).colorScheme.error,
               shape: BoxShape.circle,
             ),
             child: Icon(
-              isSuccess ? Icons.check : Icons.warning,
+              isSuccess 
+                  ? hasWarnings ? Icons.warning_amber : Icons.check 
+                  : Icons.warning,
               color: isSuccess
-                  ? Theme.of(context).colorScheme.onPrimary
+                  ? hasWarnings
+                      ? Colors.white
+                      : Theme.of(context).colorScheme.onPrimary
                   : Theme.of(context).colorScheme.onError,
               size: 24,
             ),
@@ -130,12 +146,16 @@ class PlanReviewStep extends ConsumerWidget {
               children: [
                 Text(
                   isSuccess
-                      ? 'Your schedule is ready!'
+                      ? hasWarnings
+                          ? 'Schedule ready with warnings'
+                          : 'Your schedule is ready!'
                       : 'Schedule generated with issues',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: isSuccess
-                            ? Theme.of(context).colorScheme.primary
+                            ? hasWarnings
+                                ? Colors.orange
+                                : Theme.of(context).colorScheme.primary
                             : Theme.of(context).colorScheme.error,
                       ),
                 ),
@@ -154,7 +174,7 @@ class PlanReviewStep extends ConsumerWidget {
     );
   }
 
-  Widget _buildSummaryCards(BuildContext context, dynamic result) {
+  Widget _buildSummaryCards(BuildContext context, ScheduleResult result) {
     return Row(
       children: [
         Expanded(
@@ -182,10 +202,10 @@ class PlanReviewStep extends ConsumerWidget {
         Expanded(
           child: _buildSummaryCard(
             context: context,
-            title: 'Conflicts',
-            value: result.conflicts.length.toString(),
-            icon: Icons.warning_amber,
-            color: result.conflicts.isEmpty
+            title: 'Warnings',
+            value: result.eventsWithConstraintWarnings.toString(),
+            icon: Icons.schedule,
+            color: result.constraintViolations.isEmpty
                 ? Theme.of(context).colorScheme.outline
                 : Colors.orange,
           ),
@@ -228,6 +248,86 @@ class PlanReviewStep extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildConstraintWarningsSection(BuildContext context, ScheduleResult result) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Icon(
+              Icons.schedule,
+              color: Colors.orange,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'Time Constraint Warnings (${result.eventsWithConstraintWarnings})',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Colors.orange,
+                  ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.orange.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Some events were scheduled outside their preferred time constraints:',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+              ),
+              const SizedBox(height: 12),
+              ...result.constraintViolations.map((violation) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          violation.strength.index == 2 
+                              ? Icons.lock 
+                              : violation.strength.index == 1 
+                                  ? Icons.priority_high 
+                                  : Icons.info_outline,
+                          size: 16, 
+                          color: Colors.orange,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                violation.eventName,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                              ),
+                              Text(
+                                violation.description,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -325,9 +425,15 @@ class PlanReviewStep extends ConsumerWidget {
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                 ),
-                trailing: event.event.isFixed
-                    ? const Icon(Icons.lock, size: 16)
-                    : null,
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (event.event.hasSchedulingConstraints)
+                      const Icon(Icons.schedule, size: 16, color: Colors.orange),
+                    if (event.event.isFixed)
+                      const Icon(Icons.lock, size: 16),
+                  ],
+                ),
               ),
             )),
         const SizedBox(height: 16),
@@ -335,7 +441,7 @@ class PlanReviewStep extends ConsumerWidget {
     );
   }
 
-  Widget _buildUnscheduledSection(BuildContext context, dynamic result) {
+  Widget _buildUnscheduledSection(BuildContext context, ScheduleResult result) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -378,6 +484,10 @@ class PlanReviewStep extends ConsumerWidget {
                         const Icon(Icons.circle, size: 8),
                         const SizedBox(width: 8),
                         Text(event.name),
+                        if (event.hasSchedulingConstraints) ...[
+                          const SizedBox(width: 4),
+                          const Icon(Icons.schedule, size: 14, color: Colors.orange),
+                        ],
                       ],
                     ),
                   )),
@@ -388,7 +498,7 @@ class PlanReviewStep extends ConsumerWidget {
     );
   }
 
-  Widget _buildConflictsSection(BuildContext context, dynamic result) {
+  Widget _buildConflictsSection(BuildContext context, ScheduleResult result) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

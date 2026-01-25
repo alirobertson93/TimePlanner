@@ -2,6 +2,7 @@
 enum ConflictType {
   overlap, // Two events occupy same time
   violatesConstraint, // Event placement violates constraint
+  constraintViolation, // Scheduling constraint cannot be satisfied
   travelImpossible, // Not enough travel time between events
   exceedsCapacity, // Too many events in time period
 }
