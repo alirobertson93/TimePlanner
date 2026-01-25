@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/goal_providers.dart';
+import '../../providers/goal_analysis_providers.dart';
 import '../../providers/category_providers.dart';
 import '../../providers/person_providers.dart';
 import '../../providers/location_providers.dart';
+import '../../providers/settings_providers.dart';
 import '../../../core/utils/color_utils.dart';
 import '../../../domain/enums/goal_period.dart';
 import '../../../domain/enums/goal_type.dart';
+import '../../../domain/services/goal_warning_service.dart';
+import '../../../domain/services/goal_recommendation_service.dart';
 
 /// Goals Dashboard screen showing goal progress
 class GoalsDashboardScreen extends ConsumerWidget {
@@ -121,6 +125,10 @@ class GoalsDashboardScreen extends ConsumerWidget {
     List<GoalProgress> goals,
     AsyncValue<GoalsSummary> summaryAsync,
   ) {
+    final settings = ref.watch(settingsProvider);
+    final warningsAsync = ref.watch(goalWarningsSummaryProvider);
+    final recommendationsAsync = ref.watch(goalRecommendationsProvider);
+
     // Group goals by period
     final weeklyGoals =
         goals.where((g) => g.goal.period == GoalPeriod.week).toList();
@@ -134,6 +142,8 @@ class GoalsDashboardScreen extends ConsumerWidget {
     return RefreshIndicator(
       onRefresh: () async {
         ref.invalidate(goalsWithProgressProvider);
+        ref.invalidate(goalWarningsProvider);
+        ref.invalidate(goalRecommendationsProvider);
       },
       child: ListView(
         padding: const EdgeInsets.all(16.0),
@@ -144,7 +154,29 @@ class GoalsDashboardScreen extends ConsumerWidget {
             loading: () => const SizedBox.shrink(),
             error: (_, __) => const SizedBox.shrink(),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
+
+          // Warnings Card (if enabled and has warnings)
+          if (settings.showGoalWarnings)
+            warningsAsync.when(
+              data: (summary) => summary.hasWarnings
+                  ? _buildWarningsCard(context, ref, summary)
+                  : const SizedBox.shrink(),
+              loading: () => const SizedBox.shrink(),
+              error: (_, __) => const SizedBox.shrink(),
+            ),
+
+          // Recommendations Card (if enabled and has recommendations)
+          if (settings.enableGoalRecommendations)
+            recommendationsAsync.when(
+              data: (recommendations) => recommendations.isNotEmpty
+                  ? _buildRecommendationsCard(context, ref, recommendations)
+                  : const SizedBox.shrink(),
+              loading: () => const SizedBox.shrink(),
+              error: (_, __) => const SizedBox.shrink(),
+            ),
+
+          const SizedBox(height: 8),
 
           // Weekly Goals
           if (weeklyGoals.isNotEmpty) ...[
@@ -297,6 +329,251 @@ class GoalsDashboardScreen extends ConsumerWidget {
       style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),
+    );
+  }
+
+  Widget _buildWarningsCard(
+      BuildContext context, WidgetRef ref, GoalWarningsSummary summary) {
+    return Card(
+      elevation: 2,
+      color: summary.hasCritical
+          ? Theme.of(context).colorScheme.errorContainer.withOpacity(0.8)
+          : Colors.orange.withOpacity(0.2),
+      margin: const EdgeInsets.only(bottom: 16),
+      child: InkWell(
+        onTap: () => _showWarningsDialog(context, ref),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Icon(
+                summary.hasCritical ? Icons.error : Icons.warning_amber,
+                color:
+                    summary.hasCritical ? Colors.red : Colors.orange,
+                size: 28,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      summary.hasCritical
+                          ? 'Critical Goal Warnings'
+                          : 'Goal Warnings',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    Text(
+                      '${summary.total} warning${summary.total > 1 ? 's' : ''} - tap to view',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showWarningsDialog(BuildContext context, WidgetRef ref) async {
+    final warnings = await ref.read(goalWarningsProvider.future);
+
+    if (!context.mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.warning_amber, color: Colors.orange),
+            SizedBox(width: 8),
+            Expanded(child: Text('Goal Warnings')),
+          ],
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: warnings.isEmpty
+              ? const Text('No warnings at this time.')
+              : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: warnings.length,
+                  itemBuilder: (context, index) {
+                    final warning = warnings[index];
+                    return ListTile(
+                      leading: Icon(
+                        warning.severity == GoalWarningSeverity.critical
+                            ? Icons.error
+                            : warning.severity == GoalWarningSeverity.warning
+                                ? Icons.warning_amber
+                                : Icons.info_outline,
+                        color:
+                            warning.severity == GoalWarningSeverity.critical
+                                ? Colors.red
+                                : warning.severity ==
+                                        GoalWarningSeverity.warning
+                                    ? Colors.orange
+                                    : Colors.blue,
+                      ),
+                      title: Text(warning.goalTitle),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(warning.message),
+                          if (warning.suggestedAction != null)
+                            Text(
+                              '💡 ${warning.suggestedAction}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                            ),
+                        ],
+                      ),
+                      isThreeLine: warning.suggestedAction != null,
+                    );
+                  },
+                ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecommendationsCard(BuildContext context, WidgetRef ref,
+      List<GoalRecommendation> recommendations) {
+    return Card(
+      elevation: 2,
+      color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+      margin: const EdgeInsets.only(bottom: 16),
+      child: InkWell(
+        onTap: () => _showRecommendationsDialog(context, ref, recommendations),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Icon(
+                Icons.lightbulb_outline,
+                color: Theme.of(context).colorScheme.primary,
+                size: 28,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Goal Recommendations',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    Text(
+                      '${recommendations.length} suggestion${recommendations.length > 1 ? 's' : ''} based on your activity',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showRecommendationsDialog(BuildContext context, WidgetRef ref,
+      List<GoalRecommendation> recommendations) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.lightbulb_outline,
+                color: Theme.of(context).colorScheme.primary),
+            const SizedBox(width: 8),
+            const Expanded(child: Text('Goal Recommendations')),
+          ],
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: recommendations.length,
+            itemBuilder: (context, index) {
+              final rec = recommendations[index];
+              final confidencePercent = (rec.confidence * 100).round();
+              return Card(
+                child: ListTile(
+                  leading: Icon(
+                    rec.type == GoalType.category
+                        ? Icons.category
+                        : rec.type == GoalType.location
+                            ? Icons.location_on
+                            : rec.type == GoalType.person
+                                ? Icons.person
+                                : Icons.event,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  title: Text(rec.title),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(rec.reason),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.analytics,
+                              size: 12,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Confidence: $confidencePercent%',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  isThreeLine: true,
+                  trailing: IconButton(
+                    icon: const Icon(Icons.add_circle_outline),
+                    tooltip: 'Create this goal',
+                    onPressed: () {
+                      Navigator.pop(context);
+                      // Note: Future enhancement could pass recommendation data
+                      // to pre-fill the goal form. Currently navigates to empty form.
+                      context.push('/goal/new');
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
     );
   }
 

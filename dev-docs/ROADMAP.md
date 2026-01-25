@@ -6,13 +6,21 @@ This document is the single source of truth for the project's current status, co
 
 ## Current Status
 
-**Project Phase**: Phase 9 In Progress - Enhanced Goals System
+**Project Phase**: Phase 9 Complete - Enhanced Goals System ✅
 
-**Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9A Complete, Phase 9C Complete (100%)
+**Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9 Complete (100%)
 
-**Active Work**: Phase 9D - Polish (upcoming) ⏳
+**Active Work**: None - All planned Phase 9 work complete ✅
 
-**Recent Update (2026-01-25 Night)**:
+**Recent Update (2026-01-25 Late Night)**:
+- ✅ **Phase 9D COMPLETE**: Goal settings, warnings, and recommendation engine
+  - Goal Settings: Default period, default metric, warning toggle, recommendation toggle
+  - Warning System: GoalWarningService detects unrealistic pace, behind schedule, no events
+  - Recommendation Engine: GoalRecommendationService analyzes patterns and suggests goals
+  - Goals Dashboard updated with warnings and recommendations cards
+  - Unit tests for both services
+
+**Earlier Update (2026-01-25 Night)**:
 - ✅ **Phase 9C COMPLETE**: Full scheduler integration for scheduling constraints
   - All 4 strategies (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption) now respect constraints
   - Locked constraints = hard rules (slots outside window are rejected)
@@ -778,9 +786,9 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 
 ---
 
-### Phase 9: Enhanced Goals System ⏳ (In Progress)
+### Phase 9: Enhanced Goals System ✅ (Complete)
 
-**Status**: Phase A Complete, Phase C Complete (100%), Phase D Planned
+**Status**: Phase A Complete, Phase C Complete (100%), Phase D Complete (100%)
 
 **Goal**: Expand goal types to support 4 ways of associating goals with events:
 1. **Event itself** (e.g., "Guitar Practice" - a specific recurring activity) ✅
@@ -788,7 +796,7 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 3. **Person** (e.g., "Girlfriend" - already supported ✅)
 4. **Category** (e.g., "Relaxation" - already supported ✅)
 
-**Overview**: The current goal system supports all 4 goal types (category, person, location, event). Phase 9 continues with scheduling constraints and wizard enhancements.
+**Overview**: The goal system now supports all 4 goal types (category, person, location, event), scheduling constraints with time restrictions, and intelligent goal warnings and recommendations.
 
 #### Phase A: Foundation ✅ (Complete - 100%)
 
@@ -898,7 +906,7 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 
 **Dependencies**: Phase A (complete)
 
-#### Phase D: Polish ⚪ (Planned)
+#### Phase D: Polish ✅ (Complete - 100%)
 
 **Focus**: Settings, warnings, and user preferences
 
@@ -907,11 +915,50 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
   - Stored in SharedPreferences as `wizard_auto_suggest`
   - When enabled, Planning Wizard will auto-use first suggestion
 
-**Planned Features**:
-- Goal settings and preferences
-- Warning system for unachievable goals
-- Goal recommendation engine
-- Performance optimization
+**What's Complete (2026-01-25 Night - Phase 9D Implementation)**:
+
+**Goal Settings and Preferences** ✅ **COMPLETE**:
+- ✅ Added new goal-related settings to Settings screen:
+  - Default Goal Period (Weekly/Monthly/Quarterly/Yearly)
+  - Default Goal Metric (Hours/Events/Completions)
+  - Show Goal Warnings toggle
+  - Enable Goal Recommendations toggle
+- ✅ All settings persist via SharedPreferences
+- ✅ Settings integrated into Goals Dashboard
+
+**Warning System for Unachievable Goals** ✅ **COMPLETE**:
+- ✅ Created `GoalWarningService` (`lib/domain/services/goal_warning_service.dart`)
+  - Detects unrealistic pace (requires >8 hours/day)
+  - Detects significantly behind goals (< 50% expected progress)
+  - Detects goals with no scheduled events contributing
+  - Calculates estimated completion dates
+  - Provides suggested actions for each warning
+- ✅ Created `GoalWarning` model with types and severities:
+  - Warning types: unrealisticPace, significantlyBehind, noScheduledEvents, insufficientTimeRemaining, conflictingGoals
+  - Severity levels: info, warning, critical
+- ✅ Created `goalWarningsProvider` and `goalWarningsSummaryProvider`
+- ✅ Goals Dashboard shows warnings card when warnings exist
+- ✅ Tap warnings card to see detailed warning list with suggested actions
+- ✅ Unit tests for GoalWarningService
+
+**Goal Recommendation Engine** ✅ **COMPLETE**:
+- ✅ Created `GoalRecommendationService` (`lib/domain/services/goal_recommendation_service.dart`)
+  - Analyzes event patterns over last 30 days
+  - Recommends category-based goals based on frequent categories
+  - Recommends location-based goals based on frequent locations  
+  - Recommends event-based goals for recurring event titles
+  - Calculates confidence scores based on data quality
+  - Skips recommendations for existing goals
+- ✅ Created `GoalRecommendation` model with conversion to Goal entity
+- ✅ Created `goalRecommendationsProvider`
+- ✅ Goals Dashboard shows recommendations card when recommendations available
+- ✅ Tap recommendations card to see list with "Create" buttons
+- ✅ Unit tests for GoalRecommendationService
+
+**Performance Optimization** ⏳ **Deferred**:
+- Note: No specific performance issues identified that require immediate optimization
+- Recommendation engine uses efficient data analysis patterns
+- Warning service uses lazy evaluation
 
 **Dependencies**: Phase C (complete)
 
@@ -923,7 +970,7 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 |-----------|--------|------------|-------|
 | **Database Layer** | 🟢 Complete | 100% | Events (with locationId, recurrenceRuleId, schedulingConstraintsJson), Categories, Goals (with personId, locationId, eventTitle), People, EventPeople, Locations, RecurrenceRules, Notifications, TravelTimePairs complete. **Schema v13.** Foreign keys enabled for cascade deletes. |
 | **Domain Entities** | 🟢 Complete | 100% | Core entities + Person + Location + RecurrenceRule + Notification + TravelTimePair + **SchedulingConstraint** done. Event updated with schedulingConstraint. Goal updated with locationId/eventTitle for all 4 goal types. |
-| **Domain Services** | 🟢 Complete | 100% | EventFactory, **NotificationService**, **NotificationSchedulerService**, **OnboardingService**, **SampleDataService**, **RecurrenceService**, **ConstraintChecker** - centralized service logic |
+| **Domain Services** | 🟢 Complete | 100% | EventFactory, **NotificationService**, **NotificationSchedulerService**, **OnboardingService**, **SampleDataService**, **RecurrenceService**, **ConstraintChecker**, **GoalWarningService**, **GoalRecommendationService** - centralized service logic |
 | **Repositories** | 🟢 Complete | 100% | Event, Category, Goal, Person, EventPeople, Location, RecurrenceRule, Notification, TravelTimePair repos complete with tests + interfaces. **EventRepository updated with constraint serialization.** |
 | **Scheduler Engine** | 🟢 Complete | 100% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption). **Constraint integration complete! All strategies respect time and day constraints.** |
 | **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button, Locations button, Settings button, Notifications button (with badge), recurring indicators, **constraint indicators**. **Widget tests added.** |
