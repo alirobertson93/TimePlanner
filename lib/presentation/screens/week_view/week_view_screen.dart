@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../providers/event_providers.dart';
+import '../../providers/notification_providers.dart';
 import '../../widgets/adaptive_app_bar.dart';
 import 'widgets/week_header.dart';
 import 'widgets/week_timeline.dart';
@@ -96,6 +97,8 @@ class WeekViewScreen extends ConsumerWidget {
     WidgetRef ref,
     DateTime selectedDate,
   ) {
+    final unreadCountAsync = ref.watch(unreadCountProvider);
+    
     return [
       // Navigation actions (highest priority - always visible)
       AdaptiveAppBarAction(
@@ -127,7 +130,15 @@ class WeekViewScreen extends ConsumerWidget {
         priority: AdaptiveActionPriority.navigation,
       ),
       
-      // Core action - switch to day view
+      // Core actions (high priority)
+      AdaptiveAppBarAction(
+        icon: const Icon(Icons.auto_awesome),
+        label: 'Plan week',
+        onPressed: () {
+          context.push('/plan');
+        },
+        priority: AdaptiveActionPriority.core,
+      ),
       AdaptiveAppBarAction(
         icon: const Icon(Icons.calendar_view_day),
         label: 'Day view',
@@ -135,6 +146,65 @@ class WeekViewScreen extends ConsumerWidget {
           context.go('/day');
         },
         priority: AdaptiveActionPriority.core,
+      ),
+      
+      // Normal priority actions
+      AdaptiveAppBarAction(
+        icon: const Icon(Icons.track_changes),
+        label: 'Goals',
+        onPressed: () {
+          context.push('/goals');
+        },
+        priority: AdaptiveActionPriority.normal,
+      ),
+      
+      // Low priority actions (first to go into overflow)
+      AdaptiveAppBarAction(
+        icon: const Icon(Icons.people),
+        label: 'People',
+        onPressed: () {
+          context.push('/people');
+        },
+        priority: AdaptiveActionPriority.low,
+      ),
+      AdaptiveAppBarAction(
+        icon: const Icon(Icons.location_on),
+        label: 'Locations',
+        onPressed: () {
+          context.push('/locations');
+        },
+        priority: AdaptiveActionPriority.low,
+      ),
+      AdaptiveAppBarAction(
+        icon: unreadCountAsync.when(
+          data: (count) => Badge(
+            isLabelVisible: count > 0,
+            label: Text(
+              count > 99 ? '99+' : count.toString(),
+              style: const TextStyle(fontSize: 10),
+            ),
+            child: const Icon(Icons.notifications),
+          ),
+          loading: () => const Icon(Icons.notifications),
+          error: (_, __) => const Icon(Icons.notifications),
+        ),
+        label: unreadCountAsync.when(
+          data: (count) => count > 0 ? 'Notifications ($count unread)' : 'Notifications',
+          loading: () => 'Notifications',
+          error: (_, __) => 'Notifications',
+        ),
+        onPressed: () {
+          context.push('/notifications');
+        },
+        priority: AdaptiveActionPriority.low,
+      ),
+      AdaptiveAppBarAction(
+        icon: const Icon(Icons.settings),
+        label: 'Settings',
+        onPressed: () {
+          context.push('/settings');
+        },
+        priority: AdaptiveActionPriority.low,
       ),
     ];
   }

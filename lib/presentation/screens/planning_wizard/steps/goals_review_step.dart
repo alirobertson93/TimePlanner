@@ -220,11 +220,13 @@ class GoalsReviewStep extends ConsumerWidget {
   String _getPeriodLabel(int period) {
     switch (period) {
       case 0:
-        return 'day';
+        return 'week';    // GoalPeriod.week = 0
       case 1:
-        return 'week';
+        return 'month';   // GoalPeriod.month = 1
       case 2:
-        return 'month';
+        return 'quarter'; // GoalPeriod.quarter = 2
+      case 3:
+        return 'year';    // GoalPeriod.year = 3
       default:
         return 'period';
     }
