@@ -33,6 +33,96 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-25 (Phase 9B - Wizard Enhancement)
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Implement Phase 9B - Wizard Enhancement features for historical event lookup and smart suggestions.
+
+**Work Completed**:
+
+**Historical Event Service** ✅ **COMPLETE**
+
+- ✅ Created `HistoricalEventService` (`lib/domain/services/historical_event_service.dart`):
+  - `analyze()` - Analyzes events to detect activity patterns
+  - `getSuggestionsForType()` - Returns top suggestions for a specific goal type
+  - `_analyzeCategoryPatterns()` - Detects category-based patterns
+  - `_analyzeLocationPatterns()` - Detects location-based patterns
+  - `_analyzeEventTitlePatterns()` - Detects recurring event title patterns
+  
+- ✅ Created `HistoricalActivityPattern` model:
+  - Properties: id, name, patternType, totalMinutes, eventCount, averageMinutesPerWeek
+  - Computed properties: totalHours, weeklyHours, confidence
+  - First/last seen tracking for recency scoring
+
+- ✅ Created `HistoricalAnalysisSummary` model:
+  - Combines all pattern types
+  - `allPatterns` getter sorts by confidence
+
+**Historical Analysis Providers** ✅ **COMPLETE**
+
+- ✅ Created `lib/presentation/providers/historical_analysis_providers.dart`:
+  - `historicalAnalysisProvider` - Full analysis of last 30 days
+  - `categorySuggestionsProvider` - Category-specific suggestions
+  - `locationSuggestionsProvider` - Location-specific suggestions
+  - `eventTitleSuggestionsProvider` - Event title suggestions
+
+**Goal Form UI Enhancement** ✅ **COMPLETE**
+
+- ✅ Created `HistoricalSuggestionsCard` widget (`lib/presentation/widgets/historical_suggestions.dart`):
+  - Displays smart suggestions as selectable chips
+  - Shows weekly hours for each suggestion
+  - Supports loading and empty states
+
+- ✅ Created `InlineSuggestionList` widget:
+  - Compact inline suggestion display for form fields
+  - Shows "Based on your activity:" label with suggestions
+
+- ✅ Updated `GoalFormScreen` with historical suggestions:
+  - Quick suggestions card at top of form (new goals only)
+  - Inline suggestions for Category picker
+  - Inline suggestions for Location picker
+  - Inline suggestions for Event Title field
+  - Auto-fills target value based on historical weekly hours
+
+**Tests Added** ✅ **COMPLETE**
+
+- ✅ `test/domain/services/historical_event_service_test.dart`:
+  - Tests for empty events analysis
+  - Tests for total time calculation
+  - Tests for analysis period filtering
+  - Tests for category pattern detection
+  - Tests for location pattern detection
+  - Tests for event title pattern detection (case-insensitive)
+  - Tests for suggestion sorting and limiting
+  - Tests for confidence calculation
+  - Tests for HistoricalAnalysisSummary.allPatterns
+
+**Files Created**: 4
+- `lib/domain/services/historical_event_service.dart`
+- `lib/presentation/providers/historical_analysis_providers.dart`
+- `lib/presentation/widgets/historical_suggestions.dart`
+- `test/domain/services/historical_event_service_test.dart`
+
+**Files Modified**: 1
+- `lib/presentation/screens/goal_form/goal_form_screen.dart` - Added historical suggestions UI
+
+**Technical Notes**:
+- Analysis period defaults to 30 days (configurable)
+- Minimum 2 events required to detect a pattern
+- Confidence scoring based on event count, recency, and data regularity
+- Suggestions automatically update target value based on weekly hours
+- All providers follow existing manual FutureProvider pattern (no code generation)
+
+**Phase 9B Status**: 100% COMPLETE ✅
+
+**Next Session Recommendations**:
+- Address remaining Phase 8 items (Keyboard Navigation, App Store Assets - require Flutter SDK)
+- Increase integration test coverage (currently at ~15%)
+- Consider beta testing preparation
+
+---
+
 ### Session: 2026-01-25 (Technical Debt Cleanup)
 
 **Author**: AI Assistant (GitHub Copilot)
