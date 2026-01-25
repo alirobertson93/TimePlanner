@@ -12,7 +12,9 @@ This document is the single source of truth for the project's current status, co
 
 **Active Work**: Phase 8 - Onboarding ✅ (Enhanced), Performance ✅, Accessibility ✅, Launch Prep ⏳ 60%
 
-**Recent Update (2026-01-25)**: Enhanced onboarding wizard implemented with 6-step guided setup for recurring events, people, activity goals, and places.
+**Recent Update (2026-01-25)**: 
+- Enhanced onboarding wizard implemented with 6-step guided setup for recurring events, people, activity goals, and places.
+- Analysis completed for two UX issues: Settings accessibility and Goals conceptual model.
 
 **Environment Requirements**: Remaining Phase 8 work (Keyboard Navigation, App Builds) requires Flutter SDK for:
 - Building the app (`flutter build ios`, `flutter build appbundle`)
@@ -787,6 +789,93 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 - 🟡 Partial: Some work done, needs additional effort (below target coverage)
 - ⚪ Planned: Not started, planned for future phase
 
+## Known Issues & Planned Improvements
+
+### Issue 1: Settings Menu Accessibility (Low Priority)
+
+**Status**: ✅ Analyzed (2026-01-25) - Partial issue
+
+**Problem Statement**: User reported difficulty finding the Settings menu in the UI.
+
+**Analysis**:
+- The Settings icon IS present in the Day View app bar (gear icon on right side)
+- The Settings route `/settings` exists and the SettingsScreen is fully functional
+- **Issue Found**: The Week View does not have a Settings icon - users navigating from Week View have no direct access to Settings
+- **UX Concern**: Day View app bar has many icons (11 icons total) which may be overwhelming
+
+**Proposed Solution**:
+1. Add Settings icon to Week View app bar for consistency
+2. Consider adding a bottom navigation bar or hamburger menu for better discoverability
+3. Alternative: Keep current design but improve tooltip/accessibility labels
+
+**Relevant Files**:
+- `lib/presentation/screens/day_view/day_view_screen.dart` - Has Settings icon ✅
+- `lib/presentation/screens/week_view/week_view_screen.dart` - Missing Settings icon ⚠️
+- `lib/presentation/screens/settings/settings_screen.dart` - Fully implemented ✅
+- `lib/app/router.dart` - Route exists `/settings` ✅
+
+**Documentation Updates Needed**:
+- None required (UX_FLOWS.md already documents Settings access)
+
+---
+
+### Issue 2: Goals Conceptual Model (Medium Priority)
+
+**Status**: ✅ Analyzed (2026-01-25) - Valid concern requiring conceptual refactoring
+
+**Problem Statement**: User noted that Goals feel like standalone items rather than being tied to events, places, or people. The "Goal Title" field makes goals feel independent rather than tracking specific targets.
+
+**Analysis**:
+- **User's understanding is correct** - This is a valid conceptual issue
+- The PRD states: "Define goals (hours per week on category/person)" - Goals should track time spent ON something
+- Current implementation asks for a "Goal Title" as the primary field (line 145 in `goal_form_screen.dart`)
+- The Goal entity does have `categoryId` and `personId` fields, but the UX makes the title seem primary
+- Enhanced onboarding also asks for "Activity Goal" names, reinforcing the "goal as item" mental model
+
+**Current Flow (Problematic)**:
+```
+1. User clicks "Add Goal"
+2. Form shows: "Goal Title *" as first field
+3. User enters: "Exercise more" (treating goal as an item)
+4. Then selects: Category or Person (feels secondary)
+```
+
+**Intended Flow (PRD-aligned)**:
+```
+1. User clicks "Add Goal" 
+2. Form shows: "Track time spent:" with Category/Person selector
+3. User selects: Category (e.g., "Exercise") or Person (e.g., "Mom")
+4. Goal title is auto-generated or optional: "10 hours/week on Exercise"
+```
+
+**Proposed Solution**:
+
+**Phase A: UI Reordering (Quick Fix)**
+1. Move "Goal Target" section (Category/Person selector) to the TOP of the form
+2. Make "Goal Title" optional or auto-generate it from selection
+3. Update form labels to reinforce "tracking time" concept
+4. Update enhanced onboarding "Activity Goals" step to align
+
+**Phase B: Conceptual Alignment (Full Fix)**
+1. Rename GoalType.custom to GoalType.activity (clearer naming)
+2. Consider adding GoalType.location for places
+3. Goals should be framed as "Time Tracking Targets" not independent items
+4. Update PRD to clarify the conceptual model
+5. Update UX_FLOWS.md with corrected flow
+
+**Relevant Files to Update**:
+- `lib/presentation/screens/goal_form/goal_form_screen.dart` - Reorder form fields
+- `lib/presentation/providers/goal_form_providers.dart` - Auto-generate title logic
+- `lib/presentation/screens/onboarding/enhanced_onboarding_screen.dart` - Activity goals step
+- `lib/domain/enums/goal_type.dart` - Consider renaming `custom` to `activity`
+- `dev-docs/PRD.md` - Clarify Goals concept
+- `dev-docs/UX_FLOWS.md` - Update Goal form flow
+- `dev-docs/DATA_MODEL.md` - Add conceptual note
+
+**Implementation Estimate**: 2-3 hours for Phase A, additional 2-3 hours for Phase B
+
+---
+
 ## Blockers
 
 **Current Blockers**: None
@@ -828,4 +917,4 @@ Before considering the project "complete":
 
 *For session logs and detailed development history, see [CHANGELOG.md](./CHANGELOG.md)*
 
-*Last updated: 2026-01-24*
+*Last updated: 2026-01-25*

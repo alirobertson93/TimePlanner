@@ -33,6 +33,70 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-25 - UX Analysis: Settings Menu and Goals Conceptual Model
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Analyze two potential UX issues reported by user and create a detailed remediation plan.
+
+**Issues Analyzed**:
+
+1. **Settings Menu Accessibility**
+2. **Goals Conceptual Model**
+
+**Analysis Completed**:
+
+**Issue 1: Settings Menu Accessibility** - ✅ Partially Valid
+- The Settings icon IS present in Day View app bar
+- Settings route and screen are fully functional
+- **Finding**: Week View is missing the Settings icon, creating inconsistency
+- Day View has 11 icons in app bar which may overwhelm users
+
+**Issue 2: Goals Conceptual Model** - ✅ Valid Concern
+- User correctly identified that Goals feel like standalone items
+- The Goal form asks for "Goal Title" first, making goals seem independent
+- PRD states goals should track "hours per week on category/person"
+- Current UX inverts the intended mental model
+- **Finding**: Form fields should be reordered to emphasize what is being tracked, not the goal name
+
+**Work Completed**:
+
+- ✅ **Explored codebase** to understand current implementation
+  - Reviewed: PRD.md, goal_form_screen.dart, goals_dashboard_screen.dart
+  - Reviewed: day_view_screen.dart, week_view_screen.dart, settings_screen.dart
+  - Reviewed: DATA_MODEL.md, UX_FLOWS.md, router.dart
+
+- ✅ **Documented findings in ROADMAP.md**
+  - Added "Known Issues & Planned Improvements" section
+  - Detailed Issue 1 analysis with relevant files
+  - Detailed Issue 2 analysis with proposed solutions (Phase A & B)
+  - Listed all files that need updates for each fix
+
+- ✅ **Updated CHANGELOG.md** with this session entry
+
+**Proposed Solution Summary**:
+
+| Issue | Priority | Effort | Solution |
+|-------|----------|--------|----------|
+| Settings in Week View | Low | 30 min | Add Settings icon to Week View app bar |
+| Goals Conceptual Model | Medium | 2-3 hrs | Reorder form to prioritize Category/Person selection, make title optional |
+
+**No Code Changes Made** - This was an analysis/planning session only.
+
+**Key Files Identified for Future Work**:
+- `lib/presentation/screens/week_view/week_view_screen.dart` - Add Settings icon
+- `lib/presentation/screens/goal_form/goal_form_screen.dart` - Reorder form
+- `lib/presentation/providers/goal_form_providers.dart` - Auto-generate title
+- `lib/presentation/screens/onboarding/enhanced_onboarding_screen.dart` - Align Activity Goals step
+- `dev-docs/PRD.md` - Clarify Goals concept (if needed)
+
+**Technical Notes**:
+- The Goal entity's data model is sound (has categoryId, personId, title fields)
+- No database changes needed - this is purely a UX reordering
+- Enhanced onboarding wizard also reinforces incorrect mental model (asks for "Activity Name" first)
+
+---
+
 ### Session: 2026-01-25 - Enhanced Onboarding Wizard
 
 **Author**: AI Assistant (GitHub Copilot)

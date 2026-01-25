@@ -154,6 +154,8 @@ TimePlanner is an AI-powered time planning application that intelligently schedu
 - Show goal status in planning wizard
 - Alert when goals can't be met
 
+> **Conceptual Note (2026-01-25)**: Goals are **time tracking targets**, not independent items. A goal answers the question "How much time do I want to spend on [X]?" where X is a category (e.g., "Exercise", "Deep Work") or a person (e.g., "Mom", "Partner"). The goal title should be derived from or secondary to the target being tracked. For example: "10 hours/week on Exercise" not "Get more exercise" as a standalone goal.
+
 **People & Relationships**
 - Associate people with events
 - Schedule time with specific people
@@ -386,4 +388,4 @@ TimePlanner is an AI-powered time planning application that intelligently schedu
 
 ---
 
-*Last updated: 2026-01-20*
+*Last updated: 2026-01-25*
