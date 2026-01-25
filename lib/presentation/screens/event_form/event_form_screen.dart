@@ -551,7 +551,10 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
           ),
         ] else ...[
           // Flexible event: Lock this time toggle
-          // Only show if the event has a scheduled time (editing existing event)
+          // Only show if the event is being edited AND has a scheduled time.
+          // New flexible events don't have times yet (scheduler places them),
+          // so there's nothing to lock. Existing events that have been scheduled
+          // can be locked to prevent the scheduler from moving them.
           if (formState.isEditMode && formState.hasScheduledTime) ...[
             SwitchListTile(
               value: formState.isUserLocked,

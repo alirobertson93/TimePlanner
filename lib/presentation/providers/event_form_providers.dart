@@ -57,7 +57,11 @@ class EventFormState {
   final bool isSaving;
   final String? error;
   
-  /// Returns true if this event has a scheduled time (startTime is not null)
+  /// Returns true if this event has a scheduled time.
+  /// 
+  /// This is true when both startDate and startTime are set.
+  /// Used to determine if the "Lock this time" toggle should be shown,
+  /// since locking only makes sense for events that have been scheduled.
   bool get hasScheduledTime => startDate != null && startTime != null;
 
   EventFormState copyWith({

@@ -320,8 +320,8 @@ class EventDetailSheet extends ConsumerWidget {
           SnackBar(
             content: Text(
               updatedEvent.isUserLocked 
-                  ? 'Event "${event.name}" locked'
-                  : 'Event "${event.name}" unlocked',
+                  ? 'Event "${updatedEvent.name}" locked'
+                  : 'Event "${updatedEvent.name}" unlocked',
             ),
             backgroundColor: Colors.green,
           ),
