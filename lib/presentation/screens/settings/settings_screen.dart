@@ -132,6 +132,47 @@ class SettingsScreen extends ConsumerWidget {
 
           const Divider(),
 
+          // Goals Section (Phase 9D)
+          _buildSectionHeader(context, 'Goals'),
+          _buildSettingsTile(
+            context: context,
+            icon: Icons.calendar_view_week,
+            title: 'Default Goal Period',
+            subtitle: settings.defaultGoalPeriodLabel,
+            onTap: () => _showDefaultGoalPeriodDialog(
+                context, ref, settings.defaultGoalPeriod),
+          ),
+          _buildSettingsTile(
+            context: context,
+            icon: Icons.straighten,
+            title: 'Default Goal Metric',
+            subtitle: settings.defaultGoalMetricLabel,
+            onTap: () => _showDefaultGoalMetricDialog(
+                context, ref, settings.defaultGoalMetric),
+          ),
+          _buildSwitchTile(
+            context: context,
+            icon: Icons.warning_amber,
+            title: 'Show Goal Warnings',
+            subtitle: 'Alert when goals may be unachievable',
+            value: settings.showGoalWarnings,
+            onChanged: (value) {
+              settingsNotifier.setShowGoalWarnings(value);
+            },
+          ),
+          _buildSwitchTile(
+            context: context,
+            icon: Icons.lightbulb_outline,
+            title: 'Goal Recommendations',
+            subtitle: 'Suggest goals based on your activity patterns',
+            value: settings.enableGoalRecommendations,
+            onChanged: (value) {
+              settingsNotifier.setEnableGoalRecommendations(value);
+            },
+          ),
+
+          const Divider(),
+
           // Appearance Section
           _buildSectionHeader(context, 'Appearance'),
           _buildSettingsTile(
@@ -485,6 +526,95 @@ class SettingsScreen extends ConsumerWidget {
 
     if (result != null) {
       ref.read(settingsProvider.notifier).setThemeMode(result);
+    }
+  }
+
+  void _showDefaultGoalPeriodDialog(
+      BuildContext context, WidgetRef ref, int currentValue) async {
+    final options = [
+      (0, 'Weekly'),
+      (1, 'Monthly'),
+      (2, 'Quarterly'),
+      (3, 'Yearly'),
+    ];
+
+    final result = await showDialog<int>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: const Text('Default Goal Period'),
+        children: options.map((option) {
+          return SimpleDialogOption(
+            onPressed: () => Navigator.of(context).pop(option.$1),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: option.$1 == currentValue
+                      ? Icon(
+                          Icons.check_circle,
+                          color: Theme.of(context).colorScheme.primary,
+                        )
+                      : Icon(
+                          Icons.radio_button_unchecked,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                ),
+                const SizedBox(width: 12),
+                Text(option.$2),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
+
+    if (result != null) {
+      ref.read(settingsProvider.notifier).setDefaultGoalPeriod(result);
+    }
+  }
+
+  void _showDefaultGoalMetricDialog(
+      BuildContext context, WidgetRef ref, int currentValue) async {
+    final options = [
+      (0, 'Hours'),
+      (1, 'Events'),
+      (2, 'Completions'),
+    ];
+
+    final result = await showDialog<int>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: const Text('Default Goal Metric'),
+        children: options.map((option) {
+          return SimpleDialogOption(
+            onPressed: () => Navigator.of(context).pop(option.$1),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: option.$1 == currentValue
+                      ? Icon(
+                          Icons.check_circle,
+                          color: Theme.of(context).colorScheme.primary,
+                        )
+                      : Icon(
+                          Icons.radio_button_unchecked,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                ),
+                const SizedBox(width: 12),
+                Text(option.$2),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
+
+    if (result != null) {
+      ref.read(settingsProvider.notifier).setDefaultGoalMetric(result);
     }
   }
 

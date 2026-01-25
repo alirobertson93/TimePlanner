@@ -15,6 +15,11 @@ class SettingsKeys {
   static const String goalAlertsEnabled = 'goal_alerts_enabled';
   static const String themeMode = 'theme_mode';
   static const String wizardAutoSuggest = 'wizard_auto_suggest';
+  // Goal settings (Phase 9D)
+  static const String defaultGoalPeriod = 'default_goal_period';
+  static const String defaultGoalMetric = 'default_goal_metric';
+  static const String showGoalWarnings = 'show_goal_warnings';
+  static const String enableGoalRecommendations = 'enable_goal_recommendations';
 }
 
 /// Default values for settings
@@ -31,6 +36,11 @@ class SettingsDefaults {
   static const bool goalAlertsEnabled = true;
   static const String themeMode = 'system'; // 'system', 'light', 'dark'
   static const bool wizardAutoSuggest = false; // When true, auto-take first suggestion in Plan Week wizard
+  // Goal settings (Phase 9D)
+  static const int defaultGoalPeriod = 0; // week=0, month=1, quarter=2, year=3
+  static const int defaultGoalMetric = 0; // hours=0, events=1, completions=2
+  static const bool showGoalWarnings = true; // Show warnings for unachievable goals
+  static const bool enableGoalRecommendations = true; // Enable goal recommendations
 }
 
 /// Application settings state
@@ -47,6 +57,11 @@ class AppSettings {
   final bool goalAlertsEnabled;
   final String themeMode;
   final bool wizardAutoSuggest;
+  // Goal settings (Phase 9D)
+  final int defaultGoalPeriod;
+  final int defaultGoalMetric;
+  final bool showGoalWarnings;
+  final bool enableGoalRecommendations;
 
   const AppSettings({
     this.timeSlotDuration = SettingsDefaults.timeSlotDuration,
@@ -61,6 +76,10 @@ class AppSettings {
     this.goalAlertsEnabled = SettingsDefaults.goalAlertsEnabled,
     this.themeMode = SettingsDefaults.themeMode,
     this.wizardAutoSuggest = SettingsDefaults.wizardAutoSuggest,
+    this.defaultGoalPeriod = SettingsDefaults.defaultGoalPeriod,
+    this.defaultGoalMetric = SettingsDefaults.defaultGoalMetric,
+    this.showGoalWarnings = SettingsDefaults.showGoalWarnings,
+    this.enableGoalRecommendations = SettingsDefaults.enableGoalRecommendations,
   });
 
   AppSettings copyWith({
@@ -76,6 +95,10 @@ class AppSettings {
     bool? goalAlertsEnabled,
     String? themeMode,
     bool? wizardAutoSuggest,
+    int? defaultGoalPeriod,
+    int? defaultGoalMetric,
+    bool? showGoalWarnings,
+    bool? enableGoalRecommendations,
   }) {
     return AppSettings(
       timeSlotDuration: timeSlotDuration ?? this.timeSlotDuration,
@@ -90,6 +113,10 @@ class AppSettings {
       goalAlertsEnabled: goalAlertsEnabled ?? this.goalAlertsEnabled,
       themeMode: themeMode ?? this.themeMode,
       wizardAutoSuggest: wizardAutoSuggest ?? this.wizardAutoSuggest,
+      defaultGoalPeriod: defaultGoalPeriod ?? this.defaultGoalPeriod,
+      defaultGoalMetric: defaultGoalMetric ?? this.defaultGoalMetric,
+      showGoalWarnings: showGoalWarnings ?? this.showGoalWarnings,
+      enableGoalRecommendations: enableGoalRecommendations ?? this.enableGoalRecommendations,
     );
   }
 
@@ -160,6 +187,36 @@ class AppSettings {
     }
     return '${formatHour(workHoursStart)} - ${formatHour(workHoursEnd)}';
   }
+
+  /// Helper to get default goal period as a formatted string
+  String get defaultGoalPeriodLabel {
+    switch (defaultGoalPeriod) {
+      case 0:
+        return 'Weekly';
+      case 1:
+        return 'Monthly';
+      case 2:
+        return 'Quarterly';
+      case 3:
+        return 'Yearly';
+      default:
+        return 'Weekly';
+    }
+  }
+
+  /// Helper to get default goal metric as a formatted string
+  String get defaultGoalMetricLabel {
+    switch (defaultGoalMetric) {
+      case 0:
+        return 'Hours';
+      case 1:
+        return 'Events';
+      case 2:
+        return 'Completions';
+      default:
+        return 'Hours';
+    }
+  }
 }
 
 /// Provider for SharedPreferences instance
@@ -191,6 +248,11 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
       goalAlertsEnabled: _prefs!.getBool(SettingsKeys.goalAlertsEnabled) ?? SettingsDefaults.goalAlertsEnabled,
       themeMode: _prefs!.getString(SettingsKeys.themeMode) ?? SettingsDefaults.themeMode,
       wizardAutoSuggest: _prefs!.getBool(SettingsKeys.wizardAutoSuggest) ?? SettingsDefaults.wizardAutoSuggest,
+      // Goal settings (Phase 9D)
+      defaultGoalPeriod: _prefs!.getInt(SettingsKeys.defaultGoalPeriod) ?? SettingsDefaults.defaultGoalPeriod,
+      defaultGoalMetric: _prefs!.getInt(SettingsKeys.defaultGoalMetric) ?? SettingsDefaults.defaultGoalMetric,
+      showGoalWarnings: _prefs!.getBool(SettingsKeys.showGoalWarnings) ?? SettingsDefaults.showGoalWarnings,
+      enableGoalRecommendations: _prefs!.getBool(SettingsKeys.enableGoalRecommendations) ?? SettingsDefaults.enableGoalRecommendations,
     );
   }
 
@@ -248,6 +310,27 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
   Future<void> setWizardAutoSuggest(bool value) async {
     state = state.copyWith(wizardAutoSuggest: value);
     await _prefs?.setBool(SettingsKeys.wizardAutoSuggest, value);
+  }
+
+  // Goal settings setters (Phase 9D)
+  Future<void> setDefaultGoalPeriod(int period) async {
+    state = state.copyWith(defaultGoalPeriod: period);
+    await _prefs?.setInt(SettingsKeys.defaultGoalPeriod, period);
+  }
+
+  Future<void> setDefaultGoalMetric(int metric) async {
+    state = state.copyWith(defaultGoalMetric: metric);
+    await _prefs?.setInt(SettingsKeys.defaultGoalMetric, metric);
+  }
+
+  Future<void> setShowGoalWarnings(bool value) async {
+    state = state.copyWith(showGoalWarnings: value);
+    await _prefs?.setBool(SettingsKeys.showGoalWarnings, value);
+  }
+
+  Future<void> setEnableGoalRecommendations(bool value) async {
+    state = state.copyWith(enableGoalRecommendations: value);
+    await _prefs?.setBool(SettingsKeys.enableGoalRecommendations, value);
   }
 }
 
