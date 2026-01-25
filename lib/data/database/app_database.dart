@@ -45,7 +45,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   @override
   MigrationStrategy get migration {
@@ -131,6 +131,10 @@ class AppDatabase extends _$AppDatabase {
           // Add index on locationId for location-based goals
           await customStatement(
               'CREATE INDEX IF NOT EXISTS idx_goals_location ON goals (location_id)');
+        }
+        // Migration from version 12 to 13: Add scheduling constraints to Events table
+        if (from <= 12) {
+          await m.addColumn(events, events.schedulingConstraintsJson);
         }
       },
     );

@@ -1,5 +1,6 @@
 import '../enums/event_status.dart';
 import '../enums/timing_type.dart';
+import 'scheduling_constraint.dart';
 
 /// Pure domain entity representing an event in the time planner
 class Event {
@@ -14,6 +15,7 @@ class Event {
     this.categoryId,
     this.locationId,
     this.recurrenceRuleId,
+    this.schedulingConstraint,
     this.appCanMove = true,
     this.appCanResize = true,
     this.isUserLocked = false,
@@ -33,6 +35,8 @@ class Event {
   final String? locationId;
   /// Reference to the recurrence rule for repeating events
   final String? recurrenceRuleId;
+  /// Scheduling constraints (time restrictions, day preferences, etc.)
+  final SchedulingConstraint? schedulingConstraint;
   final bool appCanMove;
   final bool appCanResize;
   final bool isUserLocked;
@@ -51,6 +55,10 @@ class Event {
 
   /// Returns true if this event is part of a recurring series
   bool get isRecurring => recurrenceRuleId != null;
+
+  /// Returns true if this event has scheduling constraints
+  bool get hasSchedulingConstraints =>
+      schedulingConstraint != null && schedulingConstraint!.hasAnyConstraints;
 
   /// Calculates the effective duration of the event
   Duration get effectiveDuration {
@@ -75,6 +83,8 @@ class Event {
     String? categoryId,
     String? locationId,
     String? recurrenceRuleId,
+    SchedulingConstraint? schedulingConstraint,
+    bool clearSchedulingConstraint = false,
     bool? appCanMove,
     bool? appCanResize,
     bool? isUserLocked,
@@ -93,6 +103,9 @@ class Event {
       categoryId: categoryId ?? this.categoryId,
       locationId: locationId ?? this.locationId,
       recurrenceRuleId: recurrenceRuleId ?? this.recurrenceRuleId,
+      schedulingConstraint: clearSchedulingConstraint
+          ? null
+          : (schedulingConstraint ?? this.schedulingConstraint),
       appCanMove: appCanMove ?? this.appCanMove,
       appCanResize: appCanResize ?? this.appCanResize,
       isUserLocked: isUserLocked ?? this.isUserLocked,
@@ -117,6 +130,7 @@ class Event {
         other.categoryId == categoryId &&
         other.locationId == locationId &&
         other.recurrenceRuleId == recurrenceRuleId &&
+        other.schedulingConstraint == schedulingConstraint &&
         other.appCanMove == appCanMove &&
         other.appCanResize == appCanResize &&
         other.isUserLocked == isUserLocked &&
@@ -138,6 +152,7 @@ class Event {
       categoryId,
       locationId,
       recurrenceRuleId,
+      schedulingConstraint,
       appCanMove,
       appCanResize,
       isUserLocked,
@@ -149,6 +164,6 @@ class Event {
 
   @override
   String toString() {
-    return 'Event(id: $id, name: $name, timingType: $timingType, status: $status, isRecurring: $isRecurring)';
+    return 'Event(id: $id, name: $name, timingType: $timingType, status: $status, isRecurring: $isRecurring, hasConstraints: $hasSchedulingConstraints)';
   }
 }

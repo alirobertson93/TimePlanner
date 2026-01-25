@@ -1,8 +1,10 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
 import '../../domain/entities/event.dart';
+import '../../domain/entities/scheduling_constraint.dart';
 import '../../domain/enums/timing_type.dart';
 import '../../domain/enums/event_status.dart';
+import '../../domain/enums/scheduling_preference_strength.dart';
 import 'repository_providers.dart';
 import 'error_handler_provider.dart';
 
@@ -28,6 +30,11 @@ class EventFormState {
     this.appCanMove = false,
     this.appCanResize = false,
     this.isUserLocked = false,
+    // Scheduling constraint fields
+    this.hasTimeConstraint = false,
+    this.notBeforeTime,
+    this.notAfterTime,
+    this.timeConstraintStrength = SchedulingPreferenceStrength.weak,
     this.isEditMode = false,
     this.isSaving = false,
     this.error,
@@ -53,6 +60,14 @@ class EventFormState {
   final bool appCanResize;
   /// Has the user locked this event at its current time? Default: false
   final bool isUserLocked;
+  /// Whether time constraints are enabled
+  final bool hasTimeConstraint;
+  /// Cannot start before this time (minutes from midnight)
+  final int? notBeforeTime;
+  /// Cannot start after this time (minutes from midnight)
+  final int? notAfterTime;
+  /// Strength of the time constraint
+  final SchedulingPreferenceStrength timeConstraintStrength;
   final bool isEditMode;
   final bool isSaving;
   final String? error;
@@ -63,6 +78,18 @@ class EventFormState {
   /// Used to determine if the "Lock this time" toggle should be shown,
   /// since locking only makes sense for events that have been scheduled.
   bool get hasScheduledTime => startDate != null && startTime != null;
+
+  /// Builds a SchedulingConstraint from the current form state
+  SchedulingConstraint? buildSchedulingConstraint() {
+    if (!hasTimeConstraint) return null;
+    if (notBeforeTime == null && notAfterTime == null) return null;
+
+    return SchedulingConstraint(
+      notBeforeTime: notBeforeTime,
+      notAfterTime: notAfterTime,
+      timeConstraintStrength: timeConstraintStrength,
+    );
+  }
 
   EventFormState copyWith({
     String? id,
@@ -82,6 +109,12 @@ class EventFormState {
     bool? appCanMove,
     bool? appCanResize,
     bool? isUserLocked,
+    bool? hasTimeConstraint,
+    int? notBeforeTime,
+    bool clearNotBeforeTime = false,
+    int? notAfterTime,
+    bool clearNotAfterTime = false,
+    SchedulingPreferenceStrength? timeConstraintStrength,
     bool? isEditMode,
     bool? isSaving,
     String? error,
@@ -104,6 +137,10 @@ class EventFormState {
       appCanMove: appCanMove ?? this.appCanMove,
       appCanResize: appCanResize ?? this.appCanResize,
       isUserLocked: isUserLocked ?? this.isUserLocked,
+      hasTimeConstraint: hasTimeConstraint ?? this.hasTimeConstraint,
+      notBeforeTime: clearNotBeforeTime ? null : (notBeforeTime ?? this.notBeforeTime),
+      notAfterTime: clearNotAfterTime ? null : (notAfterTime ?? this.notAfterTime),
+      timeConstraintStrength: timeConstraintStrength ?? this.timeConstraintStrength,
       isEditMode: isEditMode ?? this.isEditMode,
       isSaving: isSaving ?? this.isSaving,
       error: error ?? this.error,
@@ -144,6 +181,15 @@ class EventFormState {
       // Flexible event
       if (durationHours == 0 && durationMinutes == 0) {
         return 'Duration must be greater than 0';
+      }
+    }
+
+    // Validate time constraints if enabled
+    if (hasTimeConstraint) {
+      if (notBeforeTime != null && notAfterTime != null) {
+        if (notBeforeTime! >= notAfterTime!) {
+          return '"Not before" time must be earlier than "not after" time';
+        }
       }
     }
 
@@ -218,6 +264,10 @@ class EventForm extends _$EventForm {
     final associatedPeople = await eventPeopleRepository.getPeopleForEvent(eventId);
     final peopleIds = associatedPeople.map((p) => p.id).toList();
 
+    // Extract scheduling constraint fields
+    final constraint = event.schedulingConstraint;
+    final hasConstraint = constraint != null && constraint.hasTimeConstraints;
+
     state = EventFormState(
       id: event.id,
       title: event.name,
@@ -240,6 +290,10 @@ class EventForm extends _$EventForm {
       appCanMove: event.appCanMove,
       appCanResize: event.appCanResize,
       isUserLocked: event.isUserLocked,
+      hasTimeConstraint: hasConstraint,
+      notBeforeTime: constraint?.notBeforeTime,
+      notAfterTime: constraint?.notAfterTime,
+      timeConstraintStrength: constraint?.timeConstraintStrength ?? SchedulingPreferenceStrength.weak,
       isEditMode: true,
     );
   }
@@ -325,6 +379,38 @@ class EventForm extends _$EventForm {
     state = state.copyWith(isUserLocked: isLocked);
   }
 
+  // Scheduling constraint methods
+  void updateHasTimeConstraint(bool hasConstraint) {
+    state = state.copyWith(hasTimeConstraint: hasConstraint);
+    if (!hasConstraint) {
+      // Clear constraint values when disabled
+      state = state.copyWith(
+        clearNotBeforeTime: true,
+        clearNotAfterTime: true,
+      );
+    }
+  }
+
+  void updateNotBeforeTime(int? minutesFromMidnight) {
+    if (minutesFromMidnight == null) {
+      state = state.copyWith(clearNotBeforeTime: true);
+    } else {
+      state = state.copyWith(notBeforeTime: minutesFromMidnight);
+    }
+  }
+
+  void updateNotAfterTime(int? minutesFromMidnight) {
+    if (minutesFromMidnight == null) {
+      state = state.copyWith(clearNotAfterTime: true);
+    } else {
+      state = state.copyWith(notAfterTime: minutesFromMidnight);
+    }
+  }
+
+  void updateTimeConstraintStrength(SchedulingPreferenceStrength strength) {
+    state = state.copyWith(timeConstraintStrength: strength);
+  }
+
   /// Save the event
   Future<bool> save() async {
     final validationError = state.validate();
@@ -380,6 +466,7 @@ class EventForm extends _$EventForm {
         categoryId: state.categoryId,
         locationId: state.locationId,
         recurrenceRuleId: state.recurrenceRuleId,
+        schedulingConstraint: state.buildSchedulingConstraint(),
         appCanMove: state.appCanMove,
         appCanResize: state.appCanResize,
         isUserLocked: state.isUserLocked,

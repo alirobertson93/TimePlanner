@@ -24,6 +24,10 @@ class Events extends Table {
   /// Reference to the recurrence rule for repeating events
   TextColumn get recurrenceRuleId =>
       text().nullable().references(RecurrenceRules, #id)();
+  
+  /// JSON-encoded scheduling constraints (time restrictions, day preferences)
+  TextColumn get schedulingConstraintsJson => text().nullable()();
+  
   BoolColumn get appCanMove => boolean().withDefault(const Constant(true))();
   BoolColumn get appCanResize => boolean().withDefault(const Constant(true))();
   BoolColumn get isUserLocked => boolean().withDefault(const Constant(false))();
