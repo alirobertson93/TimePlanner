@@ -41,6 +41,11 @@ class _EnhancedOnboardingScreenState
   final List<_LocationWithGoalData> _locationsWithGoals = [];
 
   static const int _totalPages = 6;
+  
+  // Constants for dropdown ranges
+  static const int _maxPersonHours = 20;
+  static const int _maxActivityHours = 20;
+  static const int _maxLocationHours = 40;
 
   @override
   void dispose() {
@@ -130,18 +135,24 @@ class _EnhancedOnboardingScreenState
       );
       await recurrenceRepo.save(recurrenceRule);
 
+      // Calculate correct duration using DateTime difference
+      final startDateTime = _combineDateAndTime(now, eventData.startHour, eventData.startMinute);
+      var endDateTime = _combineDateAndTime(now, eventData.endHour, eventData.endMinute);
+      // Handle case where end time is on the next day
+      if (endDateTime.isBefore(startDateTime) || endDateTime.isAtSameMomentAs(startDateTime)) {
+        endDateTime = endDateTime.add(const Duration(days: 1));
+      }
+      final duration = endDateTime.difference(startDateTime);
+
       // Create event
       final event = Event(
         id: uuid.v4(),
         name: eventData.name,
         description: eventData.description,
         timingType: TimingType.fixed,
-        startTime: _combineDateAndTime(now, eventData.startHour, eventData.startMinute),
-        endTime: _combineDateAndTime(now, eventData.endHour, eventData.endMinute),
-        duration: Duration(
-          hours: eventData.endHour - eventData.startHour,
-          minutes: eventData.endMinute - eventData.startMinute,
-        ),
+        startTime: startDateTime,
+        endTime: endDateTime,
+        duration: duration,
         recurrenceRuleId: recurrenceRule.id,
         appCanMove: false,
         appCanResize: false,
@@ -1164,7 +1175,7 @@ class _EnhancedOnboardingScreenState
                           labelText: 'Hours',
                           border: OutlineInputBorder(),
                         ),
-                        items: List.generate(21, (i) => i).map((hours) {
+                        items: List.generate(_maxPersonHours + 1, (i) => i).map((hours) {
                           return DropdownMenuItem(
                             value: hours,
                             child: Text(hours == 0 ? 'No goal' : '$hours'),
@@ -1279,7 +1290,7 @@ class _EnhancedOnboardingScreenState
                           labelText: 'Hours',
                           border: OutlineInputBorder(),
                         ),
-                        items: List.generate(20, (i) => i + 1).map((hours) {
+                        items: List.generate(_maxActivityHours, (i) => i + 1).map((hours) {
                           return DropdownMenuItem(
                             value: hours,
                             child: Text('$hours'),
@@ -1397,7 +1408,7 @@ class _EnhancedOnboardingScreenState
                           labelText: 'Hours',
                           border: OutlineInputBorder(),
                         ),
-                        items: List.generate(41, (i) => i).map((hours) {
+                        items: List.generate(_maxLocationHours + 1, (i) => i).map((hours) {
                           return DropdownMenuItem(
                             value: hours,
                             child: Text(hours == 0 ? 'No goal' : '$hours'),
