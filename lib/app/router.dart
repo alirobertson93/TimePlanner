@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../core/constants/route_constants.dart';
 import '../presentation/screens/home_screen.dart';
 import '../presentation/screens/day_view/day_view_screen.dart';
 import '../presentation/screens/week_view/week_view_screen.dart';
@@ -27,107 +28,107 @@ class AppRouter {
 
   static GoRouter createRouter(Ref ref) {
     return GoRouter(
-      initialLocation: '/',
+      initialLocation: RouteConstants.home,
       redirect: (context, state) {
         // Check if we should redirect to onboarding
         final needsOnboarding = ref.read(needsOnboardingProvider);
-        final isOnOnboarding = state.matchedLocation == '/onboarding';
+        final isOnOnboarding = state.matchedLocation == RouteConstants.onboarding;
 
         // If needs onboarding and not already there, redirect
         if (needsOnboarding && !isOnOnboarding) {
-          return '/onboarding';
+          return RouteConstants.onboarding;
         }
 
         // If doesn't need onboarding but on onboarding page, redirect to home
         if (!needsOnboarding && isOnOnboarding) {
-          return '/';
+          return RouteConstants.home;
         }
 
         return null; // No redirect needed
       },
       routes: [
         GoRoute(
-          path: '/',
-          name: 'home',
+          path: RouteConstants.home,
+          name: RouteConstants.homeName,
           builder: (context, state) => const HomeScreen(),
         ),
         GoRoute(
-          path: '/onboarding',
-          name: 'onboarding',
+          path: RouteConstants.onboarding,
+          name: RouteConstants.onboardingName,
           builder: (context, state) => const EnhancedOnboardingScreen(),
         ),
         GoRoute(
-          path: '/day',
-          name: 'day_view',
+          path: RouteConstants.dayView,
+          name: RouteConstants.dayViewName,
           builder: (context, state) => const DayViewScreen(),
         ),
         GoRoute(
-          path: '/week',
-          name: 'week_view',
+          path: RouteConstants.weekView,
+          name: RouteConstants.weekViewName,
           builder: (context, state) => const WeekViewScreen(),
         ),
         GoRoute(
-          path: '/event/new',
-          name: 'event_new',
+          path: RouteConstants.eventNew,
+          name: RouteConstants.eventNewName,
           builder: (context, state) {
             final initialDate = state.extra as DateTime?;
             return EventFormScreen(initialDate: initialDate);
           },
         ),
         GoRoute(
-          path: '/event/:id/edit',
-          name: 'event_edit',
+          path: RouteConstants.eventEdit,
+          name: RouteConstants.eventEditName,
           builder: (context, state) {
             final eventId = state.pathParameters['id'];
             return EventFormScreen(eventId: eventId);
           },
         ),
         GoRoute(
-          path: '/plan',
-          name: 'planning_wizard',
+          path: RouteConstants.planningWizard,
+          name: RouteConstants.planningWizardName,
           builder: (context, state) => const PlanningWizardScreen(),
         ),
         GoRoute(
-          path: '/goals',
-          name: 'goals_dashboard',
+          path: RouteConstants.goalsDashboard,
+          name: RouteConstants.goalsDashboardName,
           builder: (context, state) => const GoalsDashboardScreen(),
         ),
         GoRoute(
-          path: '/goal/new',
-          name: 'goal_new',
+          path: RouteConstants.goalNew,
+          name: RouteConstants.goalNewName,
           builder: (context, state) => const GoalFormScreen(),
         ),
         GoRoute(
-          path: '/goal/:id/edit',
-          name: 'goal_edit',
+          path: RouteConstants.goalEdit,
+          name: RouteConstants.goalEditName,
           builder: (context, state) {
             final goalId = state.pathParameters['id'];
             return GoalFormScreen(goalId: goalId);
           },
         ),
         GoRoute(
-          path: '/people',
-          name: 'people',
+          path: RouteConstants.people,
+          name: RouteConstants.peopleName,
           builder: (context, state) => const PeopleScreen(),
         ),
         GoRoute(
-          path: '/locations',
-          name: 'locations',
+          path: RouteConstants.locations,
+          name: RouteConstants.locationsName,
           builder: (context, state) => const LocationsScreen(),
         ),
         GoRoute(
-          path: '/settings',
-          name: 'settings',
+          path: RouteConstants.settings,
+          name: RouteConstants.settingsName,
           builder: (context, state) => const SettingsScreen(),
         ),
         GoRoute(
-          path: '/notifications',
-          name: 'notifications',
+          path: RouteConstants.notifications,
+          name: RouteConstants.notificationsName,
           builder: (context, state) => const NotificationsScreen(),
         ),
         GoRoute(
-          path: '/travel-times',
-          name: 'travel_times',
+          path: RouteConstants.travelTimes,
+          name: RouteConstants.travelTimesName,
           builder: (context, state) => const TravelTimesScreen(),
         ),
       ],
