@@ -13,7 +13,7 @@ import '../presentation/screens/locations/locations_screen.dart';
 import '../presentation/screens/settings/settings_screen.dart';
 import '../presentation/screens/notifications/notifications_screen.dart';
 import '../presentation/screens/travel_times/travel_times_screen.dart';
-import '../presentation/screens/onboarding/onboarding_screen.dart';
+import '../presentation/screens/onboarding/enhanced_onboarding_screen.dart';
 import '../presentation/providers/onboarding_providers.dart';
 
 /// Provider for the router
@@ -54,7 +54,7 @@ class AppRouter {
         GoRoute(
           path: '/onboarding',
           name: 'onboarding',
-          builder: (context, state) => const OnboardingScreen(),
+          builder: (context, state) => const EnhancedOnboardingScreen(),
         ),
         GoRoute(
           path: '/day',
