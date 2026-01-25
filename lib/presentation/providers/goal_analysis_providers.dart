@@ -6,6 +6,7 @@ import '../../domain/entities/event.dart';
 import '../../domain/enums/goal_period.dart';
 import '../../domain/enums/goal_metric.dart';
 import '../../domain/enums/goal_type.dart';
+import '../../data/repositories/event_people_repository.dart';
 import 'repository_providers.dart';
 import 'settings_providers.dart';
 
@@ -140,7 +141,7 @@ final warningsForGoalProvider = FutureProvider.family<List<GoalWarning>, String>
 Future<double> _calculateProgress({
   required Goal goal,
   required List<Event> events,
-  required dynamic eventPeopleRepository,
+  required IEventPeopleRepository eventPeopleRepository,
 }) async {
   // Filter events based on goal type
   List<Event> relevantEvents;

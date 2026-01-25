@@ -557,8 +557,8 @@ class GoalsDashboardScreen extends ConsumerWidget {
                     tooltip: 'Create this goal',
                     onPressed: () {
                       Navigator.pop(context);
-                      // Navigate to goal form with pre-filled data
-                      // For now, just navigate to new goal form
+                      // Note: Future enhancement could pass recommendation data
+                      // to pre-fill the goal form. Currently navigates to empty form.
                       context.push('/goal/new');
                     },
                   ),

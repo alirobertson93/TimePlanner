@@ -253,9 +253,11 @@ class GoalWarningService {
           }
           break;
         case GoalType.person:
-          // Would need EventPeople data - skip for now
-          hasContributingEvents = true; // Assume true to avoid false warnings
-          break;
+          // Person goals require EventPeople association data which isn't available
+          // in the simple event list. Skip this check to avoid false positives.
+          // The warning would require passing EventPeople data to this method,
+          // which could be done in a future enhancement.
+          return null; // Skip noScheduledEvents check for person goals
         case GoalType.location:
           if (goal.locationId != null && event.locationId == goal.locationId) {
             hasContributingEvents = true;
