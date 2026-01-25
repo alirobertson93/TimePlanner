@@ -72,7 +72,7 @@ class SchedulingConstraint {
     final minutes = minutesFromMidnight % 60;
     final period = hours >= 12 ? 'PM' : 'AM';
     final displayHours = hours > 12 ? hours - 12 : (hours == 0 ? 12 : hours);
-    return '${displayHours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')} $period';
+    return '$displayHours:${minutes.toString().padLeft(2, '0')} $period';
   }
 
   /// Creates a constraint for "must be before X time"
@@ -240,10 +240,10 @@ class SchedulingConstraint {
     return 'SchedulingConstraint(notBeforeTime: $notBeforeTime, notAfterTime: $notAfterTime, strength: $timeConstraintStrength)';
   }
 
-  /// Helper to compare lists
+  /// Helper to compare lists (avoids importing collection package for single use)
   static bool _listEquals<T>(List<T>? a, List<T>? b) {
-    if (a == null && b == null) return true;
-    if (a == null || b == null) return false;
+    if (identical(a, b)) return true;
+    if (a == null || b == null) return a == b;
     if (a.length != b.length) return false;
     for (int i = 0; i < a.length; i++) {
       if (a[i] != b[i]) return false;

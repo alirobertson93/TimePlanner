@@ -634,12 +634,10 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
                       onPressed: () async {
                         final time = await showTimePicker(
                           context: context,
-                          initialTime: formState.notBeforeTime != null
-                              ? FlutterTimeOfDay(
-                                  hour: formState.notBeforeTime! ~/ 60,
-                                  minute: formState.notBeforeTime! % 60,
-                                )
-                              : const FlutterTimeOfDay(hour: 7, minute: 0),
+                          initialTime: _minutesToTimeOfDay(
+                            formState.notBeforeTime,
+                            defaultHour: 7,
+                          ),
                         );
                         if (time != null) {
                           formNotifier.updateNotBeforeTime(time.hour * 60 + time.minute);
@@ -673,12 +671,10 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
                       onPressed: () async {
                         final time = await showTimePicker(
                           context: context,
-                          initialTime: formState.notAfterTime != null
-                              ? FlutterTimeOfDay(
-                                  hour: formState.notAfterTime! ~/ 60,
-                                  minute: formState.notAfterTime! % 60,
-                                )
-                              : const FlutterTimeOfDay(hour: 15, minute: 0),
+                          initialTime: _minutesToTimeOfDay(
+                            formState.notAfterTime,
+                            defaultHour: 15,
+                          ),
                         );
                         if (time != null) {
                           formNotifier.updateNotAfterTime(time.hour * 60 + time.minute);
@@ -773,6 +769,18 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
         ],
       ],
     );
+  }
+
+  /// Converts minutes from midnight to FlutterTimeOfDay
+  /// If minutesFromMidnight is null, returns default time
+  FlutterTimeOfDay _minutesToTimeOfDay(int? minutesFromMidnight, {int defaultHour = 9}) {
+    if (minutesFromMidnight != null) {
+      return FlutterTimeOfDay(
+        hour: minutesFromMidnight ~/ 60,
+        minute: minutesFromMidnight % 60,
+      );
+    }
+    return FlutterTimeOfDay(hour: defaultHour, minute: 0);
   }
 
   /// Safely parse color hex string to Color

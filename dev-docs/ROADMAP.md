@@ -8,11 +8,17 @@ This document is the single source of truth for the project's current status, co
 
 **Project Phase**: Phase 9 In Progress - Enhanced Goals System
 
-**Overall Progress**: ~100% Core Features Complete, ~98% Phase 8 Complete, Phase 9A Started
+**Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9A Complete, Phase 9C Started
 
-**Active Work**: Phase 9A - Foundation (Location Goals, Event Goals, Basic Matching) ⏳ 85%
+**Active Work**: Phase 9C - Constraints (Scheduling time restrictions) ⏳ 30%
 
 **Recent Update (2026-01-25)**: 
+- ✅ **Phase 9A Complete**: All 4 goal types now fully implemented (Category, Person, Location, Event)
+- ✅ **Scheduling Constraints Added**: New SchedulingConstraint entity with time restrictions (not before, not after)
+- ✅ **Preference Strength Levels**: Weak, Strong, and Locked preference options for constraints
+- ✅ **Event Form UI Updated**: Time Restrictions section in Scheduling Options for flexible events
+- ✅ **Database Schema v13**: Added schedulingConstraintsJson column to Events table
+- ✅ **Auto-Suggest Setting**: New setting in Planning Wizard section to auto-select first suggestion
 - ✅ **CRITICAL: Recurring Events Now Working**: Implemented RecurrenceService to expand recurring events. Events from onboarding wizard and Plan Week wizard now populate correctly across all dates according to their recurrence rules.
 - ✅ **Week View Menu Fixed**: Week view now has full app bar actions including Plan Week, Goals, and overflow menu with People, Locations, Notifications, Settings.
 - ✅ **Goal Period Labels Fixed**: Goals now display correct period labels (week/month/quarter/year) instead of incorrectly showing "per day" for weekly goals.
@@ -763,17 +769,17 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 
 ### Phase 9: Enhanced Goals System ⏳ (In Progress)
 
-**Status**: Phase A In Progress - Foundation (85%)
+**Status**: Phase A Complete, Phase C In Progress (30%)
 
 **Goal**: Expand goal types to support 4 ways of associating goals with events:
-1. **Event itself** (e.g., "Guitar Practice" - a specific recurring activity)
-2. **Location** (e.g., "Home" - time spent at a location)
+1. **Event itself** (e.g., "Guitar Practice" - a specific recurring activity) ✅
+2. **Location** (e.g., "Home" - time spent at a location) ✅
 3. **Person** (e.g., "Girlfriend" - already supported ✅)
 4. **Category** (e.g., "Relaxation" - already supported ✅)
 
-**Overview**: The current goal system supports category-based and person-based goals. Phase 9 adds location-based and event-based goals, enabling users to track time spent at specific locations or on specific recurring activities.
+**Overview**: The current goal system supports all 4 goal types (category, person, location, event). Phase 9 continues with scheduling constraints and wizard enhancements.
 
-#### Phase A: Foundation ⏳ (In Progress - 85%)
+#### Phase A: Foundation ✅ (Complete - 100%)
 
 **Focus**: Core infrastructure for location and event goals
 
@@ -801,34 +807,18 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
   - ✅ Add locationId and eventTitle to state
   - ✅ Update validation logic
   - ✅ Update save/generate title logic
+- ✅ Goal form UI complete
+  - ✅ Location picker for location goals
+  - ✅ Event title field for event goals
+  - ✅ Show/hide fields based on goal type
 - ✅ Tests for new functionality
   - ✅ Repository tests for location and event goals
 
-**Remaining Work**:
-- [ ] Run code generation (requires Flutter SDK)
-- [ ] Goal form UI updates
-  - [ ] Location picker for location goals
-  - [ ] Event title field for event goals
-  - [ ] Show/hide fields based on goal type
-- [ ] Run tests to ensure no regressions
-
 **Technical Notes**:
-- Current schema version: 11
-- Target schema version: 12
+- Schema version: 12 (goals with location/event support)
 - Event-type goals match by exact title (case-insensitive)
 - Location-type goals track events at that location
 - Follow existing patterns for person/category goals
-
-**Key Files Being Modified**:
-- `lib/domain/enums/goal_type.dart`
-- `lib/domain/entities/goal.dart`
-- `lib/data/database/tables/goals.dart`
-- `lib/data/database/app_database.dart`
-- `lib/data/repositories/goal_repository.dart`
-- `lib/presentation/providers/goal_providers.dart`
-- `lib/presentation/providers/goal_form_providers.dart`
-- `lib/presentation/screens/goal_form/goal_form_screen.dart`
-- `test/repositories/goal_repository_test.dart`
 
 **Dependencies**: Phase 8 (complete)
 
@@ -841,24 +831,47 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 - Smart suggestion ranking (most frequent activities/locations)
 - Quick goal creation from suggestions
 - Visual feedback on historical time spent
+- Auto-select first suggestion setting (✅ Setting added in v13)
 
-**Dependencies**: Phase A (in progress)
+**Dependencies**: Phase A (complete)
 
-#### Phase C: Constraints ⚪ (Planned)
+#### Phase C: Constraints ⏳ (In Progress - 30%)
 
 **Focus**: EventConstraints implementation and scheduler integration
 
-**Planned Features**:
-- EventConstraints table implementation
-- Constraint validation in scheduler
-- UI for constraint management
-- Conflict resolution with constraints
+**What's Complete (2026-01-25)**:
+- ✅ `SchedulingPreferenceStrength` enum (weak/strong/locked)
+- ✅ `SchedulingConstraint` entity with time restrictions
+  - Not before time
+  - Not after time
+  - Preference strength
+  - JSON serialization
+- ✅ Event entity updated with `schedulingConstraint` field
+- ✅ Events table updated with `schedulingConstraintsJson` column
+- ✅ EventRepository updated to serialize/deserialize constraints
+- ✅ Database migration (v12 → v13)
+- ✅ EventFormState updated with constraint fields
+- ✅ EventForm provider constraint update methods
+- ✅ Event Form UI with Time Restrictions section
+  - Not Before / Not After time pickers
+  - Constraint strength dropdown (Weak/Strong/Locked)
+  - Help text explaining each strength level
 
-**Dependencies**: Phase B (planned)
+**Remaining Work**:
+- [ ] Integrate constraints into scheduler
+- [ ] Constraint conflict resolution
+- [ ] Constraint visualization in day/week views
+
+**Dependencies**: Phase A (complete)
 
 #### Phase D: Polish ⚪ (Planned)
 
 **Focus**: Settings, warnings, and user preferences
+
+**What's Complete (2026-01-25)**:
+- ✅ "Auto-Select Suggestions" setting added to Settings screen
+  - Stored in SharedPreferences as `wizard_auto_suggest`
+  - When enabled, Planning Wizard will auto-use first suggestion
 
 **Planned Features**:
 - Goal settings and preferences
@@ -866,7 +879,7 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 - Goal recommendation engine
 - Performance optimization
 
-**Dependencies**: Phase C (planned)
+**Dependencies**: Phase C (in progress)
 
 ---
 
