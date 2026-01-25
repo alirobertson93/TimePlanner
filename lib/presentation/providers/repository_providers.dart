@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../data/repositories/category_repository.dart';
 import '../../data/repositories/event_repository.dart';
 import '../../data/repositories/goal_repository.dart';
 import '../../data/repositories/person_repository.dart';

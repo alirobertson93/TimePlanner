@@ -10,9 +10,15 @@ This document is the single source of truth for the project's current status, co
 
 **Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9 Complete (100%)
 
-**Active Work**: None - All planned Phase 9 work complete ✅
+**Active Work**: Technical Debt Cleanup Complete ✅
 
-**Recent Update (2026-01-25 Late Night)**:
+**Latest Update (2026-01-25 - Technical Debt Cleanup)**:
+- ✅ **TD-004 RESOLVED**: Extracted CategoryRepository to its own file (`lib/data/repositories/category_repository.dart`)
+- ✅ **TD-005 RESOLVED**: Created route_constants.dart (`lib/core/constants/route_constants.dart`)
+- ✅ Updated router.dart to use RouteConstants for compile-time safety
+- ✅ Updated repository_providers.dart with explicit imports
+
+**Previous Update (2026-01-25 Late Night)**:
 - ✅ **Phase 9D COMPLETE**: Goal settings, warnings, and recommendation engine
   - Goal Settings: Default period, default metric, warning toggle, recommendation toggle
   - Warning System: GoalWarningService detects unrealistic pace, behind schedule, no events
@@ -737,10 +743,12 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 - Error handling standardization (28 catch blocks with inconsistent patterns)
 
 **Medium Priority**:
-- Router duplication (`router.dart` has legacy static router + provider-based)
+- ~~Router duplication (`router.dart` has legacy static router + provider-based)~~ ✅ **RESOLVED** - Router only uses provider-based approach now
 - TODOs in production code (2 remaining: work hours config)
 
 **Low Priority**:
+- ~~CategoryRepository file location~~ ✅ **RESOLVED** (2026-01-25) - TD-004 resolved
+- ~~Missing route_constants.dart~~ ✅ **RESOLVED** (2026-01-25) - TD-005 resolved
 - Outdated documentation (IMPLEMENTATION_SUMMARY.md, BUILD_INSTRUCTIONS.md)
 - Recurrence exception handling (feature gap)
 - Travel time in schedule generation (feature gap)

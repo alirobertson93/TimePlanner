@@ -33,6 +33,43 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-25 (Technical Debt Cleanup)
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Address technical debt items from code quality audit and prepare for future development.
+
+**Work Completed**:
+
+**Technical Debt Resolution** ✅ **COMPLETE**
+
+- ✅ **TD-004: Extract CategoryRepository** - Moved `CategoryRepository` class from `event_repository.dart` to its own file `lib/data/repositories/category_repository.dart` for architectural consistency. Added re-export in `event_repository.dart` for backward compatibility.
+
+- ✅ **TD-005: Create route_constants.dart** - Created `lib/core/constants/route_constants.dart` with all route paths and names as constants. Updated `lib/app/router.dart` to use `RouteConstants` instead of string literals.
+
+- ✅ **Updated repository_providers.dart** - Added explicit import for `category_repository.dart` instead of relying on re-export.
+
+**Files Created**: 2
+- `lib/data/repositories/category_repository.dart`
+- `lib/core/constants/route_constants.dart`
+
+**Files Modified**: 3
+- `lib/data/repositories/event_repository.dart` - Removed CategoryRepository, added re-export
+- `lib/app/router.dart` - Updated to use RouteConstants
+- `lib/presentation/providers/repository_providers.dart` - Added explicit import
+
+**Technical Notes**:
+- All existing imports continue to work due to export statement in event_repository.dart
+- RouteConstants provides compile-time safety for route strings
+- Category tests continue to pass as imports are backward-compatible
+
+**Next Session Recommendations**:
+- Continue with Phase 9B (Wizard Enhancement) if desired
+- Address remaining Phase 8 items (Keyboard Navigation, App Store Assets - require Flutter SDK)
+- Increase integration test coverage
+
+---
+
 ### Session: 2026-01-25 (Late Night) - Phase 9D Polish Complete
 
 **Author**: AI Assistant (GitHub Copilot)
@@ -3741,19 +3778,19 @@ Track technical debt to address later.
 - **Plan**: Add note to README
 - **Status**: **RESOLVED** - README already has comprehensive build_runner documentation in the "Code Generation" section (lines 124-135)
 
-**TD-004: CategoryRepository File Location**
+**TD-004: CategoryRepository File Location** ✅ Resolved
 - **Issue**: CategoryRepository is defined in event_repository.dart instead of its own file
 - **Impact**: Minor architectural inconsistency per ARCHITECTURE.md specification
 - **Effort**: 30 minutes
 - **Plan**: Extract to lib/data/repositories/category_repository.dart
-- **Status**: Open (identified in 2026-01-17 audit)
+- **Status**: **RESOLVED** (2026-01-25) - Extracted to separate file with re-export for backward compatibility
 
-**TD-005: Missing Route Constants**
+**TD-005: Missing Route Constants** ✅ Resolved
 - **Issue**: route_constants.dart mentioned in ARCHITECTURE.md doesn't exist
 - **Impact**: Minor, routes work fine with string literals
 - **Effort**: 30 minutes
 - **Plan**: Create lib/core/constants/route_constants.dart with named route constants
-- **Status**: Open (identified in 2026-01-17 audit)
+- **Status**: **RESOLVED** (2026-01-25) - Created route_constants.dart, updated router.dart to use constants
 
 ---
 
