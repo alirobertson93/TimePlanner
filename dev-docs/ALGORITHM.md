@@ -647,6 +647,49 @@ class GoalCalculator {
 }
 ```
 
+### Goal Type Matching (Phase 9A)
+
+Goals can now track time in 4 different ways:
+
+1. **Category Goals** (`GoalType.category`):
+   - Match events by `categoryId`
+   - Example: "10 hours per week on Work"
+   
+2. **Person Goals** (`GoalType.person`):
+   - Match events by `personId` (via EventPeople junction table)
+   - Example: "5 hours per week with Girlfriend"
+   
+3. **Location Goals** (`GoalType.location`) - **Added in Phase 9A**:
+   - Match events by `locationId`
+   - Example: "15 hours per week at Home"
+   - Tracks all events that occur at the specified location
+   
+4. **Event Goals** (`GoalType.event`) - **Added in Phase 9A**:
+   - Match events by exact title (case-insensitive)
+   - Example: "3 hours per week on Guitar Practice"
+   - Useful for tracking specific recurring activities
+   - Title matching uses case-insensitive comparison: `event.title.toLowerCase() == goal.eventTitle.toLowerCase()`
+
+**Implementation**:
+```dart
+List<Event> _filterRelevantEvents(List<Event> events, Goal goal) {
+  switch (goal.type) {
+    case GoalType.category:
+      return events.where((e) => e.categoryId == goal.categoryId).toList();
+    case GoalType.person:
+      // Join with EventPeople table
+      return events.where((e) => _eventHasPerson(e.id, goal.personId)).toList();
+    case GoalType.location:
+      return events.where((e) => e.locationId == goal.locationId).toList();
+    case GoalType.event:
+      return events.where((e) => 
+        e.title.toLowerCase() == goal.eventTitle?.toLowerCase()).toList();
+    case GoalType.custom:
+      return events; // Future implementation
+  }
+}
+```
+
 ---
 
 ## Plan Variation Generation
@@ -871,4 +914,4 @@ See TESTING.md for full testing strategy. Key test categories:
 
 ---
 
-*Last updated: 2026-01-17*
+*Last updated: 2026-01-25 (Phase 9A: Enhanced Goals System)*

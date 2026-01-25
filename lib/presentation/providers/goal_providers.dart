@@ -125,6 +125,13 @@ Future<List<GoalProgress>> goalsWithProgress(GoalsWithProgressRef ref) async {
       // Get event IDs for this person
       final eventIdsForPerson = await eventPeopleRepository.getEventIdsForPerson(goal.personId!);
       relevantEvents = events.where((e) => eventIdsForPerson.contains(e.id)).toList();
+    } else if (goal.type == GoalType.location && goal.locationId != null) {
+      // Location goals: filter by location
+      relevantEvents = events.where((e) => e.locationId == goal.locationId).toList();
+    } else if (goal.type == GoalType.event && goal.eventTitle != null) {
+      // Event goals: filter by exact title (case-insensitive)
+      final targetTitle = goal.eventTitle!.toLowerCase();
+      relevantEvents = events.where((e) => e.title.toLowerCase() == targetTitle).toList();
     } else {
       // Fallback: all events (for custom goals or invalid data)
       relevantEvents = events;

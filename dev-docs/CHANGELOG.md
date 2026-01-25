@@ -33,6 +33,66 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-25 (PM) - Phase 9A: Enhanced Goals System Foundation
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Implement Phase A of Enhanced Goals System - adding location and event-based goals to support 4 ways of associating goals with events.
+
+**Work Completed**:
+
+**Documentation Updates** ✅ **COMPLETE**
+
+- ✅ Updated ROADMAP.md with Phase 9: Enhanced Goals System (4 phases planned)
+- ✅ Updated DATA_MODEL.md with new fields and schema v12 documentation
+- ✅ Updated ALGORITHM.md with goal type matching logic
+
+**Schema & Database (v11 → v12)** ✅ **COMPLETE**
+
+- ✅ Added locationId column to Goals table (references Locations)
+- ✅ Added eventTitle column to Goals table
+- ✅ Added idx_goals_location index
+- ✅ Database migration implemented in app_database.dart
+
+**Domain & Data Layers** ✅ **COMPLETE**
+
+- ✅ Extended GoalType enum (added location and event)
+- ✅ Updated Goal entity with new fields
+- ✅ Updated GoalRepository with getByLocation() and getByEventTitle()
+- ✅ Updated goal progress calculation for location and event goals
+
+**Provider Layer** ✅ **COMPLETE**
+
+- ✅ Updated goal form providers with location and event support
+- ✅ Updated validation, save logic, and title generation
+
+**Testing** ✅ **COMPLETE**
+
+- ✅ Added 4 comprehensive repository tests for new functionality
+
+**Remaining Work**:
+
+- [ ] Run code generation (requires Flutter SDK: `dart run build_runner build --delete-conflicting-outputs`)
+- [ ] Update goal form UI screen with location picker and event title field
+- [ ] Run tests to verify no regressions
+- [ ] Update ROADMAP.md component status table
+
+**Technical Notes**:
+- Phase A is ~85% complete
+- All backend changes complete, UI changes remaining
+- Event goals use case-insensitive title matching
+- Location goals track all events at that location
+- Migration is backward compatible
+
+**Files Modified**: 11 files
+- Documentation: ROADMAP.md, DATA_MODEL.md, ALGORITHM.md
+- Domain: goal_type.dart, goal.dart
+- Data: goals.dart (table), app_database.dart, goal_repository.dart
+- Providers: goal_providers.dart, goal_form_providers.dart
+- Tests: goal_repository_test.dart
+
+---
+
 ### Session: 2026-01-25 - Recurring Events & Week View Menu Fix
 
 **Author**: AI Assistant (GitHub Copilot)
