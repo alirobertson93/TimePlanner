@@ -8,11 +8,16 @@ This document is the single source of truth for the project's current status, co
 
 **Project Phase**: Phase 9 In Progress - Enhanced Goals System
 
-**Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9A Complete, Phase 9C Started
+**Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9A Complete, Phase 9C UI Complete (70%)
 
-**Active Work**: Phase 9C - Constraints (Scheduling time restrictions) ⏳ 30%
+**Active Work**: Phase 9C - Constraints (Scheduler integration remaining) ⏳ 70%
 
-**Recent Update (2026-01-25)**: 
+**Recent Update (2026-01-25 Late Evening)**:
+- ✅ **Analysis Session**: Reviewed roadmap, changelog, and previous session's work
+- ✅ **Verified Phase 9C Implementation**: All UI and data layer changes confirmed working
+- 📋 **Next Steps Identified**: Scheduler integration for constraints is the primary remaining work
+
+**Earlier Update (2026-01-25)**: 
 - ✅ **Phase 9A Complete**: All 4 goal types now fully implemented (Category, Person, Location, Event)
 - ✅ **Scheduling Constraints Added**: New SchedulingConstraint entity with time restrictions (not before, not after)
 - ✅ **Preference Strength Levels**: Weak, Strong, and Locked preference options for constraints
@@ -835,7 +840,7 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 
 **Dependencies**: Phase A (complete)
 
-#### Phase C: Constraints ⏳ (In Progress - 30%)
+#### Phase C: Constraints ⏳ (In Progress - 70%)
 
 **Focus**: EventConstraints implementation and scheduler integration
 
@@ -857,10 +862,19 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
   - Constraint strength dropdown (Weak/Strong/Locked)
   - Help text explaining each strength level
 
-**Remaining Work**:
-- [ ] Integrate constraints into scheduler
+**Remaining Work (Scheduler Integration)**:
+- [ ] Integrate constraints into scheduler algorithm
+  - Modify `SchedulingStrategy` interface to accept constraints
+  - Update `BalancedStrategy` to respect time restrictions
+  - Locked constraints become hard rules (reject if violated)
+  - Strong constraints add significant penalty to scheduler score
+  - Weak constraints add minor penalty to scheduler score
 - [ ] Constraint conflict resolution
+  - Detect when constraints conflict with each other or available time
+  - Show user warning when constraint cannot be satisfied
 - [ ] Constraint visualization in day/week views
+  - Visual indicator on events that have time constraints
+  - Maybe show constraint windows on timeline
 
 **Dependencies**: Phase A (complete)
 
@@ -887,20 +901,20 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 
 | Component | Status | Completion | Notes |
 |-----------|--------|------------|-------|
-| **Database Layer** | 🟢 Complete | 100% | Events (with locationId, recurrenceRuleId), Categories, Goals (with personId), People, EventPeople, Locations, RecurrenceRules, Notifications, TravelTimePairs complete. Schema v10. **Foreign keys enabled for cascade deletes.** |
-| **Domain Entities** | 🟢 Complete | 100% | Core entities + Person + Location + RecurrenceRule + Notification + TravelTimePair done. Event updated with recurrenceRuleId. **Goal updated with personId for relationship goals.** |
-| **Domain Services** | 🟢 Complete | 100% | EventFactory, **NotificationService**, **NotificationSchedulerService**, **OnboardingService**, **SampleDataService** - centralized service logic |
-| **Repositories** | 🟢 Complete | 100% | Event, Category, Goal, Person, EventPeople, Location, RecurrenceRule, Notification, TravelTimePair repos complete with tests + interfaces. **GoalRepository updated with getByPerson().** |
-| **Scheduler Engine** | 🟢 Complete | 100% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption) |
+| **Database Layer** | 🟢 Complete | 100% | Events (with locationId, recurrenceRuleId, schedulingConstraintsJson), Categories, Goals (with personId, locationId, eventTitle), People, EventPeople, Locations, RecurrenceRules, Notifications, TravelTimePairs complete. **Schema v13.** Foreign keys enabled for cascade deletes. |
+| **Domain Entities** | 🟢 Complete | 100% | Core entities + Person + Location + RecurrenceRule + Notification + TravelTimePair + **SchedulingConstraint** done. Event updated with schedulingConstraint. Goal updated with locationId/eventTitle for all 4 goal types. |
+| **Domain Services** | 🟢 Complete | 100% | EventFactory, **NotificationService**, **NotificationSchedulerService**, **OnboardingService**, **SampleDataService**, **RecurrenceService** - centralized service logic |
+| **Repositories** | 🟢 Complete | 100% | Event, Category, Goal, Person, EventPeople, Location, RecurrenceRule, Notification, TravelTimePair repos complete with tests + interfaces. **EventRepository updated with constraint serialization.** |
+| **Scheduler Engine** | 🟡 Partial | 90% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption). **Constraint integration pending (Phase 9C).** |
 | **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button, Locations button, Settings button, Notifications button (with badge), recurring indicators. **Widget tests added.** |
 | **Week View** | 🟢 Complete | 100% | 7-day grid, event blocks, category colors, navigation, recurring indicators |
-| **Event Form** | 🟢 Complete | 100% | Create, edit, delete, people selection, location selection, recurrence selection, travel time prompt implemented. **Widget tests added.** |
+| **Event Form** | 🟢 Complete | 100% | Create, edit, delete, people selection, location selection, recurrence selection, travel time prompt, **time constraints UI** implemented. **Widget tests added.** |
 | **Planning Wizard** | 🟢 Complete | 100% | 4-step flow, schedule generation, all strategies available. **Widget tests added. Provider split into 3 focused providers.** |
 | **Goals Dashboard** | 🟢 Complete | 100% | Progress tracking, status indicators, category grouping, goal CRUD. **Updated to show person info for relationship goals.** |
-| **Goal Form** | 🟢 Complete | 100% | Create, edit, delete with validation. **Updated with goal type selector and person picker for relationship goals.** |
+| **Goal Form** | 🟢 Complete | 100% | Create, edit, delete with validation. **All 4 goal types (Category, Person, Location, Event) with appropriate pickers.** |
 | **People Management** | 🟢 Complete | 100% | Entity, tables, repositories, providers, UI, event form integration complete |
 | **Location Management** | 🟢 Complete | 100% | Entity, table, repository, providers, UI, event form integration complete |
-| **Settings** | 🟢 Complete | 100% | UI and SharedPreferences persistence complete (Phase 7). **Added Replay Onboarding feature.** |
+| **Settings** | 🟢 Complete | 100% | UI and SharedPreferences persistence complete (Phase 7). **Added Replay Onboarding and Auto-Suggest features.** |
 | **Recurrence** | 🟢 Complete | 95% | Data layer + UI complete. **RecurrenceCustomDialog extracted to separate file.** Exception handling pending. |
 | **Notifications** | 🟢 Complete | 100% | **Fully implemented!** Data layer + UI + System notifications via flutter_local_notifications. NotificationSchedulerService bridges repository with OS-level alerts. |
 | **Travel Time** | 🟢 Complete | 100% | **Fully implemented!** Data layer + Travel Times Screen + event prompts complete. Scheduler integration is deferred (future enhancement). |
