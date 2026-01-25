@@ -21,6 +21,8 @@ class GoalFormState {
     this.period = GoalPeriod.week,
     this.categoryId,
     this.personId,
+    this.locationId,
+    this.eventTitle,
     this.debtStrategy = DebtStrategy.ignore,
     this.isActive = true,
     this.isEditMode = false,
@@ -36,6 +38,8 @@ class GoalFormState {
   final GoalPeriod period;
   final String? categoryId;
   final String? personId;
+  final String? locationId;
+  final String? eventTitle;
   final DebtStrategy debtStrategy;
   final bool isActive;
   final bool isEditMode;
@@ -53,6 +57,10 @@ class GoalFormState {
     bool clearCategoryId = false,
     String? personId,
     bool clearPersonId = false,
+    String? locationId,
+    bool clearLocationId = false,
+    String? eventTitle,
+    bool clearEventTitle = false,
     DebtStrategy? debtStrategy,
     bool? isActive,
     bool? isEditMode,
@@ -69,6 +77,8 @@ class GoalFormState {
       period: period ?? this.period,
       categoryId: clearCategoryId ? null : (categoryId ?? this.categoryId),
       personId: clearPersonId ? null : (personId ?? this.personId),
+      locationId: clearLocationId ? null : (locationId ?? this.locationId),
+      eventTitle: clearEventTitle ? null : (eventTitle ?? this.eventTitle),
       debtStrategy: debtStrategy ?? this.debtStrategy,
       isActive: isActive ?? this.isActive,
       isEditMode: isEditMode ?? this.isEditMode,
@@ -91,6 +101,14 @@ class GoalFormState {
 
     if (type == GoalType.person && personId == null) {
       return 'Please select a person for this relationship goal';
+    }
+
+    if (type == GoalType.location && locationId == null) {
+      return 'Please select a location for this location goal';
+    }
+
+    if (type == GoalType.event && (eventTitle == null || eventTitle!.isEmpty)) {
+      return 'Please enter an event title for this event goal';
     }
 
     return null;
@@ -166,6 +184,8 @@ class GoalForm extends _$GoalForm {
       period: goal.period,
       categoryId: goal.categoryId,
       personId: goal.personId,
+      locationId: goal.locationId,
+      eventTitle: goal.eventTitle,
       debtStrategy: goal.debtStrategy,
       isActive: goal.isActive,
       isEditMode: true,
@@ -179,12 +199,18 @@ class GoalForm extends _$GoalForm {
 
   void updateType(GoalType type) {
     state = state.copyWith(type: type, clearError: true);
-    // Clear category/person based on type
+    // Clear category/person/location/eventTitle based on type
     if (type != GoalType.category) {
       state = state.copyWith(clearCategoryId: true);
     }
     if (type != GoalType.person) {
       state = state.copyWith(clearPersonId: true);
+    }
+    if (type != GoalType.location) {
+      state = state.copyWith(clearLocationId: true);
+    }
+    if (type != GoalType.event) {
+      state = state.copyWith(clearEventTitle: true);
     }
   }
 
@@ -213,6 +239,22 @@ class GoalForm extends _$GoalForm {
       state = state.copyWith(clearPersonId: true, clearError: true);
     } else {
       state = state.copyWith(personId: personId, clearError: true);
+    }
+  }
+
+  void updateLocation(String? locationId) {
+    if (locationId == null) {
+      state = state.copyWith(clearLocationId: true, clearError: true);
+    } else {
+      state = state.copyWith(locationId: locationId, clearError: true);
+    }
+  }
+
+  void updateEventTitle(String? eventTitle) {
+    if (eventTitle == null || eventTitle.isEmpty) {
+      state = state.copyWith(clearEventTitle: true, clearError: true);
+    } else {
+      state = state.copyWith(eventTitle: eventTitle, clearError: true);
     }
   }
 
@@ -263,6 +305,8 @@ class GoalForm extends _$GoalForm {
         period: state.period,
         categoryId: state.type == GoalType.category ? state.categoryId : null,
         personId: state.type == GoalType.person ? state.personId : null,
+        locationId: state.type == GoalType.location ? state.locationId : null,
+        eventTitle: state.type == GoalType.event ? state.eventTitle : null,
         debtStrategy: state.debtStrategy,
         isActive: state.isActive,
         createdAt: createdAt,
@@ -287,7 +331,7 @@ class GoalForm extends _$GoalForm {
     }
   }
 
-  /// Generates a title based on the selected category or person
+  /// Generates a title based on the selected category, person, location, or event
   Future<String> _generateTitle() async {
     String targetName = '';
     
@@ -296,6 +340,61 @@ class GoalForm extends _$GoalForm {
       final categoryRepo = ref.read(categoryRepositoryProvider);
       final categories = await categoryRepo.getAll();
       if (categories.isNotEmpty) {
+        final category = categories.firstWhere(
+          (c) => c.id == state.categoryId,
+          orElse: () => categories.first,
+        );
+        targetName = category.name;
+      }
+    } else if (state.type == GoalType.person && state.personId != null) {
+      // Get person name
+      final personRepo = ref.read(personRepositoryProvider);
+      final people = await personRepo.getAll();
+      if (people.isNotEmpty) {
+        final person = people.firstWhere(
+          (p) => p.id == state.personId,
+          orElse: () => people.first,
+        );
+        targetName = person.name;
+      }
+    } else if (state.type == GoalType.location && state.locationId != null) {
+      // Get location name
+      final locationRepo = ref.read(locationRepositoryProvider);
+      final locations = await locationRepo.getAll();
+      if (locations.isNotEmpty) {
+        final location = locations.firstWhere(
+          (l) => l.id == state.locationId,
+          orElse: () => locations.first,
+        );
+        targetName = location.name;
+      }
+    } else if (state.type == GoalType.event && state.eventTitle != null) {
+      // Use event title directly
+      targetName = state.eventTitle!;
+    }
+
+    // Build title
+    String typeText;
+    switch (state.type) {
+      case GoalType.category:
+        typeText = 'on';
+        break;
+      case GoalType.person:
+        typeText = 'with';
+        break;
+      case GoalType.location:
+        typeText = 'at';
+        break;
+      case GoalType.event:
+        typeText = 'on';
+        break;
+      case GoalType.custom:
+        typeText = 'for';
+        break;
+    }
+
+    return '${state.targetValue} ${state.metricDisplayText} ${state.periodDisplayText} $typeText $targetName';
+  }
         final category = categories.firstWhere(
           (c) => c.id == state.categoryId,
           orElse: () => categories.first,
