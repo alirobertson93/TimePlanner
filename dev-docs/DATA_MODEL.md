@@ -1038,7 +1038,6 @@ class EventRepository {
 ### Version 12 (Current - Phase 9A)
 - Added locationId column to Goals table (for location-based goals)
 - Added eventTitle column to Goals table (for event-based goals)
-- Added updatedAt column to Goals table
 - Added idx_goals_location index on Goals table
 - Extended GoalType enum with `location` and `event` types
 

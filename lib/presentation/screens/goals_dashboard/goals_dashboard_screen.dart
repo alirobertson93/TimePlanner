@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../providers/goal_providers.dart';
 import '../../providers/category_providers.dart';
 import '../../providers/person_providers.dart';
+import '../../providers/location_providers.dart';
 import '../../../core/utils/color_utils.dart';
 import '../../../domain/enums/goal_period.dart';
 import '../../../domain/enums/goal_type.dart';
@@ -307,6 +308,9 @@ class GoalsDashboardScreen extends ConsumerWidget {
     final personAsync = goalProgress.goal.personId != null
         ? ref.watch(personByIdProvider(goalProgress.goal.personId!))
         : null;
+    final locationAsync = goalProgress.goal.locationId != null
+        ? ref.watch(locationByIdProvider(goalProgress.goal.locationId!))
+        : null;
 
     // Get display info based on goal type
     Color indicatorColor = ColorUtils.defaultCategoryColor;
@@ -341,6 +345,29 @@ class GoalsDashboardScreen extends ConsumerWidget {
         loading: () {},
         error: (_, __) {},
       );
+    }
+
+    // For location goals
+    if (goalProgress.goal.type == GoalType.location && locationAsync != null) {
+      locationAsync.when(
+        data: (location) {
+          if (location != null) {
+            targetName = location.name;
+            indicatorColor = Theme.of(context).colorScheme.tertiary;
+            targetIcon = Icons.location_on;
+          }
+        },
+        loading: () {},
+        error: (_, __) {},
+      );
+    }
+
+    // For event goals
+    if (goalProgress.goal.type == GoalType.event &&
+        goalProgress.goal.eventTitle != null) {
+      targetName = goalProgress.goal.eventTitle;
+      indicatorColor = Theme.of(context).colorScheme.primary;
+      targetIcon = Icons.event;
     }
 
     // Get status color
@@ -420,6 +447,24 @@ class GoalsDashboardScreen extends ConsumerWidget {
                                     GoalType.person) ...[
                                   Icon(
                                     Icons.person_outline,
+                                    size: 14,
+                                    color: indicatorColor,
+                                  ),
+                                  const SizedBox(width: 4),
+                                ],
+                                if (goalProgress.goal.type ==
+                                    GoalType.location) ...[
+                                  Icon(
+                                    Icons.location_on_outlined,
+                                    size: 14,
+                                    color: indicatorColor,
+                                  ),
+                                  const SizedBox(width: 4),
+                                ],
+                                if (goalProgress.goal.type ==
+                                    GoalType.event) ...[
+                                  Icon(
+                                    Icons.event_outlined,
                                     size: 14,
                                     color: indicatorColor,
                                   ),
