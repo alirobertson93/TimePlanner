@@ -8,7 +8,7 @@ This document defines the complete data model for TimePlanner. The database is i
 
 **Implementation Status**: ⚠️ Partial (see table status below)
 
-**Current Schema Version**: 11
+**Current Schema Version**: 12 (Phase 9A in progress)
 
 **Implemented Tables** (9 total):
 - Events ✅
@@ -305,6 +305,8 @@ class Goals extends Table {
   // What this goal tracks
   TextColumn get categoryId => text().nullable().references(Categories, #id)();
   TextColumn get personId => text().nullable().references(People, #id)();
+  TextColumn get locationId => text().nullable().references(Locations, #id)(); // Added in v12
+  TextColumn get eventTitle => text().nullable()(); // Added in v12 - for event-type goals
   
   // Debt handling
   IntColumn get debtStrategy => intEnum<DebtStrategy>()();
@@ -312,18 +314,34 @@ class Goals extends Table {
   BoolColumn get isActive => boolean().withDefault(const Constant(true))();
   
   DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
   
   @override
   Set<Column> get primaryKey => {id};
 }
 ```
 
-**Indexes** (added in schema v11):
+**Indexes** (added in schema v11, expanded in v12):
 ```dart
 @TableIndex(name: 'idx_goals_category', columns: {#categoryId})
 @TableIndex(name: 'idx_goals_person', columns: {#personId})
+@TableIndex(name: 'idx_goals_location', columns: {#locationId})  // Added in v12
 @TableIndex(name: 'idx_goals_active', columns: {#isActive})
 ```
+
+**Goal Types** (as of schema v12):
+- `category`: Track time spent on a specific category (e.g., "Work", "Exercise")
+- `person`: Track time spent with a specific person (e.g., "Girlfriend", "Mom")
+- `location`: Track time spent at a specific location (e.g., "Home", "Office") - **Added in v12**
+- `event`: Track time spent on a specific recurring event by title (e.g., "Guitar Practice") - **Added in v12**
+- `custom`: Custom goal (future use)
+
+**Field Usage by Goal Type**:
+- Category goals: use `categoryId`
+- Person goals: use `personId`
+- Location goals: use `locationId` - **Added in v12**
+- Event goals: use `eventTitle` (matches event title, case-insensitive) - **Added in v12**
+- Custom goals: may use any combination
 
 ---
 
@@ -613,6 +631,8 @@ enum RecurrenceEndType {
 enum GoalType {
   category,  // Time spent on a category
   person,    // Time spent with a person
+  location,  // Time spent at a location (added in v12)
+  event,     // Specific recurring event by title (added in v12)
   custom     // Custom goal (future)
 }
 ```
@@ -1009,11 +1029,18 @@ class EventRepository {
 ### Version 10
 - Added TravelTimePairs table
 
-### Version 11 (Current)
+### Version 11
 - Added database indexes for query performance optimization:
   - Events table: idx_events_start_time, idx_events_end_time, idx_events_category, idx_events_status
   - Goals table: idx_goals_category, idx_goals_person, idx_goals_active
   - Notifications table: idx_notifications_scheduled, idx_notifications_status, idx_notifications_event
+
+### Version 12 (Current - Phase 9A)
+- Added locationId column to Goals table (for location-based goals)
+- Added eventTitle column to Goals table (for event-based goals)
+- Added updatedAt column to Goals table
+- Added idx_goals_location index on Goals table
+- Extended GoalType enum with `location` and `event` types
 
 ### Important: Foreign Key Support
 
