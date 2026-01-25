@@ -6,10 +6,13 @@ import '../../providers/repository_providers.dart';
 import '../../providers/goal_providers.dart';
 import '../../providers/person_providers.dart';
 import '../../providers/location_providers.dart';
+import '../../providers/historical_analysis_providers.dart';
+import '../../widgets/historical_suggestions.dart';
 import '../../../domain/enums/goal_type.dart';
 import '../../../domain/enums/goal_metric.dart';
 import '../../../domain/enums/goal_period.dart';
 import '../../../domain/enums/debt_strategy.dart';
+import '../../../domain/services/historical_event_service.dart';
 import '../../../core/utils/color_utils.dart';
 
 /// Screen for creating or editing goals
@@ -129,6 +132,9 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
               ),
             ),
 
+          // Quick suggestions card (only for new goals)
+          if (!formState.isEditMode) _buildQuickSuggestionsCard(context, ref, formState, formNotifier),
+
           // What to Track Section - NOW FIRST (conceptual improvement)
           Text(
             'What to Track',
@@ -154,48 +160,7 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
 
           // Category dropdown (shown when type is category)
           if (formState.type == GoalType.category)
-            FutureBuilder<List<dynamic>>(
-              future: categoriesAsync,
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const SizedBox(
-                    height: 56,
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                }
-
-                final categories = snapshot.data!;
-                return DropdownButtonFormField<String>(
-                  value: formState.categoryId,
-                  decoration: const InputDecoration(
-                    labelText: 'Category *',
-                    border: OutlineInputBorder(),
-                    helperText: 'Select the category to track time for',
-                  ),
-                  items: categories.map((category) {
-                    return DropdownMenuItem<String>(
-                      value: category.id,
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 16,
-                            height: 16,
-                            decoration: BoxDecoration(
-                              color:
-                                  ColorUtils.parseHexColor(category.colourHex),
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Text(category.name),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: formNotifier.updateCategory,
-                );
-              },
-            ),
+            _buildCategoryPicker(context, ref, formState, formNotifier, categoriesAsync),
 
           // Person dropdown (shown when type is person/relationship)
           if (formState.type == GoalType.person)
@@ -500,6 +465,70 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
     );
   }
 
+  /// Builds the quick suggestions card based on historical data
+  Widget _buildQuickSuggestionsCard(
+    BuildContext context,
+    WidgetRef ref,
+    GoalFormState formState,
+    GoalForm formNotifier,
+  ) {
+    final historicalAsync = ref.watch(historicalAnalysisProvider);
+
+    return historicalAsync.when(
+      data: (summary) {
+        final topSuggestions = summary.allPatterns.take(5).toList();
+        if (topSuggestions.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 24),
+          child: HistoricalSuggestionsCard(
+            title: 'Suggested Goals',
+            suggestions: topSuggestions,
+            onSuggestionSelected: (pattern) {
+              // Set goal type based on pattern type
+              switch (pattern.patternType) {
+                case HistoricalPatternType.category:
+                  formNotifier.updateType(GoalType.category);
+                  formNotifier.updateCategory(pattern.categoryId);
+                  break;
+                case HistoricalPatternType.location:
+                  formNotifier.updateType(GoalType.location);
+                  formNotifier.updateLocation(pattern.locationId);
+                  break;
+                case HistoricalPatternType.eventTitle:
+                  formNotifier.updateType(GoalType.event);
+                  formNotifier.updateEventTitle(pattern.eventTitle);
+                  break;
+                case HistoricalPatternType.person:
+                  formNotifier.updateType(GoalType.person);
+                  formNotifier.updatePerson(pattern.personId);
+                  break;
+              }
+              // Suggest target value based on historical weekly hours
+              final suggestedTarget = pattern.weeklyHours.ceil();
+              if (suggestedTarget > 0) {
+                formNotifier.updateTargetValue(suggestedTarget);
+                _targetValueController.text = suggestedTarget.toString();
+              }
+            },
+          ),
+        );
+      },
+      loading: () => Padding(
+        padding: const EdgeInsets.only(bottom: 24),
+        child: HistoricalSuggestionsCard(
+          title: 'Suggested Goals',
+          suggestions: const [],
+          isLoading: true,
+          onSuggestionSelected: _noOp,
+        ),
+      ),
+      error: (_, __) => const SizedBox.shrink(),
+    );
+  }
+
   /// Builds the goal type selector with 4 options
   Widget _buildGoalTypeSelector(
       BuildContext context, GoalFormState formState, GoalForm formNotifier) {
@@ -571,7 +600,98 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
     );
   }
 
-  /// Builds the location picker dropdown
+  /// Builds the category picker dropdown with suggestions
+  Widget _buildCategoryPicker(
+    BuildContext context,
+    WidgetRef ref,
+    GoalFormState formState,
+    GoalForm formNotifier,
+    Future<List<dynamic>> categoriesAsync,
+  ) {
+    final categorySuggestionsAsync = ref.watch(categorySuggestionsProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        FutureBuilder<List<dynamic>>(
+          future: categoriesAsync,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const SizedBox(
+                height: 56,
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            final categories = snapshot.data!;
+            return DropdownButtonFormField<String>(
+              value: formState.categoryId,
+              decoration: const InputDecoration(
+                labelText: 'Category *',
+                border: OutlineInputBorder(),
+                helperText: 'Select the category to track time for',
+              ),
+              items: categories.map((category) {
+                return DropdownMenuItem<String>(
+                  value: category.id,
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 16,
+                        height: 16,
+                        decoration: BoxDecoration(
+                          color: ColorUtils.parseHexColor(category.colourHex),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(category.name),
+                    ],
+                  ),
+                );
+              }).toList(),
+              onChanged: formNotifier.updateCategory,
+            );
+          },
+        ),
+        // Category suggestions based on historical data
+        categorySuggestionsAsync.when(
+          data: (suggestions) {
+            if (suggestions.isEmpty) {
+              return const SizedBox.shrink();
+            }
+            return Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: InlineSuggestionList(
+                suggestions: suggestions,
+                selectedId: formState.categoryId,
+                onSuggestionSelected: (pattern) {
+                  formNotifier.updateCategory(pattern.categoryId);
+                  // Suggest target value based on historical data
+                  final suggestedTarget = pattern.weeklyHours.ceil();
+                  if (suggestedTarget > 0) {
+                    formNotifier.updateTargetValue(suggestedTarget);
+                    _targetValueController.text = suggestedTarget.toString();
+                  }
+                },
+              ),
+            );
+          },
+          loading: () => const Padding(
+            padding: EdgeInsets.only(top: 8),
+            child: InlineSuggestionList(
+              suggestions: [],
+              isLoading: true,
+              onSuggestionSelected: _noOp,
+            ),
+          ),
+          error: (_, __) => const SizedBox.shrink(),
+        ),
+      ],
+    );
+  }
+
+  /// Builds the location picker dropdown with suggestions
   Widget _buildLocationPicker(
     BuildContext context,
     WidgetRef ref,
@@ -579,98 +699,179 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
     GoalForm formNotifier,
   ) {
     final locationsAsync = ref.watch(allLocationsProvider);
+    final locationSuggestionsAsync = ref.watch(locationSuggestionsProvider);
 
-    return locationsAsync.when(
-      data: (locations) {
-        if (locations.isEmpty) {
-          return Container(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        locationsAsync.when(
+          data: (locations) {
+            if (locations.isEmpty) {
+              return Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.orange.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline, color: Colors.orange.shade700),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'No locations added yet. Add locations in the Locations screen first.',
+                        style: TextStyle(color: Colors.orange.shade700),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return DropdownButtonFormField<String>(
+              value: formState.locationId,
+              decoration: const InputDecoration(
+                labelText: 'Location *',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.location_on),
+                helperText: 'Select the location to track time at',
+              ),
+              items: locations.map((location) {
+                return DropdownMenuItem<String>(
+                  value: location.id,
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.location_on,
+                        size: 20,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(location.name),
+                    ],
+                  ),
+                );
+              }).toList(),
+              onChanged: formNotifier.updateLocation,
+            );
+          },
+          loading: () => const SizedBox(
+            height: 56,
+            child: Center(child: CircularProgressIndicator()),
+          ),
+          error: (error, _) => Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.orange.shade50,
+              color: Colors.red.shade50,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.orange.shade200),
             ),
-            child: Row(
-              children: [
-                Icon(Icons.info_outline, color: Colors.orange.shade700),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'No locations added yet. Add locations in the Locations screen first.',
-                    style: TextStyle(color: Colors.orange.shade700),
-                  ),
-                ),
-              ],
+            child: Text(
+              'Error loading locations: $error',
+              style: TextStyle(color: Colors.red.shade700),
             ),
-          );
-        }
-        return DropdownButtonFormField<String>(
-          value: formState.locationId,
-          decoration: const InputDecoration(
-            labelText: 'Location *',
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.location_on),
-            helperText: 'Select the location to track time at',
           ),
-          items: locations.map((location) {
-            return DropdownMenuItem<String>(
-              value: location.id,
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.location_on,
-                    size: 20,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  const SizedBox(width: 12),
-                  Text(location.name),
-                ],
+        ),
+        // Location suggestions based on historical data
+        locationSuggestionsAsync.when(
+          data: (suggestions) {
+            if (suggestions.isEmpty) {
+              return const SizedBox.shrink();
+            }
+            return Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: InlineSuggestionList(
+                suggestions: suggestions,
+                selectedId: formState.locationId,
+                onSuggestionSelected: (pattern) {
+                  formNotifier.updateLocation(pattern.locationId);
+                  // Suggest target value based on historical data
+                  final suggestedTarget = pattern.weeklyHours.ceil();
+                  if (suggestedTarget > 0) {
+                    formNotifier.updateTargetValue(suggestedTarget);
+                    _targetValueController.text = suggestedTarget.toString();
+                  }
+                },
               ),
             );
-          }).toList(),
-          onChanged: formNotifier.updateLocation,
-        );
-      },
-      loading: () => const SizedBox(
-        height: 56,
-        child: Center(child: CircularProgressIndicator()),
-      ),
-      error: (error, _) => Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.red.shade50,
-          borderRadius: BorderRadius.circular(8),
+          },
+          loading: () => const Padding(
+            padding: EdgeInsets.only(top: 8),
+            child: InlineSuggestionList(
+              suggestions: [],
+              isLoading: true,
+              onSuggestionSelected: _noOp,
+            ),
+          ),
+          error: (_, __) => const SizedBox.shrink(),
         ),
-        child: Text(
-          'Error loading locations: $error',
-          style: TextStyle(color: Colors.red.shade700),
-        ),
-      ),
+      ],
     );
   }
 
-  /// Builds the event title text field
+  /// Builds the event title text field with historical suggestions
   Widget _buildEventTitleField(
     BuildContext context,
     GoalFormState formState,
     GoalForm formNotifier,
   ) {
-    return TextField(
-      decoration: const InputDecoration(
-        labelText: 'Event Name *',
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.event),
-        helperText:
-            'Enter the exact name of the event to track (case-insensitive)',
-        hintText: 'e.g., Guitar Practice, Team Meeting',
-      ),
-      controller: TextEditingController(text: formState.eventTitle ?? '')
-        ..selection = TextSelection.fromPosition(
-          TextPosition(offset: formState.eventTitle?.length ?? 0),
+    final eventSuggestionsAsync = ref.watch(eventTitleSuggestionsProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          decoration: const InputDecoration(
+            labelText: 'Event Name *',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.event),
+            helperText:
+                'Enter the exact name of the event to track (case-insensitive)',
+            hintText: 'e.g., Guitar Practice, Team Meeting',
+          ),
+          controller: TextEditingController(text: formState.eventTitle ?? '')
+            ..selection = TextSelection.fromPosition(
+              TextPosition(offset: formState.eventTitle?.length ?? 0),
+            ),
+          onChanged: formNotifier.updateEventTitle,
         ),
-      onChanged: formNotifier.updateEventTitle,
+        // Event title suggestions based on historical data
+        eventSuggestionsAsync.when(
+          data: (suggestions) {
+            if (suggestions.isEmpty) {
+              return const SizedBox.shrink();
+            }
+            return Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: InlineSuggestionList(
+                suggestions: suggestions,
+                selectedId: formState.eventTitle?.toLowerCase(),
+                onSuggestionSelected: (pattern) {
+                  formNotifier.updateEventTitle(pattern.eventTitle);
+                  // Suggest target value based on historical data
+                  final suggestedTarget = pattern.weeklyHours.ceil();
+                  if (suggestedTarget > 0) {
+                    formNotifier.updateTargetValue(suggestedTarget);
+                    _targetValueController.text = suggestedTarget.toString();
+                  }
+                },
+              ),
+            );
+          },
+          loading: () => const Padding(
+            padding: EdgeInsets.only(top: 8),
+            child: InlineSuggestionList(
+              suggestions: [],
+              isLoading: true,
+              onSuggestionSelected: _noOp,
+            ),
+          ),
+          error: (_, __) => const SizedBox.shrink(),
+        ),
+      ],
     );
   }
+
+  static void _noOp(HistoricalActivityPattern _) {}
 
   /// Builds a human-readable summary of the goal
   String _buildGoalSummaryText(GoalFormState formState) {

@@ -10,15 +10,25 @@ This document is the single source of truth for the project's current status, co
 
 **Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9 Complete (100%)
 
-**Active Work**: Technical Debt Cleanup Complete ✅
+**Active Work**: Phase 9B Complete ✅
 
-**Latest Update (2026-01-25 - Technical Debt Cleanup)**:
+**Latest Update (2026-01-25 - Phase 9B Wizard Enhancement)**:
+- ✅ **Phase 9B COMPLETE**: Historical event lookup and smart suggestions
+  - Created HistoricalEventService to analyze past events (last 30 days)
+  - Detects patterns for categories, locations, and recurring event titles
+  - Smart suggestion ranking by weekly hours and confidence
+  - Quick goal creation from suggestions with auto-filled target values
+  - InlineSuggestionList widget for each goal type picker
+  - HistoricalSuggestionsCard widget for top suggestions at form start
+  - Comprehensive unit tests for new service
+
+**Previous Update (2026-01-25 - Technical Debt Cleanup)**:
 - ✅ **TD-004 RESOLVED**: Extracted CategoryRepository to its own file (`lib/data/repositories/category_repository.dart`)
 - ✅ **TD-005 RESOLVED**: Created route_constants.dart (`lib/core/constants/route_constants.dart`)
 - ✅ Updated router.dart to use RouteConstants for compile-time safety
 - ✅ Updated repository_providers.dart with explicit imports
 
-**Previous Update (2026-01-25 Late Night)**:
+**Earlier Update (2026-01-25 Late Night)**:
 - ✅ **Phase 9D COMPLETE**: Goal settings, warnings, and recommendation engine
   - Goal Settings: Default period, default metric, warning toggle, recommendation toggle
   - Warning System: GoalWarningService detects unrealistic pace, behind schedule, no events
@@ -849,16 +859,42 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 
 **Dependencies**: Phase 8 (complete)
 
-#### Phase B: Wizard Enhancement ⚪ (Planned)
+#### Phase B: Wizard Enhancement ✅ (Complete - 100%)
 
 **Focus**: Enhanced goal creation UX with historical data
 
-**Planned Features**:
-- Historical event lookup (suggest goals based on past events)
-- Smart suggestion ranking (most frequent activities/locations)
-- Quick goal creation from suggestions
-- Visual feedback on historical time spent
-- Auto-select first suggestion setting (✅ Setting added in v13)
+**What's Complete (2026-01-25)**:
+- ✅ Historical event lookup (suggest goals based on past events)
+- ✅ Smart suggestion ranking (most frequent activities/locations)
+- ✅ Quick goal creation from suggestions
+- ✅ Visual feedback on historical time spent
+- ✅ Auto-select first suggestion setting (added in v13)
+
+**Implementation Details**:
+- ✅ Created `HistoricalEventService` for analyzing past events
+  - Analyzes last 30 days of event data
+  - Detects category, location, and event title patterns
+  - Calculates confidence scores based on frequency and recency
+- ✅ Created `HistoricalActivityPattern` model with weekly hours calculation
+- ✅ Created `HistoricalAnalysisSummary` for combining all patterns
+- ✅ Created Riverpod providers for historical data
+  - `historicalAnalysisProvider` - Full analysis
+  - `categorySuggestionsProvider` - Category suggestions
+  - `locationSuggestionsProvider` - Location suggestions
+  - `eventTitleSuggestionsProvider` - Event title suggestions
+- ✅ Created `HistoricalSuggestionsCard` widget for displaying suggestions
+- ✅ Created `InlineSuggestionList` widget for inline form suggestions
+- ✅ Updated Goal Form with smart suggestions:
+  - Quick suggestions card at form top (new goals only)
+  - Inline suggestions for each goal type picker
+  - Auto-fills target value from historical weekly hours
+- ✅ Comprehensive unit tests for HistoricalEventService
+
+**Files Created**:
+- `lib/domain/services/historical_event_service.dart`
+- `lib/presentation/providers/historical_analysis_providers.dart`
+- `lib/presentation/widgets/historical_suggestions.dart`
+- `test/domain/services/historical_event_service_test.dart`
 
 **Dependencies**: Phase A (complete)
 
@@ -978,7 +1014,7 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 |-----------|--------|------------|-------|
 | **Database Layer** | 🟢 Complete | 100% | Events (with locationId, recurrenceRuleId, schedulingConstraintsJson), Categories, Goals (with personId, locationId, eventTitle), People, EventPeople, Locations, RecurrenceRules, Notifications, TravelTimePairs complete. **Schema v13.** Foreign keys enabled for cascade deletes. |
 | **Domain Entities** | 🟢 Complete | 100% | Core entities + Person + Location + RecurrenceRule + Notification + TravelTimePair + **SchedulingConstraint** done. Event updated with schedulingConstraint. Goal updated with locationId/eventTitle for all 4 goal types. |
-| **Domain Services** | 🟢 Complete | 100% | EventFactory, **NotificationService**, **NotificationSchedulerService**, **OnboardingService**, **SampleDataService**, **RecurrenceService**, **ConstraintChecker**, **GoalWarningService**, **GoalRecommendationService** - centralized service logic |
+| **Domain Services** | 🟢 Complete | 100% | EventFactory, **NotificationService**, **NotificationSchedulerService**, **OnboardingService**, **SampleDataService**, **RecurrenceService**, **ConstraintChecker**, **GoalWarningService**, **GoalRecommendationService**, **HistoricalEventService** - centralized service logic |
 | **Repositories** | 🟢 Complete | 100% | Event, Category, Goal, Person, EventPeople, Location, RecurrenceRule, Notification, TravelTimePair repos complete with tests + interfaces. **EventRepository updated with constraint serialization.** |
 | **Scheduler Engine** | 🟢 Complete | 100% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption). **Constraint integration complete! All strategies respect time and day constraints.** |
 | **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button, Locations button, Settings button, Notifications button (with badge), recurring indicators, **constraint indicators**. **Widget tests added.** |
@@ -986,7 +1022,7 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 | **Event Form** | 🟢 Complete | 100% | Create, edit, delete, people selection, location selection, recurrence selection, travel time prompt, **time constraints UI** implemented. **Widget tests added.** |
 | **Planning Wizard** | 🟢 Complete | 100% | 4-step flow, schedule generation, all strategies available, **constraint warnings display**. **Widget tests added. Provider split into 3 focused providers.** |
 | **Goals Dashboard** | 🟢 Complete | 100% | Progress tracking, status indicators, category grouping, goal CRUD. **Updated to show person info for relationship goals.** |
-| **Goal Form** | 🟢 Complete | 100% | Create, edit, delete with validation. **All 4 goal types (Category, Person, Location, Event) with appropriate pickers.** |
+| **Goal Form** | 🟢 Complete | 100% | Create, edit, delete with validation. **All 4 goal types (Category, Person, Location, Event) with appropriate pickers. Historical suggestions UI for smart goal creation.** |
 | **People Management** | 🟢 Complete | 100% | Entity, tables, repositories, providers, UI, event form integration complete |
 | **Location Management** | 🟢 Complete | 100% | Entity, table, repository, providers, UI, event form integration complete |
 | **Settings** | 🟢 Complete | 100% | UI and SharedPreferences persistence complete (Phase 7). **Added Replay Onboarding and Auto-Suggest features.** |
