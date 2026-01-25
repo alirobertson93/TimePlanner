@@ -217,6 +217,12 @@ class _WeekEventBlock extends ConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
+              if (event.isUserLocked)
+                const Icon(
+                  Icons.lock,
+                  size: 10,
+                  color: Colors.white70,
+                ),
               if (event.isRecurring)
                 const Icon(
                   Icons.repeat,

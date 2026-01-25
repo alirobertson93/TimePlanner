@@ -121,7 +121,7 @@ This document is the single source of truth for the project's current status, co
   - [x] All event fields (title, description, category, timing, duration)
   - [x] Time-bound vs duration-based toggle
   - [x] Form validation
-  - [ ] Constraint picker (movable, resizable, locked) - deferred to Phase 4
+  - [x] Constraint picker (movable, resizable, locked) - implemented in Phase 8
 - [x] Week View
   - [x] 7-day grid display with day headers
   - [x] Event blocks with category colors
@@ -612,6 +612,13 @@ This document is the single source of truth for the project's current status, co
   - [x] Color contrast verification (WCAG 2.1 AA compliant)
   - [x] Touch target sizing (48dp minimum via Material components)
   - [ ] Keyboard navigation
+- [x] Event Timing Constraints UI (**NEW**)
+  - [x] Scheduling Options section in Event Form (collapsible ExpansionTile)
+  - [x] Fixed events: "Allow app to suggest changes" toggle (appCanMove)
+  - [x] Flexible events: "Lock this time" toggle (isUserLocked)
+  - [x] Flexible events: "Allow duration changes" toggle (appCanResize)
+  - [x] Lock icon indicators in day/week views for locked events
+  - [x] Lock/Unlock quick action in event detail sheet
 - [x] Launch Preparation
   - [x] Privacy Policy (dev-docs/PRIVACY_POLICY.md)
   - [x] Terms of Service (dev-docs/TERMS_OF_SERVICE.md)
@@ -629,6 +636,8 @@ This document is the single source of truth for the project's current status, co
 - lib/presentation/providers/onboarding_providers.dart
 - lib/presentation/providers/notification_service_provider.dart
 - test/scheduler/scheduler_performance_test.dart (Performance benchmark tests)
+- test/widget/screens/event_form_constraints_test.dart (Constraint toggle tests)
+- test/domain/entities/event_test.dart (Event entity computed properties tests)
 - dev-docs/PRIVACY_POLICY.md (Privacy policy for app store submission)
 - dev-docs/TERMS_OF_SERVICE.md (Terms of service for app store submission)
 - dev-docs/USER_GUIDE.md (Comprehensive user documentation)
@@ -638,9 +647,12 @@ This document is the single source of truth for the project's current status, co
 - lib/main.dart - Added timezone initialization and notification service init
 - pubspec.yaml - Added flutter_local_notifications: ^18.0.1 and timezone: ^0.10.0
 - ios/Runner/AppDelegate.swift - Added notification permission setup
-- lib/presentation/screens/day_view/widgets/event_card.dart - Added Semantics wrapper with detailed label
+- lib/presentation/providers/event_form_providers.dart - Added constraint fields (appCanMove, appCanResize, isUserLocked)
+- lib/presentation/screens/day_view/widgets/event_card.dart - Added Semantics wrapper, lock icon indicator
+- lib/presentation/screens/day_view/widgets/event_detail_sheet.dart - Added lock/unlock quick action
 - lib/presentation/screens/day_view/day_view_screen.dart - FAB with semantic label
-- lib/presentation/screens/event_form/event_form_screen.dart - Form fields with semantic labels
+- lib/presentation/screens/event_form/event_form_screen.dart - Added Scheduling Options section with constraint toggles
+- lib/presentation/screens/week_view/widgets/week_timeline.dart - Added lock icon indicator
 - lib/presentation/screens/goals_dashboard/goals_dashboard_screen.dart - Goal cards with semantic labels
 - lib/presentation/screens/planning_wizard/planning_wizard_screen.dart - Step indicators with accessibility
 - lib/presentation/screens/onboarding/onboarding_screen.dart - Pages with semantic containers
