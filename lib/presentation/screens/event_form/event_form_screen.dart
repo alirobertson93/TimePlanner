@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../providers/event_form_providers.dart' as form_providers;
 import '../../providers/repository_providers.dart';
+import '../../providers/error_handler_provider.dart';
 import '../../widgets/people_picker.dart';
 import '../../widgets/location_picker.dart';
 import '../../widgets/recurrence_picker.dart';
@@ -585,7 +586,10 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
       }
     } catch (e) {
       // Don't block the save operation if travel time check fails
-      debugPrint('Error checking travel times: $e');
+      ref.read(errorHandlerProvider).handleWarning(
+        e,
+        context: 'checking travel times',
+      );
     }
   }
 }

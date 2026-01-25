@@ -6,6 +6,7 @@ import '../../domain/enums/recurrence_frequency.dart';
 import '../../domain/enums/recurrence_end_type.dart';
 import '../providers/repository_providers.dart';
 import '../providers/recurrence_providers.dart';
+import '../providers/error_handler_provider.dart';
 import 'recurrence_custom_dialog.dart';
 
 /// A widget for selecting or creating a recurrence rule for an event
@@ -188,8 +189,10 @@ class _RecurrencePickerState extends ConsumerState<RecurrencePicker> {
           widget.onRecurrenceChanged(result.id);
         } catch (e) {
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error saving recurrence: $e')),
+            ref.read(errorHandlerProvider).showErrorSnackBar(
+              context,
+              e,
+              operationContext: 'saving recurrence',
             );
           }
         }
@@ -210,8 +213,10 @@ class _RecurrencePickerState extends ConsumerState<RecurrencePicker> {
         widget.onRecurrenceChanged(result.id);
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e')),
+          ref.read(errorHandlerProvider).showErrorSnackBar(
+            context,
+            e,
+            operationContext: 'creating recurrence',
           );
         }
       }

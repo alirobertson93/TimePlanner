@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../domain/entities/event.dart';
 import '../../../providers/event_providers.dart';
+import '../../../providers/error_handler_provider.dart';
 
 /// Bottom sheet showing event details
 class EventDetailSheet extends ConsumerWidget {
@@ -253,11 +254,10 @@ class EventDetailSheet extends ConsumerWidget {
         } catch (e) {
           // Show error message
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Failed to delete event: $e'),
-                backgroundColor: Colors.red,
-              ),
+            ref.read(errorHandlerProvider).showErrorSnackBar(
+              context,
+              e,
+              operationContext: 'deleting event',
             );
           }
         }

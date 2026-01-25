@@ -4,6 +4,7 @@ import '../../domain/entities/location.dart';
 import '../../domain/entities/travel_time_pair.dart';
 import '../providers/repository_providers.dart';
 import '../providers/travel_time_providers.dart';
+import '../providers/error_handler_provider.dart';
 
 /// Dialog to prompt user for travel time between two locations
 class TravelTimePromptDialog extends ConsumerStatefulWidget {
@@ -254,8 +255,10 @@ class _TravelTimePromptDialogState
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+        ref.read(errorHandlerProvider).showErrorSnackBar(
+          context,
+          e,
+          operationContext: 'saving travel time',
         );
       }
     } finally {

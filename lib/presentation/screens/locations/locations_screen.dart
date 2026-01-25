@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 import '../../../domain/entities/location.dart';
 import '../../providers/location_providers.dart';
 import '../../providers/repository_providers.dart';
+import '../../providers/error_handler_provider.dart';
 
 /// Screen for managing locations
 class LocationsScreen extends ConsumerStatefulWidget {
@@ -208,8 +209,10 @@ class _LocationsScreenState extends ConsumerState<LocationsScreen> {
                 }
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: $e')),
+                  ref.read(errorHandlerProvider).showErrorSnackBar(
+                    context,
+                    e,
+                    operationContext: 'adding location',
                   );
                 }
               }
@@ -305,8 +308,10 @@ class _LocationsScreenState extends ConsumerState<LocationsScreen> {
                 }
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: $e')),
+                  ref.read(errorHandlerProvider).showErrorSnackBar(
+                    context,
+                    e,
+                    operationContext: 'updating location',
                   );
                 }
               }
@@ -359,8 +364,10 @@ class _LocationsScreenState extends ConsumerState<LocationsScreen> {
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e')),
+          ref.read(errorHandlerProvider).showErrorSnackBar(
+            context,
+            e,
+            operationContext: 'deleting location',
           );
         }
       }

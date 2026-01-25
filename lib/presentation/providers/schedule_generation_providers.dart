@@ -5,6 +5,7 @@ import '../../scheduler/models/schedule_result.dart';
 import '../../core/utils/date_utils.dart';
 import 'repository_providers.dart';
 import 'planning_parameters_providers.dart';
+import 'error_handler_provider.dart';
 
 part 'schedule_generation_providers.g.dart';
 
@@ -94,10 +95,16 @@ class ScheduleGeneration extends _$ScheduleGeneration {
         isGenerating: false,
         scheduleResult: result,
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      final errorHandler = ref.read(errorHandlerProvider);
+      final message = errorHandler.handleError(
+        e,
+        stackTrace: stackTrace,
+        operationContext: 'generating schedule',
+      );
       state = state.copyWith(
         isGenerating: false,
-        error: 'Failed to generate schedule: $e',
+        error: message,
       );
     }
   }
@@ -124,8 +131,14 @@ class ScheduleGeneration extends _$ScheduleGeneration {
       }
 
       return true;
-    } catch (e) {
-      state = state.copyWith(error: 'Failed to save schedule: $e');
+    } catch (e, stackTrace) {
+      final errorHandler = ref.read(errorHandlerProvider);
+      final message = errorHandler.handleError(
+        e,
+        stackTrace: stackTrace,
+        operationContext: 'saving schedule',
+      );
+      state = state.copyWith(error: message);
       return false;
     }
   }
