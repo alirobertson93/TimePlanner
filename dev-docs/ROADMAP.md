@@ -8,9 +8,11 @@ This document is the single source of truth for the project's current status, co
 
 **Project Phase**: Phase 8 In Progress - Polish & Launch
 
-**Overall Progress**: ~100% Core Features Complete, 90% Phase 8 Complete
+**Overall Progress**: ~100% Core Features Complete, 95% Phase 8 Complete
 
-**Active Work**: Phase 8 - Onboarding ✅, Performance ✅, Accessibility ✅, Launch Prep ⏳ 60%
+**Active Work**: Phase 8 - Onboarding ✅ (Enhanced), Performance ✅, Accessibility ✅, Launch Prep ⏳ 60%
+
+**Recent Update (2026-01-25)**: Enhanced onboarding wizard implemented with 6-step guided setup for recurring events, people, activity goals, and places.
 
 **Environment Requirements**: Remaining Phase 8 work (Keyboard Navigation, App Builds) requires Flutter SDK for:
 - Building the app (`flutter build ios`, `flutter build appbundle`)
@@ -545,17 +547,28 @@ This document is the single source of truth for the project's current status, co
 - Prepare for launch ⏳ (Documents complete, assets pending)
 
 **What's Working**:
-- ✅ **Onboarding Experience** implemented
+- ✅ **Enhanced Onboarding Experience** implemented (Updated 2026-01-25)
   - OnboardingService - Manages onboarding state with SharedPreferences, supports versioned re-onboarding
-  - OnboardingScreen - 5-page welcome wizard with:
-    - Welcome, Smart Scheduling, Track Your Goals, Plan Ahead, Stay Notified pages
-    - Skip button, page indicators, back/next navigation
-    - Option to install sample data at completion
+  - **EnhancedOnboardingScreen** - 6-step comprehensive setup wizard:
+    1. Welcome - Overview of what will be set up
+    2. Recurring Fixed Events - Add weekly recurring events (work, gym, classes)
+    3. People & Time Goals - Add people with optional hours/week or hours/month goals
+    4. Activity Goals - Add custom activity goals with quick-add suggestions
+    5. Places - Add locations with optional time goals
+    6. Summary - Shows count of items created with completion message
+  - Creates RecurrenceRule entities for recurring events
+  - Creates Person entities with associated Goal (GoalType.person) for time goals
+  - Creates Goal entities for activity goals (GoalType.custom)
+  - Creates Location entities with optional time goals
+  - Skip button available throughout, back/next navigation
+  - Quick-add chips for common suggestions (Exercise, Reading, Home, Office, etc.)
   - SampleDataService - Generates sample locations, people, goals, and events
-  - onboarding_providers.dart - Providers for onboarding and sample data services
   - Router auto-redirects first-time users to onboarding
-  - **Bug fixes (2026-01-25)**: App now uses `routerProvider` with redirect logic (was using legacy static router), loading state defaults to `true` (was `false`), removed duplicate legacy router
-  - **Replay Onboarding** feature added to Settings screen with confirmation dialog
+  - **Replay Onboarding** feature available in Settings > "Replay Onboarding"
+- ✅ **Monthly Goal Tracking** - Already supported
+  - `goal_providers.dart` calculates period boundaries for week, month, quarter, and year
+  - Users can set per-week OR per-month time goals in onboarding wizard
+  - Progress tracked across entire calendar month for monthly goals
 - ✅ **System Notifications** integrated (from Phase 7)
   - flutter_local_notifications package added
   - NotificationService - Wraps flutter_local_notifications plugin
@@ -569,7 +582,7 @@ This document is the single source of truth for the project's current status, co
     - EventFormScreen: Form fields and buttons with semantic labels
     - GoalsDashboardScreen: Goal cards and summary items with descriptive labels
     - PlanningWizardScreen: Step indicators and navigation buttons with context
-    - OnboardingScreen: Pages with semantic labels
+    - EnhancedOnboardingScreen: Progress indicator, step content with labels
     - SettingsScreen: Settings tiles with current values in labels
     - NotificationsScreen: Notification tiles with full context including type and status
   - Icons with semanticLabel properties throughout
@@ -596,12 +609,17 @@ This document is the single source of truth for the project's current status, co
   - Category colors darkened for WCAG 3:1 UI component contrast
 
 **Features**:
-- [x] Onboarding
-  - [x] Welcome wizard (5-page flow)
-  - [x] Feature tutorials (built into wizard pages)
-  - [x] Sample data setup (optional at completion)
-  - [x] First-time user guidance (auto-redirect via router) **Bug fixed: App was using wrong router**
-  - [x] Replay Onboarding from Settings (**NEW**: Users can re-run wizard anytime)
+- [x] Onboarding (ENHANCED)
+  - [x] Welcome wizard - Now 6-step comprehensive setup
+  - [x] Recurring Fixed Events setup - Add weekly recurring commitments
+  - [x] People & Time Goals - Add people with hours/week or hours/month goals
+  - [x] Activity Goals - Add custom activity goals (exercise, reading, etc.)
+  - [x] Places setup - Add locations with optional time goals
+  - [x] Summary page - Shows count of items created
+  - [x] Monthly goal tracking - Already supported in goal_providers.dart
+  - [x] Sample data setup (optional via separate flow)
+  - [x] First-time user guidance (auto-redirect via router)
+  - [x] Replay Onboarding from Settings
 - [x] Performance
   - [x] Profiling and optimization (scheduler benchmarks: <10ms for 100 events)
   - [x] Database query optimization (10 indexes added in schema v11)
@@ -758,7 +776,7 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 | **Notifications** | 🟢 Complete | 100% | **Fully implemented!** Data layer + UI + System notifications via flutter_local_notifications. NotificationSchedulerService bridges repository with OS-level alerts. |
 | **Travel Time** | 🟢 Complete | 100% | **Fully implemented!** Data layer + Travel Times Screen + event prompts complete. Scheduler integration is deferred (future enhancement). |
 | **Relationship Goals** | 🟢 Complete | 100% | **Fully implemented!** Goal entity with personId, Goal form with type selector, progress tracking via EventPeople, Dashboard display with person info. |
-| **Onboarding** | 🟢 Complete | 100% | **Fully implemented!** OnboardingService, OnboardingScreen (5-page wizard), SampleDataService, auto-redirect via router. **Bug fixes: App now uses correct routerProvider, loading state defaults to true. Added Replay Onboarding in Settings.** |
+| **Onboarding** | 🟢 Complete | 100% | **ENHANCED (2026-01-25)!** New 6-step wizard: Welcome, Recurring Events, People & Time Goals, Activity Goals, Places, Summary. Creates recurring events, people with goals, activity goals, locations. Supports per-week AND per-month time goals. |
 | **Accessibility** | 🟢 Complete | 90% | **Screen reader support added!** Semantics widgets in all major screens. Touch targets meet 48dp via Material components. **Color contrast WCAG 2.1 AA compliant.** Keyboard nav remaining. |
 | **Widget Tests** | 🟢 Complete | 100% | **All 10 screen tests implemented!** Day View, Event Form, Planning Wizard, Week View, Goals Dashboard, Settings, Notifications, People, Locations, Onboarding tests added. **Bug fix (2026-01-25)**: Fixed missing `debtStrategy` parameter in Goals Dashboard test. |
 | **Integration Tests** | 🟡 Partial | 15% | **Core user flow test added** (Create Event → Day View → Planning Wizard). **Bug fix (2026-01-25)**: Updated to use `routerProvider` with `Consumer` pattern (was using removed `AppRouter.router`). **Audit: Needs more critical flow coverage** |

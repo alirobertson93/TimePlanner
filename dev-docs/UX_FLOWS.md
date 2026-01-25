@@ -6,53 +6,119 @@ User journey documentation for TimePlanner.
 
 This document defines all user interactions and workflows in TimePlanner. Use this as a reference when implementing features or designing UI.
 
-**Last Updated**: 2026-01-16
+**Last Updated**: 2026-01-25
 
 ---
 
 ## Layer 1: Initial Setup Flow
 
-### Onboarding Wizard (First Launch)
+### Enhanced Onboarding Wizard (First Launch)
 
 **Entry Point**: App first launch
+
+**Purpose**: Guide users through establishing their recurring week-by-week schedule, including fixed events, people they want to spend time with, activity goals, and locations.
+
+**Progress Indicator**: Linear progress bar showing completion percentage across all steps
 
 **Steps**:
 
 1. **Welcome Screen**
-   - Welcome message
-   - Brief app overview
-   - "Get Started" button
-   - "Skip" option (goes to main app)
+   - Welcome message with app logo/icon
+   - Brief explanation of what the wizard will help set up:
+     - Recurring events (work, gym, etc.)
+     - People you want to spend time with
+     - Activity goals (exercise, reading, etc.)
+     - Main locations
+   - "Get Started" button (Next)
+   - "Skip" option (goes to main app with defaults)
 
-2. **Work Hours Setup**
-   - "When do you typically work?"
-   - Start time picker (default: 9:00 AM)
-   - End time picker (default: 5:00 PM)
-   - Info: "We'll schedule flexible events during these hours"
-   - Next button
+2. **Recurring Fixed Events Setup**
+   - Header: "Recurring Fixed Events" with repeat icon
+   - Description: "Add events that happen at the same time each week"
+   - List of added recurring events (with delete option)
+   - "Add Recurring Event" button opens dialog:
+     - Event Name (required)
+     - Description (optional)
+     - Start time picker
+     - End time picker
+     - Day selector chips (S, M, T, W, T, F, S)
+   - Empty state: "No recurring events added yet. You can skip this step or add them later."
+   - Back/Next navigation
 
-3. **Default Categories Review**
-   - "Here are some category suggestions"
-   - List of default categories with colors
-   - Option to add custom category
-   - Option to remove categories
-   - Next button
+3. **People & Time Goals Setup**
+   - Header: "People & Time Goals" with people icon
+   - Description: "Add important people and set goals for time with them"
+   - List of added people with their time goals
+   - "Add Person" button opens dialog:
+     - Name (required)
+     - Email (optional)
+     - Phone (optional)
+     - Time Goal section:
+       - Hours dropdown (0-20, 0 = "No goal")
+       - Period dropdown (Per week / Per month)
+   - Examples: "Mum - 5 hours per week", "Girlfriend - 8 hours per week"
+   - Back/Next navigation
 
-4. **Goals Introduction (Optional)**
-   - "Want to track time goals?" 
-   - "You can set goals like '10 hours/week on deep work'"
-   - "Set up now" or "Skip for now"
-   - If "Set up now": Go to Goal Creation flow
-   - Next button
+4. **Activity Goals Setup**
+   - Header: "Activity Goals" with flag icon
+   - Description: "Set goals for activities you want to make time for"
+   - List of added activity goals
+   - "Add Activity Goal" button opens dialog:
+     - Activity Name (required)
+     - Hours dropdown (1-20)
+     - Period dropdown (Per week / Per month)
+   - Suggested activities as quick-add chips:
+     - Exercise (3 hrs/week)
+     - Reading (2 hrs/week)
+     - Learning (2 hrs/week)
+     - Meditation (1 hr/week)
+     - Hobbies (3 hrs/week)
+     - Side Project (5 hrs/week)
+   - Back/Next navigation
 
-5. **Completion**
-   - "You're all set!"
-   - Summary of settings
-   - "Start Planning" button → Goes to main app
+5. **Places Setup**
+   - Header: "Your Places" with location icon
+   - Description: "Add your main locations with optional time goals"
+   - List of added locations with their time goals
+   - "Add Location" button opens dialog:
+     - Location Name (required)
+     - Address (optional)
+     - Time Goal section:
+       - Hours dropdown (0-40, 0 = "No goal")
+       - Period dropdown (Per week / Per month)
+   - Quick-add chips for common locations:
+     - Home
+     - Office
+     - Gym
+     - Coffee Shop
+   - Back/Next navigation
+
+6. **Summary & Completion**
+   - Success icon and "You're All Set!" message
+   - Summary counts:
+     - Recurring Events: X
+     - People Added: X
+     - Activity Goals: X
+     - Locations: X
+   - Tip: "Use the Planning Wizard to automatically schedule your flexible events around your fixed commitments."
+   - "Get Started" button → Saves all data and goes to main app
+
+**Data Created**:
+- Recurring events are saved with weekly recurrence rules
+- People are saved with associated time goals (GoalType.person)
+- Activity goals are saved as custom goals (GoalType.custom)
+- Locations are saved with optional time goals
 
 **Exit Points**:
-- ✅ Complete onboarding → Day View
-- ⏭️ Skip → Day View (with defaults)
+- ✅ Complete onboarding → Day View (all data saved)
+- ⏭️ Skip → Day View (no data created, defaults used)
+- Can replay via Settings > "Replay Onboarding"
+
+**Time Goal Periods**:
+- **Per Week**: Progress tracked against current week (Monday-Sunday)
+- **Per Month**: Progress tracked against current calendar month
+  - The app calculates boundaries and aggregates events accordingly
+  - See `goal_providers.dart` for implementation details
 
 ---
 

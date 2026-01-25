@@ -33,6 +33,66 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-25 - Enhanced Onboarding Wizard
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Implement an enhanced onboarding wizard that guides users through establishing their recurring week-by-week schedule, including recurring fixed events, people with time goals, activity goals, and places.
+
+**Work Completed**:
+
+- ✅ **Created Enhanced Onboarding Wizard** (`lib/presentation/screens/onboarding/enhanced_onboarding_screen.dart`)
+  - 6-step wizard with progress indicator
+  - Step 1: Welcome - Overview of what will be set up
+  - Step 2: Recurring Fixed Events - Add weekly recurring events with day selection
+  - Step 3: People & Time Goals - Add people with optional hours/week or hours/month goals
+  - Step 4: Activity Goals - Add custom activity goals with suggested quick-add options
+  - Step 5: Places - Add locations with optional time goals
+  - Step 6: Summary - Shows count of items created with completion message
+
+- ✅ **Data Persistence**
+  - Creates recurring events with RecurrenceRule (weekly, selected days)
+  - Creates Person entities with associated Goal (GoalType.person) when time goal specified
+  - Creates Goal entities for activity goals (GoalType.custom)
+  - Creates Location entities with associated custom Goal when time goal specified
+
+- ✅ **UX Features**
+  - Skip option available throughout
+  - Back/Next navigation between steps
+  - Dialog forms for adding items
+  - Quick-add chips for common suggestions (Exercise, Reading, Home, Office, etc.)
+  - Delete items from lists before completing
+  - Error handling with loading indicator during save
+
+- ✅ **Updated Router** (`lib/app/router.dart`)
+  - Changed onboarding route to use EnhancedOnboardingScreen
+  - Existing "Replay Onboarding" in Settings now uses enhanced version
+
+- ✅ **Updated Documentation**
+  - Updated UX_FLOWS.md with complete enhanced onboarding flow documentation
+  - Documented all 6 steps with UI elements, dialogs, and data created
+  - Added note about per-week vs per-month goal tracking implementation
+
+**Monthly Goal Tracking Analysis**:
+The existing codebase already supports monthly goals via `_getPeriodBoundaries()` in `goal_providers.dart`. This function calculates period boundaries for week, month, quarter, and year periods. Monthly goals track progress across the entire calendar month. No additional implementation was needed.
+
+**Key Files Added**:
+- `lib/presentation/screens/onboarding/enhanced_onboarding_screen.dart` - New 6-step wizard
+
+**Key Files Modified**:
+- `lib/app/router.dart` - Updated to use EnhancedOnboardingScreen
+- `dev-docs/UX_FLOWS.md` - Complete documentation of enhanced onboarding flow
+- `dev-docs/CHANGELOG.md` - This entry
+- `dev-docs/ROADMAP.md` - Updated with onboarding wizard enhancement
+
+**Technical Notes**:
+- Recurring events created with `appCanMove: false`, `appCanResize: false`, `isUserLocked: true` to mark as non-negotiables
+- Person time goals use `GoalType.person` with `personId` field
+- Activity/Location goals use `GoalType.custom` (note: may want to add `GoalType.location` in future)
+- All time goals default to `DebtStrategy.carryForward` for missed goals
+
+---
+
 ### Session: 2026-01-25 - Implement Event Timing Constraints UI
 
 **Author**: AI Assistant (GitHub Copilot)
