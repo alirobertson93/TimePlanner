@@ -33,6 +33,51 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-25 (Bug Fix - Onboarding Wizard Replay)
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Fix two bugs with the onboarding wizard: replay from settings not working, and onboarding showing on every app restart.
+
+**Work Completed**:
+
+**Bug Fix: Onboarding Wizard Issues** ✅ **COMPLETE**
+
+- ✅ **Fixed "Replay Onboarding" not working** (`lib/presentation/screens/settings/settings_screen.dart`):
+  - Root cause: Provider state was cached after `resetOnboarding()` was called
+  - Fix: Added `ref.invalidate(sharedPreferencesProvider)` after reset to force state refresh
+  - Onboarding now properly displays when triggered from Settings
+
+- ✅ **Fixed onboarding showing on every app restart** (`lib/presentation/providers/onboarding_providers.dart`):
+  - Root cause: `needsOnboardingProvider` returned `true` during async SharedPreferences loading
+  - This caused the router to redirect to onboarding on every startup
+  - Fix: Changed return type from `bool` to `bool?`, returning `null` during loading
+  
+- ✅ **Updated router redirect logic** (`lib/app/router.dart`):
+  - Skip redirect when `needsOnboarding == null` (loading state)
+  - Allows current navigation to proceed during loading
+  - Proper redirects once state is confirmed
+
+**Tests Added** ✅ **COMPLETE**
+
+- ✅ `test/domain/services/onboarding_service_test.dart`:
+  - Tests for `isOnboardingComplete` (missing keys, version mismatch, completion check)
+  - Tests for `isFreshInstall` detection
+  - Tests for `completeOnboarding()` setting flags and version
+  - Tests for `resetOnboarding()` removing flags
+
+**Files Changed**:
+- `lib/presentation/providers/onboarding_providers.dart` - Changed `needsOnboardingProvider` to return `bool?`
+- `lib/app/router.dart` - Handle null state in redirect logic
+- `lib/presentation/screens/settings/settings_screen.dart` - Invalidate provider after reset
+- `test/domain/services/onboarding_service_test.dart` - New test file
+
+**Next Steps**:
+- CI will verify tests pass
+- Monitor for any edge cases with onboarding flow
+
+---
+
 ### Session: 2026-01-25 (Phase 9B - Wizard Enhancement)
 
 **Author**: AI Assistant (GitHub Copilot)
@@ -3906,7 +3951,19 @@ Track bugs discovered during development.
 
 ### Resolved
 
-*None yet*
+**BUG-001**: Onboarding wizard replay from settings not working ✅
+- **Reported**: 2026-01-25
+- **Fixed**: 2026-01-25
+- **Symptom**: Tapping "Replay Onboarding" in settings redirected to home instead of showing wizard
+- **Root Cause**: Provider state was cached after `resetOnboarding()` was called
+- **Fix**: Added `ref.invalidate(sharedPreferencesProvider)` after reset
+
+**BUG-002**: Onboarding showing on every app restart ✅
+- **Reported**: 2026-01-25
+- **Fixed**: 2026-01-25
+- **Symptom**: Onboarding wizard appeared every time user reopened the app, even after completing it
+- **Root Cause**: `needsOnboardingProvider` returned `true` during loading state
+- **Fix**: Changed return type to `bool?`, returning `null` during loading; router skips redirect when null
 
 ---
 

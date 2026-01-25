@@ -10,9 +10,17 @@ This document is the single source of truth for the project's current status, co
 
 **Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9 Complete (100%)
 
-**Active Work**: Phase 9B Complete ✅
+**Active Work**: Bug Fixes and Maintenance
 
-**Latest Update (2026-01-25 - Phase 9B Wizard Enhancement)**:
+**Latest Update (2026-01-25 - Onboarding Wizard Bug Fixes)**:
+- ✅ **BUG-001 FIXED**: Replay Onboarding from settings now works correctly
+  - Added provider invalidation after `resetOnboarding()` to force state refresh
+- ✅ **BUG-002 FIXED**: Onboarding no longer shows on every app restart
+  - Changed `needsOnboardingProvider` to return `null` during loading state
+  - Router skips redirect during loading, preventing false redirects to onboarding
+- ✅ Added unit tests for `OnboardingService`
+
+**Previous Update (2026-01-25 - Phase 9B Wizard Enhancement)**:
 - ✅ **Phase 9B COMPLETE**: Historical event lookup and smart suggestions
   - Created HistoricalEventService to analyze past events (last 30 days)
   - Detects patterns for categories, locations, and recurring event titles
@@ -22,7 +30,7 @@ This document is the single source of truth for the project's current status, co
   - HistoricalSuggestionsCard widget for top suggestions at form start
   - Comprehensive unit tests for new service
 
-**Previous Update (2026-01-25 - Technical Debt Cleanup)**:
+**Earlier Update (2026-01-25 - Technical Debt Cleanup)**:
 - ✅ **TD-004 RESOLVED**: Extracted CategoryRepository to its own file (`lib/data/repositories/category_repository.dart`)
 - ✅ **TD-005 RESOLVED**: Created route_constants.dart (`lib/core/constants/route_constants.dart`)
 - ✅ Updated router.dart to use RouteConstants for compile-time safety
