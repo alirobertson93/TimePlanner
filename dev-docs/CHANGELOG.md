@@ -41,16 +41,17 @@ This changelog serves multiple purposes:
 
 **Issues Analyzed**:
 
-1. **Settings Menu Accessibility**
+1. **App Bar Overflow - Icons Not Visible in Portrait Mode**
 2. **Goals Conceptual Model**
 
 **Analysis Completed**:
 
-**Issue 1: Settings Menu Accessibility** - ✅ Partially Valid
+**Issue 1: App Bar Overflow** - ✅ **Responsive Design Issue (High Priority)**
 - The Settings icon IS present in Day View app bar
 - Settings route and screen are fully functional
-- **Finding**: Week View is missing the Settings icon, creating inconsistency
-- Day View has 11 icons in app bar which may overwhelm users
+- **Root Cause**: Day View has 10 icons which do NOT fit on screen width in portrait mode
+- **Result**: Rightmost icons (including Settings) are rendered off-screen and inaccessible
+- **Solution**: Implement responsive overflow/ellipsis menu pattern
 
 **Issue 2: Goals Conceptual Model** - ✅ Valid Concern
 - User correctly identified that Goals feel like standalone items
@@ -68,7 +69,7 @@ This changelog serves multiple purposes:
 
 - ✅ **Documented findings in ROADMAP.md**
   - Added "Known Issues & Planned Improvements" section
-  - Detailed Issue 1 analysis with relevant files
+  - Detailed Issue 1 analysis with responsive overflow solution
   - Detailed Issue 2 analysis with proposed solutions (Phase A & B)
   - Listed all files that need updates for each fix
 
@@ -78,14 +79,16 @@ This changelog serves multiple purposes:
 
 | Issue | Priority | Effort | Solution |
 |-------|----------|--------|----------|
-| Settings in Week View | Low | 30 min + testing | Add Settings icon to Week View app bar |
+| App Bar Overflow | High | 3-4 hrs | Implement responsive overflow menu (ellipsis/⋮) for narrow screens |
 | Goals Conceptual Model (Phase A) | Medium | 2-3 hrs | Reorder form to prioritize Category/Person selection |
 | Goals Conceptual Model (Phase B) | Medium | 3-4 hrs | Make title optional, update onboarding, update docs |
 
 **No Code Changes Made** - This was an analysis/planning session only.
 
 **Key Files Identified for Future Work**:
-- `lib/presentation/screens/week_view/week_view_screen.dart` - Add Settings icon
+- `lib/presentation/screens/day_view/day_view_screen.dart` - Add responsive overflow menu
+- `lib/presentation/screens/week_view/week_view_screen.dart` - Same responsive overflow treatment
+- `lib/presentation/widgets/adaptive_app_bar.dart` - New: reusable overflow pattern (optional)
 - `lib/presentation/screens/goal_form/goal_form_screen.dart` - Reorder form
 - `lib/presentation/providers/goal_form_providers.dart` - Auto-generate title
 - `lib/presentation/screens/onboarding/enhanced_onboarding_screen.dart` - Align Activity Goals step

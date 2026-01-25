@@ -791,31 +791,43 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 
 ## Known Issues & Planned Improvements
 
-### Issue 1: Settings Menu Accessibility (Low Priority)
+### Issue 1: App Bar Overflow - Icons Not Visible in Portrait Mode (High Priority)
 
-**Status**: ✅ Analyzed (2026-01-25) - Partial issue
+**Status**: ✅ Analyzed (2026-01-25) - **Responsive Design Issue**
 
-**Problem Statement**: User reported difficulty finding the Settings menu in the UI.
+**Problem Statement**: User reported difficulty finding the Settings menu in the UI. Investigation revealed the Settings icon IS present but not visible on screen in portrait mode because the 10 app bar icons exceed the screen width.
 
 **Analysis**:
 - The Settings icon IS present in the Day View app bar (gear icon on right side)
 - The Settings route `/settings` exists and the SettingsScreen is fully functional
-- **Issue Found**: The Week View does not have a Settings icon - users navigating from Week View have no direct access to Settings
-- **UX Concern**: Day View app bar has 10 icons total which may be overwhelming for users
+- **Root Cause**: Day View has 10 icons in the app bar which do NOT fit on the screen width in portrait mode on typical phone screens
+- **Result**: Rightmost icons (including Settings) are rendered off-screen and inaccessible
+- The Week View has the same issue (icons extend beyond visible area)
 
 **Proposed Solution**:
-1. Add Settings icon to Week View app bar for consistency
-2. Consider adding a bottom navigation bar or hamburger menu for better discoverability
-3. Alternative: Keep current design but improve tooltip/accessibility labels
+Implement a responsive overflow menu pattern:
+1. Detect available screen width and calculate how many icons can fit
+2. Show high-priority icons directly in the app bar
+3. Group remaining icons into an overflow/ellipsis menu (⋮ or "More" button)
+4. Priority ordering for visible icons: navigation (prev/today/next), core actions (plan week), overflow menu
+5. Lower-priority items (settings, locations, people, notifications) move into overflow menu on narrow screens
+
+**Implementation Options**:
+- **Option A**: Use `PopupMenuButton` for overflow items when screen width < threshold
+- **Option B**: Use `LayoutBuilder` to dynamically show/hide icons based on constraints
+- **Option C**: Implement a custom adaptive app bar widget that handles overflow automatically
 
 **Relevant Files**:
-- `lib/presentation/screens/day_view/day_view_screen.dart` (lines 23-86) - Has Settings icon ✅
-- `lib/presentation/screens/week_view/week_view_screen.dart` - Missing Settings icon ⚠️
-- `lib/presentation/screens/settings/settings_screen.dart` - Fully implemented ✅
-- `lib/app/router.dart` - Route exists `/settings` ✅
+- `lib/presentation/screens/day_view/day_view_screen.dart` (lines 23-86) - Needs responsive overflow
+- `lib/presentation/screens/week_view/week_view_screen.dart` - Needs same responsive treatment
+- Consider creating: `lib/presentation/widgets/adaptive_app_bar.dart` - Reusable overflow pattern
+
+**Implementation Estimate**: 
+- 3-4 hours for initial implementation + testing
+- Additional time for refinement based on user testing
 
 **Documentation Updates Needed**:
-- None required (UX_FLOWS.md already documents Settings access)
+- UX_FLOWS.md should document the overflow menu behavior
 
 ---
 
