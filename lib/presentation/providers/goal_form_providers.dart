@@ -334,7 +334,7 @@ class GoalForm extends _$GoalForm {
   /// Generates a title based on the selected category, person, location, or event
   Future<String> _generateTitle() async {
     String targetName = '';
-    
+
     if (state.type == GoalType.category && state.categoryId != null) {
       // Get category name
       final categoryRepo = ref.read(categoryRepositoryProvider);
@@ -399,7 +399,8 @@ class GoalForm extends _$GoalForm {
   /// Delete the goal
   Future<bool> delete() async {
     if (state.id == null) {
-      state = state.copyWith(error: 'Cannot delete a goal that has not been saved');
+      state =
+          state.copyWith(error: 'Cannot delete a goal that has not been saved');
       return false;
     }
 

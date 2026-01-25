@@ -103,43 +103,49 @@ Future<List<GoalProgress>> goalsWithProgress(GoalsWithProgressRef ref) async {
 
   // Get all active goals
   final goals = await goalRepository.getAll();
-  
+
   final now = DateTime.now();
   final progressList = <GoalProgress>[];
 
   for (final goal in goals) {
     // Calculate period boundaries
     final (periodStart, periodEnd) = _getPeriodBoundaries(now, goal.period);
-    
+
     // Get events in the period
-    final events = await eventRepository.getEventsInRange(periodStart, periodEnd);
-    
+    final events =
+        await eventRepository.getEventsInRange(periodStart, periodEnd);
+
     // Filter events based on goal type
     List<Event> relevantEvents;
-    
+
     if (goal.type == GoalType.category && goal.categoryId != null) {
       // Category goals: filter by category
-      relevantEvents = events.where((e) => e.categoryId == goal.categoryId).toList();
+      relevantEvents =
+          events.where((e) => e.categoryId == goal.categoryId).toList();
     } else if (goal.type == GoalType.person && goal.personId != null) {
       // Relationship goals: filter events by associated person
       // Get event IDs for this person
-      final eventIdsForPerson = await eventPeopleRepository.getEventIdsForPerson(goal.personId!);
-      relevantEvents = events.where((e) => eventIdsForPerson.contains(e.id)).toList();
+      final eventIdsForPerson =
+          await eventPeopleRepository.getEventIdsForPerson(goal.personId!);
+      relevantEvents =
+          events.where((e) => eventIdsForPerson.contains(e.id)).toList();
     } else if (goal.type == GoalType.location && goal.locationId != null) {
       // Location goals: filter by location
-      relevantEvents = events.where((e) => e.locationId == goal.locationId).toList();
+      relevantEvents =
+          events.where((e) => e.locationId == goal.locationId).toList();
     } else if (goal.type == GoalType.event && goal.eventTitle != null) {
       // Event goals: filter by exact title (case-insensitive)
       final targetTitle = goal.eventTitle!.toLowerCase();
-      relevantEvents = events.where((e) => e.name.toLowerCase() == targetTitle).toList();
+      relevantEvents =
+          events.where((e) => e.name.toLowerCase() == targetTitle).toList();
     } else {
       // Fallback: all events (for custom goals or invalid data)
       relevantEvents = events;
     }
-    
+
     // Calculate current value based on metric
     final currentValue = _calculateProgress(relevantEvents, goal.metric);
-    
+
     // Determine status
     final status = _determineStatus(
       currentValue: currentValue,
@@ -148,7 +154,7 @@ Future<List<GoalProgress>> goalsWithProgress(GoalsWithProgressRef ref) async {
       periodEnd: periodEnd,
       now: now,
     );
-    
+
     progressList.add(GoalProgress(
       goal: goal,
       currentValue: currentValue,
@@ -209,7 +215,7 @@ class GoalsSummary {
 @riverpod
 Future<GoalsSummary> goalsSummary(GoalsSummaryRef ref) async {
   final goals = await ref.watch(goalsWithProgressProvider.future);
-  
+
   return GoalsSummary(
     totalGoals: goals.length,
     onTrack: goals.where((g) => g.status == GoalProgressStatus.onTrack).length,
@@ -226,24 +232,30 @@ Future<GoalsSummary> goalsSummary(GoalsSummaryRef ref) async {
     case GoalPeriod.week:
       // Start from Monday of current week
       final weekStart = now.subtract(Duration(days: now.weekday - 1));
-      final periodStart = DateTime(weekStart.year, weekStart.month, weekStart.day);
-      final periodEnd = periodStart.add(const Duration(days: 7)).subtract(const Duration(seconds: 1));
+      final periodStart =
+          DateTime(weekStart.year, weekStart.month, weekStart.day);
+      final periodEnd = periodStart
+          .add(const Duration(days: 7))
+          .subtract(const Duration(seconds: 1));
       return (periodStart, periodEnd);
-    
+
     case GoalPeriod.month:
       final periodStart = DateTime(now.year, now.month, 1);
-      final periodEnd = DateTime(now.year, now.month + 1, 1).subtract(const Duration(seconds: 1));
+      final periodEnd = DateTime(now.year, now.month + 1, 1)
+          .subtract(const Duration(seconds: 1));
       return (periodStart, periodEnd);
-    
+
     case GoalPeriod.quarter:
       final quarterMonth = ((now.month - 1) ~/ 3) * 3 + 1;
       final periodStart = DateTime(now.year, quarterMonth, 1);
-      final periodEnd = DateTime(now.year, quarterMonth + 3, 1).subtract(const Duration(seconds: 1));
+      final periodEnd = DateTime(now.year, quarterMonth + 3, 1)
+          .subtract(const Duration(seconds: 1));
       return (periodStart, periodEnd);
-    
+
     case GoalPeriod.year:
       final periodStart = DateTime(now.year, 1, 1);
-      final periodEnd = DateTime(now.year + 1, 1, 1).subtract(const Duration(seconds: 1));
+      final periodEnd =
+          DateTime(now.year + 1, 1, 1).subtract(const Duration(seconds: 1));
       return (periodStart, periodEnd);
   }
 }
@@ -262,14 +274,17 @@ double _calculateProgress(List<Event> events, GoalMetric metric) {
         }
       }
       return totalMinutes / 60.0;
-    
+
     case GoalMetric.events:
       // Count number of events
       return events.length.toDouble();
-    
+
     case GoalMetric.completions:
       // Count completed events
-      return events.where((e) => e.status == EventStatus.completed).length.toDouble();
+      return events
+          .where((e) => e.status == EventStatus.completed)
+          .length
+          .toDouble();
   }
 }
 
@@ -282,24 +297,24 @@ GoalProgressStatus _determineStatus({
   required DateTime now,
 }) {
   if (targetValue == 0) return GoalProgressStatus.onTrack;
-  
+
   final progress = currentValue / targetValue;
   final totalDuration = periodEnd.difference(periodStart);
   final elapsedDuration = now.difference(periodStart);
-  
+
   // Calculate expected progress based on time elapsed
   final expectedProgress = elapsedDuration.inMinutes / totalDuration.inMinutes;
-  
+
   // If ahead or on pace, we're on track
   if (progress >= expectedProgress * 0.9) {
     return GoalProgressStatus.onTrack;
   }
-  
+
   // If significantly behind (less than 70% of expected), we're behind
   if (progress < expectedProgress * 0.7) {
     return GoalProgressStatus.behind;
   }
-  
+
   // Otherwise, at risk
   return GoalProgressStatus.atRisk;
 }

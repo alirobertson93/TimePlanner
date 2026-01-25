@@ -138,7 +138,7 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
           ),
           const Divider(height: 16),
           const SizedBox(height: 8),
-          
+
           // Explanatory text
           Text(
             'Goals track how much time you spend on a category, with a person, at a location, or on a specific event.',
@@ -181,7 +181,8 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
                             width: 16,
                             height: 16,
                             decoration: BoxDecoration(
-                              color: ColorUtils.parseHexColor(category.colourHex),
+                              color:
+                                  ColorUtils.parseHexColor(category.colourHex),
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -237,12 +238,17 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
                         children: [
                           CircleAvatar(
                             radius: 12,
-                            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primaryContainer,
                             child: Text(
-                              person.name.trim().isNotEmpty ? person.name.trim()[0].toUpperCase() : '?',
+                              person.name.trim().isNotEmpty
+                                  ? person.name.trim()[0].toUpperCase()
+                                  : '?',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer,
                               ),
                             ),
                           ),
@@ -363,7 +369,10 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+              color: Theme.of(context)
+                  .colorScheme
+                  .primaryContainer
+                  .withOpacity(0.3),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
@@ -398,14 +407,18 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
                   ),
             ),
             subtitle: Text(
-              formState.title.isNotEmpty ? formState.title : 'Auto-generated from selection',
+              formState.title.isNotEmpty
+                  ? formState.title
+                  : 'Auto-generated from selection',
               style: Theme.of(context).textTheme.bodySmall,
               overflow: TextOverflow.ellipsis,
             ),
-            initiallyExpanded: formState.isEditMode && formState.title.isNotEmpty,
+            initiallyExpanded:
+                formState.isEditMode && formState.title.isNotEmpty,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: TextField(
                   controller: _titleController,
                   decoration: InputDecoration(
@@ -440,7 +453,8 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
             initiallyExpanded: false,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -450,7 +464,8 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
                       decoration: const InputDecoration(
                         labelText: 'Shortfall Strategy',
                         border: OutlineInputBorder(),
-                        helperText: 'What happens if you don\'t meet this goal?',
+                        helperText:
+                            'What happens if you don\'t meet this goal?',
                         helperMaxLines: 2,
                       ),
                       items: DebtStrategy.values.map((strategy) {
@@ -486,7 +501,8 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
   }
 
   /// Builds the goal type selector with 4 options
-  Widget _buildGoalTypeSelector(BuildContext context, GoalFormState formState, GoalForm formNotifier) {
+  Widget _buildGoalTypeSelector(
+      BuildContext context, GoalFormState formState, GoalForm formNotifier) {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
@@ -563,7 +579,7 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
     GoalForm formNotifier,
   ) {
     final locationsAsync = ref.watch(allLocationsProvider);
-    
+
     return locationsAsync.when(
       data: (locations) {
         if (locations.isEmpty) {
@@ -644,7 +660,8 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
         labelText: 'Event Name *',
         border: OutlineInputBorder(),
         prefixIcon: Icon(Icons.event),
-        helperText: 'Enter the exact name of the event to track (case-insensitive)',
+        helperText:
+            'Enter the exact name of the event to track (case-insensitive)',
         hintText: 'e.g., Guitar Practice, Team Meeting',
       ),
       controller: TextEditingController(text: formState.eventTitle ?? '')
@@ -657,18 +674,23 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
 
   /// Builds a human-readable summary of the goal
   String _buildGoalSummaryText(GoalFormState formState) {
-    final targetText = '${formState.targetValue} ${formState.metricDisplayText} ${formState.periodDisplayText}';
-    
+    final targetText =
+        '${formState.targetValue} ${formState.metricDisplayText} ${formState.periodDisplayText}';
+
     if (formState.type == GoalType.category && formState.categoryId != null) {
       return 'Track $targetText on selected category';
-    } else if (formState.type == GoalType.person && formState.personId != null) {
+    } else if (formState.type == GoalType.person &&
+        formState.personId != null) {
       return 'Track $targetText with selected person';
-    } else if (formState.type == GoalType.location && formState.locationId != null) {
+    } else if (formState.type == GoalType.location &&
+        formState.locationId != null) {
       return 'Track $targetText at selected location';
-    } else if (formState.type == GoalType.event && formState.eventTitle != null && formState.eventTitle!.isNotEmpty) {
+    } else if (formState.type == GoalType.event &&
+        formState.eventTitle != null &&
+        formState.eventTitle!.isNotEmpty) {
       return 'Track $targetText on "${formState.eventTitle}"';
     }
-    
+
     return 'Track $targetText';
   }
 
@@ -712,7 +734,7 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
     GoalForm formNotifier,
   ) async {
     final formState = ref.read(goalFormProvider);
-    
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(

@@ -228,7 +228,7 @@ void main() {
     test('save and getById returns relationship goal with personId', () async {
       // Arrange - First create the referenced person
       await createTestPerson('person_john', 'John');
-      
+
       final relationshipGoal = Goal(
         id: 'goal_relationship',
         title: 'Spend time with John',
@@ -259,7 +259,7 @@ void main() {
       // Arrange - First create the referenced people
       await createTestPerson('person_john', 'John');
       await createTestPerson('person_jane', 'Jane');
-      
+
       final personGoal1 = Goal(
         id: 'goal_1',
         title: 'Spend time with John',
@@ -315,7 +315,7 @@ void main() {
     test('relationship goal with all properties', () async {
       // Arrange - First create the referenced person
       await createTestPerson('person_test', 'Test Person');
-      
+
       final now = DateTime.now();
       final goal = Goal(
         id: 'goal_full',
@@ -385,7 +385,7 @@ void main() {
     test('save and getById returns location goal with locationId', () async {
       // Arrange - First create the referenced location
       await createTestLocation('location_home', 'Home');
-      
+
       final locationGoal = Goal(
         id: 'goal_location',
         title: 'Spend time at Home',
@@ -418,7 +418,7 @@ void main() {
       // Arrange - First create the referenced locations
       await createTestLocation('location_home', 'Home');
       await createTestLocation('location_office', 'Office');
-      
+
       final homeGoal = Goal(
         id: 'goal_1',
         title: 'Time at Home',
