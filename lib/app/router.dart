@@ -34,6 +34,11 @@ class AppRouter {
         final needsOnboarding = ref.read(needsOnboardingProvider);
         final isOnOnboarding = state.matchedLocation == RouteConstants.onboarding;
 
+        // During loading (null), don't redirect - let the current navigation proceed
+        if (needsOnboarding == null) {
+          return null;
+        }
+
         // If needs onboarding and not already there, redirect
         if (needsOnboarding && !isOnOnboarding) {
           return RouteConstants.onboarding;
