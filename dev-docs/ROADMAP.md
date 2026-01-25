@@ -801,7 +801,7 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 - The Settings icon IS present in the Day View app bar (gear icon on right side)
 - The Settings route `/settings` exists and the SettingsScreen is fully functional
 - **Issue Found**: The Week View does not have a Settings icon - users navigating from Week View have no direct access to Settings
-- **UX Concern**: Day View app bar has many icons (11 icons total) which may be overwhelming
+- **UX Concern**: Day View app bar has 10 icons total which may be overwhelming for users
 
 **Proposed Solution**:
 1. Add Settings icon to Week View app bar for consistency
@@ -809,7 +809,7 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 3. Alternative: Keep current design but improve tooltip/accessibility labels
 
 **Relevant Files**:
-- `lib/presentation/screens/day_view/day_view_screen.dart` - Has Settings icon ✅
+- `lib/presentation/screens/day_view/day_view_screen.dart` (lines 23-86) - Has Settings icon ✅
 - `lib/presentation/screens/week_view/week_view_screen.dart` - Missing Settings icon ⚠️
 - `lib/presentation/screens/settings/settings_screen.dart` - Fully implemented ✅
 - `lib/app/router.dart` - Route exists `/settings` ✅
@@ -828,7 +828,7 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 **Analysis**:
 - **User's understanding is correct** - This is a valid conceptual issue
 - The PRD states: "Define goals (hours per week on category/person)" - Goals should track time spent ON something
-- Current implementation asks for a "Goal Title" as the primary field (line 145 in `goal_form_screen.dart`)
+- Current implementation asks for a "Goal Title" as the primary field (`goal_form_screen.dart`, TextField with labelText 'Goal Title *')
 - The Goal entity does have `categoryId` and `personId` fields, but the UX makes the title seem primary
 - Enhanced onboarding also asks for "Activity Goal" names, reinforcing the "goal as item" mental model
 
@@ -872,7 +872,9 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 - `dev-docs/UX_FLOWS.md` - Update Goal form flow
 - `dev-docs/DATA_MODEL.md` - Add conceptual note
 
-**Implementation Estimate**: 2-3 hours for Phase A, additional 2-3 hours for Phase B
+**Implementation Estimate**: 
+- Phase A (UI Reordering): 1-2 hours coding + 1 hour testing
+- Phase B (Conceptual Alignment): 2-3 hours coding + 1 hour testing + documentation updates
 
 ---
 

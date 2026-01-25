@@ -78,8 +78,9 @@ This changelog serves multiple purposes:
 
 | Issue | Priority | Effort | Solution |
 |-------|----------|--------|----------|
-| Settings in Week View | Low | 30 min | Add Settings icon to Week View app bar |
-| Goals Conceptual Model | Medium | 2-3 hrs | Reorder form to prioritize Category/Person selection, make title optional |
+| Settings in Week View | Low | 30 min + testing | Add Settings icon to Week View app bar |
+| Goals Conceptual Model (Phase A) | Medium | 2-3 hrs | Reorder form to prioritize Category/Person selection |
+| Goals Conceptual Model (Phase B) | Medium | 3-4 hrs | Make title optional, update onboarding, update docs |
 
 **No Code Changes Made** - This was an analysis/planning session only.
 
