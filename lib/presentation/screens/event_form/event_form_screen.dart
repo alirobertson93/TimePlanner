@@ -499,8 +499,88 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
             selectedRecurrenceRuleId: formState.recurrenceRuleId,
             onRecurrenceChanged: formNotifier.updateRecurrence,
           ),
+
+          const SizedBox(height: 32),
+
+          // Scheduling Options Section (collapsible)
+          _buildSchedulingOptionsSection(context, formState, formNotifier),
         ],
       ),
+    );
+  }
+
+  /// Builds the Scheduling Options section with constraint toggles
+  Widget _buildSchedulingOptionsSection(
+    BuildContext context,
+    form_providers.EventFormState formState,
+    dynamic formNotifier,
+  ) {
+    return ExpansionTile(
+      initiallyExpanded: false,
+      tilePadding: EdgeInsets.zero,
+      title: Text(
+        'Scheduling Options',
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w500,
+            ),
+      ),
+      subtitle: Text(
+        'Advanced settings for the scheduler',
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Colors.grey[600],
+            ),
+      ),
+      leading: Icon(
+        Icons.tune,
+        color: Theme.of(context).colorScheme.primary,
+      ),
+      children: [
+        const Divider(height: 16),
+        const SizedBox(height: 8),
+        if (formState.timingType == TimingType.fixed) ...[
+          // Fixed event: Allow app to suggest changes
+          SwitchListTile(
+            value: formState.appCanMove,
+            onChanged: (value) => formNotifier.updateAppCanMove(value),
+            title: const Text('Allow app to suggest changes'),
+            subtitle: const Text(
+              'Let the scheduler suggest moving this if there are conflicts',
+            ),
+            secondary: const Icon(Icons.swap_horiz),
+            contentPadding: EdgeInsets.zero,
+          ),
+        ] else ...[
+          // Flexible event: Lock this time toggle
+          // Only show if the event has a scheduled time (editing existing event)
+          if (formState.isEditMode && formState.hasScheduledTime) ...[
+            SwitchListTile(
+              value: formState.isUserLocked,
+              onChanged: (value) => formNotifier.updateIsUserLocked(value),
+              title: const Text('Lock this time'),
+              subtitle: const Text(
+                'Keep this event at its scheduled time',
+              ),
+              secondary: Icon(
+                formState.isUserLocked ? Icons.lock : Icons.lock_open,
+              ),
+              contentPadding: EdgeInsets.zero,
+            ),
+            const SizedBox(height: 8),
+          ],
+          // Flexible event: Allow duration changes
+          SwitchListTile(
+            value: formState.appCanResize,
+            onChanged: (value) => formNotifier.updateAppCanResize(value),
+            title: const Text('Allow duration changes'),
+            subtitle: const Text(
+              'Let the scheduler shorten this if needed',
+            ),
+            secondary: const Icon(Icons.expand),
+            contentPadding: EdgeInsets.zero,
+          ),
+        ],
+        const SizedBox(height: 16),
+      ],
     );
   }
 

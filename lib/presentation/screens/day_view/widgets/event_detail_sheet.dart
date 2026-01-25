@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../domain/entities/event.dart';
 import '../../../providers/event_providers.dart';
 import '../../../providers/error_handler_provider.dart';
+import '../../../providers/repository_providers.dart';
 
 /// Bottom sheet showing event details
 class EventDetailSheet extends ConsumerWidget {
@@ -84,6 +85,16 @@ class EventDetailSheet extends ConsumerWidget {
                       label: 'Type',
                       value: event.isFixed ? 'Fixed' : 'Flexible',
                     ),
+                    // Locked status (for flexible events)
+                    if (!event.isFixed) ...[
+                      const SizedBox(height: 16),
+                      _buildInfoRow(
+                        context,
+                        icon: event.isUserLocked ? Icons.lock : Icons.lock_open,
+                        label: 'Locked',
+                        value: event.isUserLocked ? 'Yes' : 'No',
+                      ),
+                    ],
                     // Recurrence (if applicable)
                     if (event.isRecurring) ...[
                       const SizedBox(height: 16),
@@ -127,27 +138,48 @@ class EventDetailSheet extends ConsumerWidget {
                     ),
                   ],
                 ),
-                child: Row(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () {
-                          context.pushReplacement('/event/${event.id}/edit');
-                        },
-                        icon: const Icon(Icons.edit),
-                        label: const Text('Edit'),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: FilledButton.icon(
-                        onPressed: () => _showDeleteConfirmation(context, ref),
-                        icon: const Icon(Icons.delete),
-                        label: const Text('Delete'),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: Colors.red,
+                    // Lock/Unlock button for flexible events with scheduled time
+                    if (!event.isFixed && event.startTime != null) ...[
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: () => _toggleLock(context, ref),
+                          icon: Icon(
+                            event.isUserLocked ? Icons.lock_open : Icons.lock,
+                          ),
+                          label: Text(
+                            event.isUserLocked ? 'Unlock Event' : 'Lock Event',
+                          ),
                         ),
                       ),
+                      const SizedBox(height: 12),
+                    ],
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () {
+                              context.pushReplacement('/event/${event.id}/edit');
+                            },
+                            icon: const Icon(Icons.edit),
+                            label: const Text('Edit'),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: FilledButton.icon(
+                            onPressed: () => _showDeleteConfirmation(context, ref),
+                            icon: const Icon(Icons.delete),
+                            label: const Text('Delete'),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: Colors.red,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -263,5 +295,47 @@ class EventDetailSheet extends ConsumerWidget {
         }
       }
     });
+  }
+
+  /// Toggles the lock status of the event and saves immediately
+  Future<void> _toggleLock(BuildContext context, WidgetRef ref) async {
+    try {
+      final repository = ref.read(eventRepositoryProvider);
+      final updatedEvent = event.copyWith(
+        isUserLocked: !event.isUserLocked,
+        updatedAt: DateTime.now(),
+      );
+      
+      await repository.save(updatedEvent);
+      
+      // Invalidate the events provider to refresh the list
+      ref.invalidate(eventsForDateProvider);
+      
+      // Close the bottom sheet
+      if (context.mounted) {
+        Navigator.of(context).pop();
+        
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              updatedEvent.isUserLocked 
+                  ? 'Event "${event.name}" locked'
+                  : 'Event "${event.name}" unlocked',
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      // Show error message
+      if (context.mounted) {
+        ref.read(errorHandlerProvider).showErrorSnackBar(
+          context,
+          e,
+          operationContext: 'updating event lock status',
+        );
+      }
+    }
   }
 }

@@ -47,6 +47,10 @@ class EventCard extends ConsumerWidget {
       buffer.write(', category: ${category.name}');
     }
 
+    if (event.isUserLocked) {
+      buffer.write(', locked event');
+    }
+
     if (event.isRecurring) {
       buffer.write(', recurring event');
     }
@@ -91,6 +95,15 @@ class EventCard extends ConsumerWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    if (event.isUserLocked) ...[
+                      const SizedBox(width: 4),
+                      const Icon(
+                        Icons.lock,
+                        size: 14,
+                        color: Colors.white70,
+                        semanticLabel: 'Locked',
+                      ),
+                    ],
                     if (event.isRecurring) ...[
                       const SizedBox(width: 4),
                       const Icon(

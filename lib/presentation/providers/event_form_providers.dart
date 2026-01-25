@@ -25,6 +25,9 @@ class EventFormState {
     this.durationHours = 1,
     this.durationMinutes = 0,
     this.selectedPeopleIds = const [],
+    this.appCanMove = false,
+    this.appCanResize = false,
+    this.isUserLocked = false,
     this.isEditMode = false,
     this.isSaving = false,
     this.error,
@@ -44,9 +47,18 @@ class EventFormState {
   final int durationHours;
   final int durationMinutes;
   final List<String> selectedPeopleIds;
+  /// Can the scheduler move this event? Default: false for fixed, true for flexible
+  final bool appCanMove;
+  /// Can the scheduler resize this event? Default: false for fixed, true for flexible
+  final bool appCanResize;
+  /// Has the user locked this event at its current time? Default: false
+  final bool isUserLocked;
   final bool isEditMode;
   final bool isSaving;
   final String? error;
+  
+  /// Returns true if this event has a scheduled time (startTime is not null)
+  bool get hasScheduledTime => startDate != null && startTime != null;
 
   EventFormState copyWith({
     String? id,
@@ -63,6 +75,9 @@ class EventFormState {
     int? durationHours,
     int? durationMinutes,
     List<String>? selectedPeopleIds,
+    bool? appCanMove,
+    bool? appCanResize,
+    bool? isUserLocked,
     bool? isEditMode,
     bool? isSaving,
     String? error,
@@ -82,6 +97,9 @@ class EventFormState {
       durationHours: durationHours ?? this.durationHours,
       durationMinutes: durationMinutes ?? this.durationMinutes,
       selectedPeopleIds: selectedPeopleIds ?? this.selectedPeopleIds,
+      appCanMove: appCanMove ?? this.appCanMove,
+      appCanResize: appCanResize ?? this.appCanResize,
+      isUserLocked: isUserLocked ?? this.isUserLocked,
       isEditMode: isEditMode ?? this.isEditMode,
       isSaving: isSaving ?? this.isSaving,
       error: error ?? this.error,
@@ -173,6 +191,10 @@ class EventForm extends _$EventForm {
       endDate: now,
       endTime: TimeOfDay(hour: nextHour, minute: 0),
       timingType: TimingType.fixed,
+      // Fixed events: defaults to not allowing app changes
+      appCanMove: false,
+      appCanResize: false,
+      isUserLocked: false,
       isEditMode: false,
     );
   }
@@ -211,6 +233,9 @@ class EventForm extends _$EventForm {
       durationHours: event.duration?.inHours ?? 1,
       durationMinutes: event.duration?.inMinutes.remainder(60) ?? 0,
       selectedPeopleIds: peopleIds,
+      appCanMove: event.appCanMove,
+      appCanResize: event.appCanResize,
+      isUserLocked: event.isUserLocked,
       isEditMode: true,
     );
   }
@@ -229,7 +254,23 @@ class EventForm extends _$EventForm {
   }
 
   void updateTimingType(TimingType type) {
-    state = state.copyWith(timingType: type);
+    // Reset constraints to defaults when timing type changes
+    if (type == TimingType.fixed) {
+      state = state.copyWith(
+        timingType: type,
+        appCanMove: false,
+        appCanResize: false,
+        isUserLocked: false,
+      );
+    } else {
+      // Flexible event defaults
+      state = state.copyWith(
+        timingType: type,
+        appCanMove: true,
+        appCanResize: true,
+        isUserLocked: false,
+      );
+    }
   }
 
   void updateStartDate(DateTime date) {
@@ -266,6 +307,18 @@ class EventForm extends _$EventForm {
 
   void updateRecurrence(String? recurrenceRuleId) {
     state = state.copyWith(recurrenceRuleId: recurrenceRuleId);
+  }
+
+  void updateAppCanMove(bool canMove) {
+    state = state.copyWith(appCanMove: canMove);
+  }
+
+  void updateAppCanResize(bool canResize) {
+    state = state.copyWith(appCanResize: canResize);
+  }
+
+  void updateIsUserLocked(bool isLocked) {
+    state = state.copyWith(isUserLocked: isLocked);
   }
 
   /// Save the event
@@ -323,6 +376,9 @@ class EventForm extends _$EventForm {
         categoryId: state.categoryId,
         locationId: state.locationId,
         recurrenceRuleId: state.recurrenceRuleId,
+        appCanMove: state.appCanMove,
+        appCanResize: state.appCanResize,
+        isUserLocked: state.isUserLocked,
         status: EventStatus.pending,
         createdAt: createdAt,
         updatedAt: now,
