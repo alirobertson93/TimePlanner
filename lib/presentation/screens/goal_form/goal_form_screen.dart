@@ -128,152 +128,26 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
               ),
             ),
 
-          // Basic Information Section
+          // What to Track Section - NOW FIRST (conceptual improvement)
           Text(
-            'Basic Information',
+            'What to Track',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w500,
                 ),
           ),
           const Divider(height: 16),
-          const SizedBox(height: 16),
-
-          // Title field
-          TextField(
-            controller: _titleController,
-            decoration: const InputDecoration(
-              labelText: 'Goal Title *',
-              border: OutlineInputBorder(),
-              hintText: 'e.g., Deep Work Time',
-            ),
-            onChanged: formNotifier.updateTitle,
-          ),
-          const SizedBox(height: 24),
-
-          // Target Section
-          Text(
-            'Target',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-          ),
-          const Divider(height: 16),
-          const SizedBox(height: 16),
-
-          // Target value and metric row
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Target value field
-              Expanded(
-                child: TextField(
-                  controller: _targetValueController,
-                  decoration: const InputDecoration(
-                    labelText: 'Target Value *',
-                    border: OutlineInputBorder(),
-                    hintText: 'e.g., 10',
-                  ),
-                  keyboardType: TextInputType.number,
-                  onChanged: (value) {
-                    final intValue = int.tryParse(value) ?? 0;
-                    formNotifier.updateTargetValue(intValue);
-                  },
-                ),
-              ),
-              const SizedBox(width: 16),
-              // Metric dropdown
-              Expanded(
-                child: DropdownButtonFormField<GoalMetric>(
-                  value: formState.metric,
-                  decoration: const InputDecoration(
-                    labelText: 'Metric',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: GoalMetric.values.map((metric) {
-                    return DropdownMenuItem<GoalMetric>(
-                      value: metric,
-                      child: Text(_getMetricDisplayName(metric)),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      formNotifier.updateMetric(value);
-                    }
-                  },
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // Period dropdown
-          DropdownButtonFormField<GoalPeriod>(
-            value: formState.period,
-            decoration: const InputDecoration(
-              labelText: 'Period',
-              border: OutlineInputBorder(),
-            ),
-            items: GoalPeriod.values.map((period) {
-              return DropdownMenuItem<GoalPeriod>(
-                value: period,
-                child: Text(_getPeriodDisplayName(period)),
-              );
-            }).toList(),
-            onChanged: (value) {
-              if (value != null) {
-                formNotifier.updatePeriod(value);
-              }
-            },
-          ),
-          const SizedBox(height: 8),
-
-          // Goal summary text
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.track_changes,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Track ${formState.targetValue} ${formState.metricDisplayText} ${formState.periodDisplayText}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Goal Target Section
-          Text(
-            'Goal Target',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-          ),
-          const Divider(height: 16),
-          const SizedBox(height: 16),
-
-          // Goal type selector
-          Text(
-            'Track time spent:',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
           const SizedBox(height: 8),
           
+          // Explanatory text
+          Text(
+            'Goals track how much time you spend on a category of activity or with a person.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+          ),
+          const SizedBox(height: 16),
+
+          // Goal type selector (BY CATEGORY or WITH PERSON)
           SegmentedButton<GoalType>(
             segments: const [
               ButtonSegment<GoalType>(
@@ -312,6 +186,7 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
                   decoration: const InputDecoration(
                     labelText: 'Category *',
                     border: OutlineInputBorder(),
+                    helperText: 'Select the category to track time for',
                   ),
                   items: categories.map((category) {
                     return DropdownMenuItem<String>(
@@ -369,6 +244,7 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
                     labelText: 'Person *',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.person),
+                    helperText: 'Select the person to track time with',
                   ),
                   items: people.map((person) {
                     return DropdownMenuItem<String>(
@@ -413,6 +289,153 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
             ),
 
           const SizedBox(height: 24),
+
+          // Time Target Section (was "Target" section)
+          Text(
+            'Time Target',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+          ),
+          const Divider(height: 16),
+          const SizedBox(height: 16),
+
+          // Target value and metric row
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Target value field
+              Expanded(
+                child: TextField(
+                  controller: _targetValueController,
+                  decoration: const InputDecoration(
+                    labelText: 'Hours *',
+                    border: OutlineInputBorder(),
+                    hintText: 'e.g., 10',
+                  ),
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    final intValue = int.tryParse(value) ?? 0;
+                    formNotifier.updateTargetValue(intValue);
+                  },
+                ),
+              ),
+              const SizedBox(width: 16),
+              // Metric dropdown
+              Expanded(
+                child: DropdownButtonFormField<GoalMetric>(
+                  value: formState.metric,
+                  decoration: const InputDecoration(
+                    labelText: 'Metric',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: GoalMetric.values.map((metric) {
+                    return DropdownMenuItem<GoalMetric>(
+                      value: metric,
+                      child: Text(_getMetricDisplayName(metric)),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      formNotifier.updateMetric(value);
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // Period dropdown
+          DropdownButtonFormField<GoalPeriod>(
+            value: formState.period,
+            decoration: const InputDecoration(
+              labelText: 'Period',
+              border: OutlineInputBorder(),
+            ),
+            items: GoalPeriod.values.map((period) {
+              return DropdownMenuItem<GoalPeriod>(
+                value: period,
+                child: Text(_getPeriodDisplayName(period)),
+              );
+            }).toList(),
+            onChanged: (value) {
+              if (value != null) {
+                formNotifier.updatePeriod(value);
+              }
+            },
+          ),
+          const SizedBox(height: 8),
+
+          // Goal summary text (improved to show what's being tracked)
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.track_changes,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    _buildGoalSummaryText(formState),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // Optional Title Section (collapsed by default since auto-generated)
+          ExpansionTile(
+            title: Text(
+              'Custom Title (Optional)',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+            ),
+            subtitle: Text(
+              formState.title.isNotEmpty ? formState.title : 'Auto-generated from selection',
+              style: Theme.of(context).textTheme.bodySmall,
+              overflow: TextOverflow.ellipsis,
+            ),
+            initiallyExpanded: formState.isEditMode && formState.title.isNotEmpty,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: TextField(
+                  controller: _titleController,
+                  decoration: InputDecoration(
+                    labelText: 'Custom Title',
+                    border: const OutlineInputBorder(),
+                    hintText: 'Leave empty to auto-generate',
+                    helperText: 'Override the auto-generated title if desired',
+                    suffixIcon: formState.title.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              _titleController.clear();
+                              formNotifier.updateTitle('');
+                            },
+                          )
+                        : null,
+                  ),
+                  onChanged: formNotifier.updateTitle,
+                ),
+              ),
+            ],
+          ),
 
           // Advanced Options Section (collapsed by default)
           ExpansionTile(
@@ -468,6 +491,19 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
         ],
       ),
     );
+  }
+
+  /// Builds a human-readable summary of the goal
+  String _buildGoalSummaryText(GoalFormState formState) {
+    final targetText = '${formState.targetValue} ${formState.metricDisplayText} ${formState.periodDisplayText}';
+    
+    if (formState.type == GoalType.category && formState.categoryId != null) {
+      return 'Track $targetText on selected category';
+    } else if (formState.type == GoalType.person && formState.personId != null) {
+      return 'Track $targetText with selected person';
+    }
+    
+    return 'Track $targetText';
   }
 
   String _getMetricDisplayName(GoalMetric metric) {

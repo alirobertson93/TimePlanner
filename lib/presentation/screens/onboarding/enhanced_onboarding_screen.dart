@@ -604,11 +604,11 @@ class _EnhancedOnboardingScreenState
         children: [
           Row(
             children: [
-              Icon(Icons.flag, color: theme.colorScheme.primary, size: 32),
+              Icon(Icons.track_changes, color: theme.colorScheme.primary, size: 32),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Activity Goals',
+                  'Activity Time Tracking',
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -618,7 +618,7 @@ class _EnhancedOnboardingScreenState
           ),
           const SizedBox(height: 8),
           Text(
-            'Set goals for activities you want to make time for each week or month, like exercise, reading, hobbies, or learning.',
+            'Track how much time you spend on activities like exercise, reading, hobbies, or learning. Set your time targets below.',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.withOpacity(0.7),
             ),
@@ -655,7 +655,7 @@ class _EnhancedOnboardingScreenState
           OutlinedButton.icon(
             onPressed: () => _showAddActivityGoalDialog(),
             icon: const Icon(Icons.add),
-            label: const Text('Add Activity Goal'),
+            label: const Text('Track New Activity'),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
             ),
@@ -885,8 +885,8 @@ class _EnhancedOnboardingScreenState
             ),
             _buildSummarySection(
               theme,
-              'Activity Goals',
-              Icons.flag,
+              'Activities Tracked',
+              Icons.track_changes,
               _activityGoals.length,
             ),
             _buildSummarySection(
@@ -1263,23 +1263,28 @@ class _EnhancedOnboardingScreenState
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('Add Activity Goal'),
+          title: const Text('Track Time on Activity'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const Text(
+                  'What activity do you want to track time for?',
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+                const SizedBox(height: 8),
                 TextField(
                   controller: nameController,
                   decoration: const InputDecoration(
-                    labelText: 'Activity Name *',
+                    labelText: 'Activity *',
                     hintText: 'e.g., Exercise, Reading, Learning',
                   ),
                   autofocus: true,
                   textCapitalization: TextCapitalization.words,
                 ),
                 const SizedBox(height: 24),
-                const Text('Time Goal'),
+                const Text('How much time per period?'),
                 const SizedBox(height: 8),
                 Row(
                   children: [
