@@ -1,6 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/event.dart';
 import '../../domain/entities/goal.dart';
+import '../../domain/entities/recurrence_rule.dart';
+import '../../domain/services/recurrence_service.dart';
 import '../../scheduler/event_scheduler.dart';
 import '../../scheduler/models/schedule_request.dart';
 import '../../scheduler/models/schedule_result.dart';
@@ -215,12 +217,37 @@ class PlanningWizard extends _$PlanningWizard {
     state = state.copyWith(isGenerating: true, error: null);
 
     try {
-      // Get events from repository
+      // Get events from repository with recurrence expansion
       final eventRepository = ref.read(eventRepositoryProvider);
+      final recurrenceRepository = ref.read(recurrenceRuleRepositoryProvider);
       final windowStart = DateTimeUtils.startOfDay(state.startDate!);
       final windowEnd = DateTimeUtils.endOfDay(state.endDate!);
       
-      final allEvents = await eventRepository.getEventsInRange(windowStart, windowEnd);
+      // Get all events (including recurring events that may have started before this period)
+      final searchStart = windowStart.subtract(const Duration(days: 365)); // Look back 1 year
+      final allEventsFromDb = await eventRepository.getEventsInRange(searchStart, windowEnd);
+      
+      // Get all recurrence rules that might be needed
+      final recurrenceRuleIds = allEventsFromDb
+          .where((e) => e.recurrenceRuleId != null)
+          .map((e) => e.recurrenceRuleId!)
+          .toSet();
+      
+      final recurrenceRulesMap = <String, RecurrenceRule>{};
+      for (final ruleId in recurrenceRuleIds) {
+        final rule = await recurrenceRepository.getById(ruleId);
+        if (rule != null) {
+          recurrenceRulesMap[ruleId] = rule;
+        }
+      }
+      
+      // Expand recurring events for the planning window
+      final allEvents = RecurrenceService.expandEvents(
+        events: allEventsFromDb,
+        rangeStart: windowStart,
+        rangeEnd: windowEnd,
+        getRecurrenceRule: (id) => recurrenceRulesMap[id],
+      );
 
       // Separate fixed and flexible events
       final fixedEvents = allEvents.where((e) => e.isFixed).toList();

@@ -13,6 +13,9 @@ This document is the single source of truth for the project's current status, co
 **Active Work**: Phase 8 - Onboarding ✅ (Enhanced), Performance ✅, Accessibility ✅, UX Improvements ✅, Launch Prep ⏳ 60%
 
 **Recent Update (2026-01-25)**: 
+- ✅ **CRITICAL: Recurring Events Now Working**: Implemented RecurrenceService to expand recurring events. Events from onboarding wizard and Plan Week wizard now populate correctly across all dates according to their recurrence rules.
+- ✅ **Week View Menu Fixed**: Week view now has full app bar actions including Plan Week, Goals, and overflow menu with People, Locations, Notifications, Settings.
+- ✅ **Goal Period Labels Fixed**: Goals now display correct period labels (week/month/quarter/year) instead of incorrectly showing "per day" for weekly goals.
 - ✅ **App Bar Overflow Menu IMPLEMENTED**: Created AdaptiveAppBarActions widget for responsive overflow menu. Navigation icons always visible, lower-priority items (Settings, People, Locations, Notifications) collapse into overflow menu (⋮) on narrow screens.
 - ✅ **Goals Conceptual Model FIXED**: Reordered Goal form to emphasize "What to Track" (Category/Person) as primary selection. Title is now optional with auto-generation. Updated onboarding to use "Activity Time Tracking" language.
 
@@ -791,7 +794,76 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 
 ## Known Issues & Planned Improvements
 
-### Issue 1: App Bar Overflow - Icons Not Visible in Portrait Mode (High Priority)
+### Issue 1: Recurring Events Not Populating (CRITICAL)
+
+**Status**: ✅ **RESOLVED** (2026-01-25) - Implemented RecurrenceService with full expansion logic
+
+**Problem Statement**: After the onboarding wizard, recurring events created in that process don't populate properly. No matter what day they are set to reoccur on, they always just populate once on the present day. Similarly, when using the 'Plan Week' wizard, nothing gets populated.
+
+**Root Cause**: The system created `RecurrenceRule` entities and linked them to events, but never generated recurring event instances. The `getEventsInRange()` method only fetched stored events without expanding recurrence rules.
+
+**Solution Implemented**:
+- ✅ Created `lib/domain/services/recurrence_service.dart`
+  - `expandRecurringEvent()` - Generates individual event instances from recurrence rules
+  - Handles weekly recurrence with `byWeekDay` constraints (0=Sunday, 6=Saturday)
+  - Supports all end conditions: never, after N occurrences, on specific date
+  - Handles events that started before query range (1-year lookback)
+- ✅ Updated `lib/presentation/providers/event_providers.dart`
+  - `eventsForDateProvider` and `eventsForWeekProvider` now expand recurring events
+- ✅ Updated `lib/presentation/providers/planning_wizard_providers.dart`
+  - `generateSchedule()` uses recurrence-aware event fetching
+- ✅ Created comprehensive unit tests in `test/domain/services/recurrence_service_test.dart`
+
+**Files Changed**:
+- `lib/domain/services/recurrence_service.dart` (NEW)
+- `lib/presentation/providers/event_providers.dart`
+- `lib/presentation/providers/planning_wizard_providers.dart`
+- `test/domain/services/recurrence_service_test.dart` (NEW)
+
+---
+
+### Issue 2: Week View Ellipsis Menu Not Visible (Medium Priority)
+
+**Status**: ✅ **RESOLVED** (2026-01-25) - Updated Week View to match Day View structure
+
+**Problem Statement**: In the week view, the ellipsis menu isn't visible. The button to switch back to day view is visible, but the menu bar should be the same as day view - showing date, left arrow, 'go to current day' button, right arrow, then ellipsis menu.
+
+**Solution Implemented**:
+- ✅ Updated `lib/presentation/screens/week_view/week_view_screen.dart`
+  - Added import for `notification_providers.dart`
+  - Updated `_buildAppBarActions` to include all Day View actions
+  - Added Plan Week button (core priority)
+  - Added Goals button (normal priority)
+  - Added People, Locations, Notifications with badge, Settings (low priority - overflow)
+  - All actions now properly appear in ellipsis menu on narrow screens
+
+**Files Changed**:
+- `lib/presentation/screens/week_view/week_view_screen.dart`
+
+---
+
+### Issue 3: Goals Display "per day" Instead of "per week" (Medium Priority)
+
+**Status**: ✅ **RESOLVED** (2026-01-25) - Fixed period label mapping
+
+**Problem Statement**: In the 'Review goals' portion of the plan week wizard, the stated goals are all written per day, e.g. "Time with Girlfriend 10 hours per day" when 10 hours per week was the user entered goal.
+
+**Root Cause**: The `_getPeriodLabel()` method had incorrect mapping. It returned 'day' for case 0, but `GoalPeriod.week` has value 0 (enum index).
+
+**Solution Implemented**:
+- ✅ Fixed `lib/presentation/screens/planning_wizard/steps/goals_review_step.dart`
+  - Corrected `_getPeriodLabel()` to match enum values:
+    - Case 0: 'week' (not 'day')
+    - Case 1: 'month' (not 'week')
+    - Case 2: 'quarter' (not 'month')
+    - Case 3: 'year' (was missing)
+
+**Files Changed**:
+- `lib/presentation/screens/planning_wizard/steps/goals_review_step.dart`
+
+---
+
+### Issue 4: App Bar Overflow - Icons Not Visible in Portrait Mode (High Priority)
 
 **Status**: ✅ **RESOLVED** (2026-01-25) - Implemented AdaptiveAppBarActions widget
 
