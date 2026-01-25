@@ -745,6 +745,8 @@ class SettingsScreen extends ConsumerWidget {
               Navigator.pop(context);
               final service = ref.read(onboardingServiceProvider);
               await service.resetOnboarding();
+              // Invalidate the shared preferences provider to force refresh of onboarding state
+              ref.invalidate(sharedPreferencesProvider);
               if (context.mounted) {
                 context.go('/onboarding');
               }

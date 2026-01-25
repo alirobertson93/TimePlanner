@@ -21,14 +21,16 @@ final onboardingServiceProvider = Provider<OnboardingService>((ref) {
 });
 
 /// Provider to check if onboarding is needed
-final needsOnboardingProvider = Provider<bool>((ref) {
+/// Returns null during loading state to allow router to distinguish between
+/// "loading" (don't redirect) and "confirmed not needed" (can redirect to home)
+final needsOnboardingProvider = Provider<bool?>((ref) {
   final prefsAsync = ref.watch(sharedPreferencesProvider);
   return prefsAsync.when(
     data: (prefs) {
       final service = OnboardingService(prefs);
       return !service.isOnboardingComplete;
     },
-    loading: () => true, // Assume onboarding needed until confirmed complete
+    loading: () => null, // Return null during loading - router should not redirect
     error: (_, __) => false,
   );
 });
