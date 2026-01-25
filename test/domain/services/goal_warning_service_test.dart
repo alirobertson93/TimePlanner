@@ -32,7 +32,7 @@ void main() {
         targetValue: targetValue,
         period: period,
         categoryId: categoryId,
-        debtStrategy: DebtStrategy.carryOver,
+        debtStrategy: DebtStrategy.carryForward,
         isActive: true,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
@@ -61,7 +61,8 @@ void main() {
     }
 
     group('analyzeGoal', () {
-      test('returns unrealistic pace warning when goal requires >8 hours/day', () {
+      test('returns unrealistic pace warning when goal requires >8 hours/day',
+          () {
         final goal = createTestGoal(
           targetValue: 80, // 80 hours for the week
         );
@@ -75,8 +76,9 @@ void main() {
           scheduledEvents: [],
         );
 
-        expect(warnings.any((w) => w.type == GoalWarningType.unrealisticPace), isTrue);
-        
+        expect(warnings.any((w) => w.type == GoalWarningType.unrealisticPace),
+            isTrue);
+
         final paceWarning = warnings.firstWhere(
           (w) => w.type == GoalWarningType.unrealisticPace,
         );
@@ -104,7 +106,9 @@ void main() {
         );
 
         expect(
-          warnings.where((w) => w.type == GoalWarningType.unrealisticPace).isEmpty,
+          warnings
+              .where((w) => w.type == GoalWarningType.unrealisticPace)
+              .isEmpty,
           isTrue,
         );
       });

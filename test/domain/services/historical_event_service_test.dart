@@ -60,12 +60,16 @@ void main() {
           _createEvent(
             name: 'Recent Event',
             startTime: now.subtract(const Duration(days: 1)),
-            endTime: now.subtract(const Duration(days: 1)).add(const Duration(hours: 1)),
+            endTime: now
+                .subtract(const Duration(days: 1))
+                .add(const Duration(hours: 1)),
           ),
           _createEvent(
             name: 'Old Event',
             startTime: now.subtract(const Duration(days: 60)),
-            endTime: now.subtract(const Duration(days: 60)).add(const Duration(hours: 1)),
+            endTime: now
+                .subtract(const Duration(days: 60))
+                .add(const Duration(hours: 1)),
           ),
         ];
 
@@ -78,7 +82,8 @@ void main() {
         );
 
         expect(summary.totalEvents, 1);
-        expect(summary.eventTitlePatterns.length, 0); // Not enough for pattern (need 2)
+        expect(summary.eventTitlePatterns.length,
+            0); // Not enough for pattern (need 2)
       });
     });
 
@@ -90,8 +95,6 @@ void main() {
             id: categoryId,
             name: 'Work',
             colourHex: 'FF0000FF',
-            createdAt: now,
-            updatedAt: now,
           ),
         ];
 
@@ -106,7 +109,9 @@ void main() {
             name: 'Task 2',
             categoryId: categoryId,
             startTime: now.subtract(const Duration(days: 3)),
-            endTime: now.subtract(const Duration(days: 3)).add(const Duration(hours: 3)),
+            endTime: now
+                .subtract(const Duration(days: 3))
+                .add(const Duration(hours: 3)),
           ),
         ];
 
@@ -132,8 +137,6 @@ void main() {
             id: categoryId,
             name: 'Rare',
             colourHex: 'FF0000FF',
-            createdAt: now,
-            updatedAt: now,
           ),
         ];
 
@@ -165,7 +168,6 @@ void main() {
             id: locationId,
             name: 'Office',
             createdAt: now,
-            updatedAt: now,
           ),
         ];
 
@@ -180,7 +182,9 @@ void main() {
             name: 'Meeting 2',
             locationId: locationId,
             startTime: now.subtract(const Duration(days: 2)),
-            endTime: now.subtract(const Duration(days: 2)).add(const Duration(hours: 3)),
+            endTime: now
+                .subtract(const Duration(days: 2))
+                .add(const Duration(hours: 3)),
           ),
         ];
 
@@ -210,12 +214,16 @@ void main() {
           _createEvent(
             name: 'Daily Standup',
             startTime: now.subtract(const Duration(days: 5)),
-            endTime: now.subtract(const Duration(days: 5)).add(const Duration(minutes: 30)),
+            endTime: now
+                .subtract(const Duration(days: 5))
+                .add(const Duration(minutes: 30)),
           ),
           _createEvent(
             name: 'Daily Standup',
             startTime: now.subtract(const Duration(days: 3)),
-            endTime: now.subtract(const Duration(days: 3)).add(const Duration(minutes: 30)),
+            endTime: now
+                .subtract(const Duration(days: 3))
+                .add(const Duration(minutes: 30)),
           ),
         ];
 
@@ -243,12 +251,16 @@ void main() {
           _createEvent(
             name: 'Meeting',
             startTime: now.subtract(const Duration(days: 3)),
-            endTime: now.subtract(const Duration(days: 3)).add(const Duration(hours: 1)),
+            endTime: now
+                .subtract(const Duration(days: 3))
+                .add(const Duration(hours: 1)),
           ),
           _createEvent(
             name: 'meeting',
             startTime: now.subtract(const Duration(days: 1)),
-            endTime: now.subtract(const Duration(days: 1)).add(const Duration(hours: 1)),
+            endTime: now
+                .subtract(const Duration(days: 1))
+                .add(const Duration(hours: 1)),
           ),
         ];
 
@@ -279,7 +291,9 @@ void main() {
             name: 'Cat A Event 2',
             categoryId: 'cat-a',
             startTime: now.subtract(const Duration(days: 3)),
-            endTime: now.subtract(const Duration(days: 3)).add(const Duration(hours: 5)),
+            endTime: now
+                .subtract(const Duration(days: 3))
+                .add(const Duration(hours: 5)),
           ),
           // Low frequency category
           _createEvent(
@@ -292,13 +306,15 @@ void main() {
             name: 'Cat B Event 2',
             categoryId: 'cat-b',
             startTime: now.subtract(const Duration(days: 2)),
-            endTime: now.subtract(const Duration(days: 2)).add(const Duration(hours: 1)),
+            endTime: now
+                .subtract(const Duration(days: 2))
+                .add(const Duration(hours: 1)),
           ),
         ];
 
         final categories = [
-          Category(id: 'cat-a', name: 'High Hours', colourHex: 'FF0000', createdAt: now, updatedAt: now),
-          Category(id: 'cat-b', name: 'Low Hours', colourHex: '0000FF', createdAt: now, updatedAt: now),
+          Category(id: 'cat-a', name: 'High Hours', colourHex: 'FF0000'),
+          Category(id: 'cat-b', name: 'Low Hours', colourHex: '0000FF'),
         ];
 
         final summary = HistoricalEventService.analyze(
@@ -330,22 +346,22 @@ void main() {
             id: catId,
             name: 'Category $i',
             colourHex: 'FF0000',
-            createdAt: now,
-            updatedAt: now,
           ));
-          
+
           // Add 2 events per category
           events.add(_createEvent(
             name: 'Event ${i}a',
             categoryId: catId,
             startTime: oneWeekAgo,
-            endTime: oneWeekAgo.add(const Duration(hours: i + 1)),
+            endTime: oneWeekAgo.add(Duration(hours: i + 1)),
           ));
           events.add(_createEvent(
             name: 'Event ${i}b',
             categoryId: catId,
             startTime: now.subtract(const Duration(days: 3)),
-            endTime: now.subtract(const Duration(days: 3)).add(const Duration(hours: i + 1)),
+            endTime: now
+                .subtract(const Duration(days: 3))
+                .add(Duration(hours: i + 1)),
           ));
         }
 
@@ -412,7 +428,8 @@ void main() {
           categoryId: 'cat-2',
         );
 
-        expect(recentHighActivity.confidence, greaterThan(oldLowActivity.confidence));
+        expect(recentHighActivity.confidence,
+            greaterThan(oldLowActivity.confidence));
       });
     });
 
@@ -430,7 +447,9 @@ void main() {
             name: 'Cat Event 2',
             categoryId: 'cat-1',
             startTime: now.subtract(const Duration(days: 1)),
-            endTime: now.subtract(const Duration(days: 1)).add(const Duration(hours: 2)),
+            endTime: now
+                .subtract(const Duration(days: 1))
+                .add(const Duration(hours: 2)),
           ),
           // Location events
           _createEvent(
@@ -443,7 +462,9 @@ void main() {
             name: 'Loc Event 2',
             locationId: 'loc-1',
             startTime: now.subtract(const Duration(days: 2)),
-            endTime: now.subtract(const Duration(days: 2)).add(const Duration(hours: 1)),
+            endTime: now
+                .subtract(const Duration(days: 2))
+                .add(const Duration(hours: 1)),
           ),
           // Title events
           _createEvent(
@@ -454,15 +475,17 @@ void main() {
           _createEvent(
             name: 'Standup',
             startTime: now.subtract(const Duration(days: 1)),
-            endTime: now.subtract(const Duration(days: 1)).add(const Duration(minutes: 30)),
+            endTime: now
+                .subtract(const Duration(days: 1))
+                .add(const Duration(minutes: 30)),
           ),
         ];
 
         final categories = [
-          Category(id: 'cat-1', name: 'Work', colourHex: 'FF0000', createdAt: now, updatedAt: now),
+          Category(id: 'cat-1', name: 'Work', colourHex: 'FF0000'),
         ];
         final locations = [
-          Location(id: 'loc-1', name: 'Office', createdAt: now, updatedAt: now),
+          Location(id: 'loc-1', name: 'Office', createdAt: now),
         ];
 
         final summary = HistoricalEventService.analyze(
@@ -474,9 +497,10 @@ void main() {
 
         // Should have patterns from multiple types
         expect(summary.allPatterns.length, greaterThanOrEqualTo(2));
-        
+
         // Should be sorted by confidence (descending)
-        final confidences = summary.allPatterns.map((p) => p.confidence).toList();
+        final confidences =
+            summary.allPatterns.map((p) => p.confidence).toList();
         for (var i = 0; i < confidences.length - 1; i++) {
           expect(confidences[i], greaterThanOrEqualTo(confidences[i + 1]));
         }

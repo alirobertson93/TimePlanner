@@ -63,6 +63,7 @@ class GoalRecommendation {
 
   /// Create a Goal entity from this recommendation
   Goal toGoal({required String id}) {
+    final now = DateTime.now();
     return Goal(
       id: id,
       title: title,
@@ -74,10 +75,10 @@ class GoalRecommendation {
       personId: personId,
       locationId: locationId,
       eventTitle: eventTitle,
-      debtStrategy: DebtStrategy.carryOver,
+      debtStrategy: DebtStrategy.carryForward,
       isActive: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
+      createdAt: now,
+      updatedAt: now,
     );
   }
 
@@ -152,7 +153,8 @@ class GoalRecommendationService {
 
       // Calculate hours
       if (event.startTime != null && event.endTime != null) {
-        stats.totalMinutes += event.endTime!.difference(event.startTime!).inMinutes;
+        stats.totalMinutes +=
+            event.endTime!.difference(event.startTime!).inMinutes;
       } else if (event.duration != null) {
         stats.totalMinutes += event.duration!.inMinutes;
       }
@@ -176,8 +178,6 @@ class GoalRecommendationService {
           id: stats.categoryId,
           name: 'Unknown',
           colourHex: 'FF000000',
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
         ),
       );
 
@@ -192,7 +192,8 @@ class GoalRecommendationService {
         suggestedTarget: suggestedTarget,
         suggestedPeriod: GoalPeriod.week,
         suggestedMetric: GoalMetric.hours,
-        reason: 'You spend an average of ${avgHoursPerWeek.toStringAsFixed(1)} hours/week on ${category.name}',
+        reason:
+            'You spend an average of ${avgHoursPerWeek.toStringAsFixed(1)} hours/week on ${category.name}',
         confidence: confidence,
         categoryId: stats.categoryId,
       ));
@@ -222,7 +223,8 @@ class GoalRecommendationService {
 
       // Calculate hours
       if (event.startTime != null && event.endTime != null) {
-        stats.totalMinutes += event.endTime!.difference(event.startTime!).inMinutes;
+        stats.totalMinutes +=
+            event.endTime!.difference(event.startTime!).inMinutes;
       } else if (event.duration != null) {
         stats.totalMinutes += event.duration!.inMinutes;
       }
@@ -246,7 +248,6 @@ class GoalRecommendationService {
           id: stats.locationId,
           name: 'Unknown',
           createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
         ),
       );
 
@@ -261,7 +262,8 @@ class GoalRecommendationService {
         suggestedTarget: suggestedTarget,
         suggestedPeriod: GoalPeriod.week,
         suggestedMetric: GoalMetric.hours,
-        reason: 'You spend an average of ${avgHoursPerWeek.toStringAsFixed(1)} hours/week at ${location.name}',
+        reason:
+            'You spend an average of ${avgHoursPerWeek.toStringAsFixed(1)} hours/week at ${location.name}',
         confidence: confidence,
         locationId: stats.locationId,
       ));
@@ -291,7 +293,8 @@ class GoalRecommendationService {
 
       // Calculate hours
       if (event.startTime != null && event.endTime != null) {
-        stats.totalMinutes += event.endTime!.difference(event.startTime!).inMinutes;
+        stats.totalMinutes +=
+            event.endTime!.difference(event.startTime!).inMinutes;
       } else if (event.duration != null) {
         stats.totalMinutes += event.duration!.inMinutes;
       }
@@ -304,8 +307,9 @@ class GoalRecommendationService {
 
       // Skip if there's already a goal for this event title
       final hasExistingGoal = existingGoals.any(
-        (g) => g.type == GoalType.event && 
-               g.eventTitle?.toLowerCase() == entry.key,
+        (g) =>
+            g.type == GoalType.event &&
+            g.eventTitle?.toLowerCase() == entry.key,
       );
       if (hasExistingGoal) continue;
 
@@ -322,7 +326,8 @@ class GoalRecommendationService {
           suggestedTarget: suggestedTarget,
           suggestedPeriod: GoalPeriod.week,
           suggestedMetric: GoalMetric.hours,
-          reason: 'You have ${stats.eventCount} "${stats.title}" events averaging ${avgHoursPerWeek.toStringAsFixed(1)} hours/week',
+          reason:
+              'You have ${stats.eventCount} "${stats.title}" events averaging ${avgHoursPerWeek.toStringAsFixed(1)} hours/week',
           confidence: confidence,
           eventTitle: stats.title,
         ));
@@ -362,7 +367,7 @@ class GoalRecommendationService {
 
     // Base confidence on event count
     final eventFactor = (relevantEvents / 10).clamp(0.0, 1.0);
-    
+
     // Adjust by proportion of relevant events
     final proportionFactor = relevantEvents / totalEvents;
 

@@ -21,8 +21,6 @@ void main() {
         id: id,
         name: name,
         colourHex: 'FF0000FF',
-        createdAt: now,
-        updatedAt: now,
       );
     }
 
@@ -31,7 +29,6 @@ void main() {
         id: id,
         name: name,
         createdAt: now,
-        updatedAt: now,
       );
     }
 
@@ -75,7 +72,7 @@ void main() {
         categoryId: categoryId,
         locationId: locationId,
         eventTitle: eventTitle,
-        debtStrategy: DebtStrategy.carryOver,
+        debtStrategy: DebtStrategy.carryForward,
         isActive: true,
         createdAt: now,
         updatedAt: now,
@@ -97,7 +94,7 @@ void main() {
 
       test('recommends category-based goals for frequent categories', () {
         final category = createCategory(id: 'cat_exercise', name: 'Exercise');
-        
+
         // Create multiple events in the same category over multiple weeks
         final events = List.generate(
           10,
@@ -120,17 +117,15 @@ void main() {
 
         // Should recommend a goal for the Exercise category
         expect(
-          recommendations.any((r) => 
-            r.type == GoalType.category && 
-            r.categoryId == 'cat_exercise'
-          ),
+          recommendations.any((r) =>
+              r.type == GoalType.category && r.categoryId == 'cat_exercise'),
           isTrue,
         );
       });
 
       test('recommends location-based goals for frequent locations', () {
         final location = createLocation(id: 'loc_gym', name: 'Gym');
-        
+
         // Create multiple events at the same location
         final events = List.generate(
           10,
@@ -153,10 +148,8 @@ void main() {
 
         // Should recommend a goal for the Gym location
         expect(
-          recommendations.any((r) => 
-            r.type == GoalType.location && 
-            r.locationId == 'loc_gym'
-          ),
+          recommendations.any(
+              (r) => r.type == GoalType.location && r.locationId == 'loc_gym'),
           isTrue,
         );
       });
@@ -183,17 +176,15 @@ void main() {
 
         // Should recommend a goal for "Guitar Practice" events
         expect(
-          recommendations.any((r) => 
-            r.type == GoalType.event && 
-            r.eventTitle == 'Guitar Practice'
-          ),
+          recommendations.any((r) =>
+              r.type == GoalType.event && r.eventTitle == 'Guitar Practice'),
           isTrue,
         );
       });
 
       test('does not recommend goals that already exist', () {
         final category = createCategory(id: 'cat_exercise', name: 'Exercise');
-        
+
         final events = List.generate(
           10,
           (i) => createEvent(
@@ -221,10 +212,8 @@ void main() {
 
         // Should NOT recommend a goal for Exercise category since one exists
         expect(
-          recommendations.any((r) => 
-            r.type == GoalType.category && 
-            r.categoryId == 'cat_exercise'
-          ),
+          recommendations.any((r) =>
+              r.type == GoalType.category && r.categoryId == 'cat_exercise'),
           isFalse,
         );
       });
@@ -268,7 +257,7 @@ void main() {
         ];
 
         final events = <Event>[];
-        
+
         // High frequency category - 20 events
         for (var i = 0; i < 20; i++) {
           events.add(createEvent(
@@ -278,7 +267,7 @@ void main() {
             categoryId: 'cat_high',
           ));
         }
-        
+
         // Low frequency category - 3 events (minimum)
         for (var i = 0; i < 3; i++) {
           events.add(createEvent(
@@ -306,7 +295,7 @@ void main() {
             (r) => r.categoryId == 'cat_low',
             orElse: () => highFreqRec,
           );
-          
+
           if (lowFreqRec.categoryId != highFreqRec.categoryId) {
             expect(highFreqRec.confidence, greaterThan(lowFreqRec.confidence));
           }

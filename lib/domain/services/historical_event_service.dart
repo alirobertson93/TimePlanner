@@ -74,8 +74,7 @@ class HistoricalActivityPattern {
     final eventFactor = (eventCount / 10.0).clamp(0.0, 1.0);
 
     // Recency factor (recent events are more relevant)
-    final daysSinceLastEvent =
-        DateTime.now().difference(lastSeen).inDays.abs();
+    final daysSinceLastEvent = DateTime.now().difference(lastSeen).inDays.abs();
     final recencyFactor = (1.0 - daysSinceLastEvent / 60.0).clamp(0.0, 1.0);
 
     // Regularity factor (data spread over time)
@@ -293,8 +292,6 @@ class HistoricalEventService {
           id: entry.key,
           name: 'Unknown',
           colourHex: 'FF000000',
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
         ),
       );
 
@@ -357,7 +354,6 @@ class HistoricalEventService {
           id: entry.key,
           name: 'Unknown',
           createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
         ),
       );
 

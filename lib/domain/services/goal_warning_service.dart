@@ -55,16 +55,16 @@ class GoalWarning {
 enum GoalWarningType {
   /// Goal requires too many hours per day to be achievable
   unrealisticPace,
-  
+
   /// Goal is significantly behind schedule
   significantlyBehind,
-  
+
   /// No events are scheduled that contribute to this goal
   noScheduledEvents,
-  
+
   /// Not enough time remaining in the period to catch up
   insufficientTimeRemaining,
-  
+
   /// Goal has conflicting constraints
   conflictingGoals,
 }
@@ -73,10 +73,10 @@ enum GoalWarningType {
 enum GoalWarningSeverity {
   /// Informational warning - goal is at risk but achievable
   info,
-  
+
   /// Warning - goal is unlikely to be achieved without changes
   warning,
-  
+
   /// Critical - goal is almost certainly unachievable
   critical,
 }
@@ -85,7 +85,7 @@ enum GoalWarningSeverity {
 class GoalWarningService {
   /// Maximum reasonable hours per day for any goal
   static const double maxReasonableHoursPerDay = 8.0;
-  
+
   /// Threshold for "significantly behind" (% of expected progress)
   static const double significantlyBehindThreshold = 0.5;
 
@@ -165,8 +165,8 @@ class GoalWarningService {
         type: GoalWarningType.unrealisticPace,
         message: 'Requires ${requiredHoursPerDay.toStringAsFixed(1)} hours/day '
             'to achieve (${remaining.toStringAsFixed(1)} hours in $daysRemaining days)',
-        severity: requiredHoursPerDay > 12 
-            ? GoalWarningSeverity.critical 
+        severity: requiredHoursPerDay > 12
+            ? GoalWarningSeverity.critical
             : GoalWarningSeverity.warning,
         suggestedAction: 'Consider reducing the target or extending the period',
         currentValue: currentProgress,
@@ -178,7 +178,8 @@ class GoalWarningService {
         goalId: goal.id,
         goalTitle: goal.title,
         type: GoalWarningType.unrealisticPace,
-        message: 'Requires ${requiredHoursPerDay.toStringAsFixed(1)} hours/day - '
+        message:
+            'Requires ${requiredHoursPerDay.toStringAsFixed(1)} hours/day - '
             'this is a demanding pace',
         severity: GoalWarningSeverity.info,
         suggestedAction: 'Consider scheduling more time for this activity',
@@ -202,12 +203,13 @@ class GoalWarningService {
     // Calculate expected progress based on time elapsed
     final totalDuration = periodEnd.difference(periodStart);
     final elapsedDuration = now.difference(periodStart);
-    
+
     if (totalDuration.inMinutes <= 0 || elapsedDuration.inMinutes <= 0) {
       return null;
     }
 
-    final expectedProgressPercent = elapsedDuration.inMinutes / totalDuration.inMinutes;
+    final expectedProgressPercent =
+        elapsedDuration.inMinutes / totalDuration.inMinutes;
     final expectedProgress = goal.targetValue * expectedProgressPercent;
     final actualProgressPercent = currentProgress / goal.targetValue;
 
@@ -215,18 +217,21 @@ class GoalWarningService {
     if (expectedProgressPercent < 0.25) return null;
 
     // Check if actual progress is less than threshold of expected
-    if (actualProgressPercent < expectedProgressPercent * significantlyBehindThreshold) {
-      final behindPercent = ((expectedProgressPercent - actualProgressPercent) * 100).round();
-      
+    if (actualProgressPercent <
+        expectedProgressPercent * significantlyBehindThreshold) {
+      final behindPercent =
+          ((expectedProgressPercent - actualProgressPercent) * 100).round();
+
       return GoalWarning(
         goalId: goal.id,
         goalTitle: goal.title,
         type: GoalWarningType.significantlyBehind,
         message: 'Goal is $behindPercent% behind expected progress',
-        severity: behindPercent > 50 
-            ? GoalWarningSeverity.critical 
+        severity: behindPercent > 50
+            ? GoalWarningSeverity.critical
             : GoalWarningSeverity.warning,
-        suggestedAction: 'Schedule more time for this goal or adjust the target',
+        suggestedAction:
+            'Schedule more time for this goal or adjust the target',
         currentValue: currentProgress,
         targetValue: goal.targetValue,
       );
@@ -269,6 +274,9 @@ class GoalWarningService {
             hasContributingEvents = true;
           }
           break;
+        case GoalType.custom:
+          // Custom goals don't have automatic event matching
+          return null;
       }
 
       if (hasContributingEvents) break;
@@ -317,9 +325,14 @@ class GoalWarningService {
   static GoalWarningsSummary summarizeWarnings(List<GoalWarning> warnings) {
     return GoalWarningsSummary(
       total: warnings.length,
-      critical: warnings.where((w) => w.severity == GoalWarningSeverity.critical).length,
-      warnings: warnings.where((w) => w.severity == GoalWarningSeverity.warning).length,
-      info: warnings.where((w) => w.severity == GoalWarningSeverity.info).length,
+      critical: warnings
+          .where((w) => w.severity == GoalWarningSeverity.critical)
+          .length,
+      warnings: warnings
+          .where((w) => w.severity == GoalWarningSeverity.warning)
+          .length,
+      info:
+          warnings.where((w) => w.severity == GoalWarningSeverity.info).length,
     );
   }
 }
