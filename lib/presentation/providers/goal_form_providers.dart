@@ -395,27 +395,6 @@ class GoalForm extends _$GoalForm {
 
     return '${state.targetValue} ${state.metricDisplayText} ${state.periodDisplayText} $typeText $targetName';
   }
-        final category = categories.firstWhere(
-          (c) => c.id == state.categoryId,
-          orElse: () => categories.first,
-        );
-        targetName = category.name;
-      }
-    } else if (state.type == GoalType.person && state.personId != null) {
-      // Get person name
-      final personRepo = ref.read(personRepositoryProvider);
-      final person = await personRepo.getById(state.personId!);
-      if (person != null) {
-        targetName = 'Time with ${person.name}';
-      }
-    }
-    
-    if (targetName.isEmpty) {
-      return '${state.targetValue} ${state.metricDisplayText} ${state.periodDisplayText}';
-    }
-    
-    return '${state.targetValue} ${state.metricDisplayText} ${state.periodDisplayText} on $targetName';
-  }
 
   /// Delete the goal
   Future<bool> delete() async {

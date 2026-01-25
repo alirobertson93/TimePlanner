@@ -5,6 +5,7 @@ import '../../providers/goal_form_providers.dart';
 import '../../providers/repository_providers.dart';
 import '../../providers/goal_providers.dart';
 import '../../providers/person_providers.dart';
+import '../../providers/location_providers.dart';
 import '../../../domain/enums/goal_type.dart';
 import '../../../domain/enums/goal_metric.dart';
 import '../../../domain/enums/goal_period.dart';
@@ -140,32 +141,15 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
           
           // Explanatory text
           Text(
-            'Goals track how much time you spend on a category of activity or with a person.',
+            'Goals track how much time you spend on a category, with a person, at a location, or on a specific event.',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
           ),
           const SizedBox(height: 16),
 
-          // Goal type selector (BY CATEGORY or WITH PERSON)
-          SegmentedButton<GoalType>(
-            segments: const [
-              ButtonSegment<GoalType>(
-                value: GoalType.category,
-                label: Text('By Category'),
-                icon: Icon(Icons.category),
-              ),
-              ButtonSegment<GoalType>(
-                value: GoalType.person,
-                label: Text('With Person'),
-                icon: Icon(Icons.person),
-              ),
-            ],
-            selected: {formState.type},
-            onSelectionChanged: (Set<GoalType> selected) {
-              formNotifier.updateType(selected.first);
-            },
-          ),
+          // Goal type selector - use Wrap for better layout with 4 options
+          _buildGoalTypeSelector(context, formState, formNotifier),
           const SizedBox(height: 16),
 
           // Category dropdown (shown when type is category)
@@ -287,6 +271,14 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
                 ),
               ),
             ),
+
+          // Location dropdown (shown when type is location)
+          if (formState.type == GoalType.location)
+            _buildLocationPicker(context, ref, formState, formNotifier),
+
+          // Event title text field (shown when type is event)
+          if (formState.type == GoalType.event)
+            _buildEventTitleField(context, formState, formNotifier),
 
           const SizedBox(height: 24),
 
@@ -493,6 +485,176 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
     );
   }
 
+  /// Builds the goal type selector with 4 options
+  Widget _buildGoalTypeSelector(BuildContext context, GoalFormState formState, GoalForm formNotifier) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        _buildGoalTypeChip(
+          context: context,
+          label: 'Category',
+          icon: Icons.category,
+          type: GoalType.category,
+          isSelected: formState.type == GoalType.category,
+          onSelected: () => formNotifier.updateType(GoalType.category),
+        ),
+        _buildGoalTypeChip(
+          context: context,
+          label: 'Person',
+          icon: Icons.person,
+          type: GoalType.person,
+          isSelected: formState.type == GoalType.person,
+          onSelected: () => formNotifier.updateType(GoalType.person),
+        ),
+        _buildGoalTypeChip(
+          context: context,
+          label: 'Location',
+          icon: Icons.location_on,
+          type: GoalType.location,
+          isSelected: formState.type == GoalType.location,
+          onSelected: () => formNotifier.updateType(GoalType.location),
+        ),
+        _buildGoalTypeChip(
+          context: context,
+          label: 'Event',
+          icon: Icons.event,
+          type: GoalType.event,
+          isSelected: formState.type == GoalType.event,
+          onSelected: () => formNotifier.updateType(GoalType.event),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGoalTypeChip({
+    required BuildContext context,
+    required String label,
+    required IconData icon,
+    required GoalType type,
+    required bool isSelected,
+    required VoidCallback onSelected,
+  }) {
+    return FilterChip(
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 18,
+            color: isSelected
+                ? Theme.of(context).colorScheme.onSecondaryContainer
+                : Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 6),
+          Text(label),
+        ],
+      ),
+      selected: isSelected,
+      onSelected: (_) => onSelected(),
+    );
+  }
+
+  /// Builds the location picker dropdown
+  Widget _buildLocationPicker(
+    BuildContext context,
+    WidgetRef ref,
+    GoalFormState formState,
+    GoalForm formNotifier,
+  ) {
+    final locationsAsync = ref.watch(allLocationsProvider);
+    
+    return locationsAsync.when(
+      data: (locations) {
+        if (locations.isEmpty) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.orange.shade50,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.orange.shade200),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.info_outline, color: Colors.orange.shade700),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'No locations added yet. Add locations in the Locations screen first.',
+                    style: TextStyle(color: Colors.orange.shade700),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        return DropdownButtonFormField<String>(
+          value: formState.locationId,
+          decoration: const InputDecoration(
+            labelText: 'Location *',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.location_on),
+            helperText: 'Select the location to track time at',
+          ),
+          items: locations.map((location) {
+            return DropdownMenuItem<String>(
+              value: location.id,
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.location_on,
+                    size: 20,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(location.name),
+                ],
+              ),
+            );
+          }).toList(),
+          onChanged: formNotifier.updateLocation,
+        );
+      },
+      loading: () => const SizedBox(
+        height: 56,
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (error, _) => Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.red.shade50,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          'Error loading locations: $error',
+          style: TextStyle(color: Colors.red.shade700),
+        ),
+      ),
+    );
+  }
+
+  /// Builds the event title text field
+  Widget _buildEventTitleField(
+    BuildContext context,
+    GoalFormState formState,
+    GoalForm formNotifier,
+  ) {
+    return TextField(
+      decoration: const InputDecoration(
+        labelText: 'Event Name *',
+        border: OutlineInputBorder(),
+        prefixIcon: Icon(Icons.event),
+        helperText: 'Enter the exact name of the event to track (case-insensitive)',
+        hintText: 'e.g., Guitar Practice, Team Meeting',
+      ),
+      controller: TextEditingController(text: formState.eventTitle ?? '')
+        ..selection = TextSelection.fromPosition(
+          TextPosition(offset: formState.eventTitle?.length ?? 0),
+        ),
+      onChanged: formNotifier.updateEventTitle,
+    );
+  }
+
   /// Builds a human-readable summary of the goal
   String _buildGoalSummaryText(GoalFormState formState) {
     final targetText = '${formState.targetValue} ${formState.metricDisplayText} ${formState.periodDisplayText}';
@@ -501,6 +663,10 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
       return 'Track $targetText on selected category';
     } else if (formState.type == GoalType.person && formState.personId != null) {
       return 'Track $targetText with selected person';
+    } else if (formState.type == GoalType.location && formState.locationId != null) {
+      return 'Track $targetText at selected location';
+    } else if (formState.type == GoalType.event && formState.eventTitle != null && formState.eventTitle!.isNotEmpty) {
+      return 'Track $targetText on "${formState.eventTitle}"';
     }
     
     return 'Track $targetText';

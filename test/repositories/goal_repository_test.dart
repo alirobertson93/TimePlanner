@@ -2,7 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:drift/native.dart';
 import 'package:time_planner/data/database/app_database.dart';
 import 'package:time_planner/data/repositories/goal_repository.dart';
+import 'package:time_planner/data/repositories/person_repository.dart';
+import 'package:time_planner/data/repositories/location_repository.dart';
 import 'package:time_planner/domain/entities/goal.dart';
+import 'package:time_planner/domain/entities/person.dart';
+import 'package:time_planner/domain/entities/location.dart' as domain;
 import 'package:time_planner/domain/enums/goal_type.dart';
 import 'package:time_planner/domain/enums/goal_metric.dart';
 import 'package:time_planner/domain/enums/goal_period.dart';
@@ -11,16 +15,38 @@ import 'package:time_planner/domain/enums/debt_strategy.dart';
 void main() {
   late AppDatabase database;
   late GoalRepository repository;
+  late PersonRepository personRepository;
+  late LocationRepository locationRepository;
 
   setUp(() {
     // Create in-memory database for testing
     database = AppDatabase.forTesting(NativeDatabase.memory());
     repository = GoalRepository(database);
+    personRepository = PersonRepository(database);
+    locationRepository = LocationRepository(database);
   });
 
   tearDown(() async {
     await database.close();
   });
+
+  // Helper to create a test person
+  Future<void> createTestPerson(String id, String name) async {
+    await personRepository.save(Person(
+      id: id,
+      name: name,
+      createdAt: DateTime.now(),
+    ));
+  }
+
+  // Helper to create a test location
+  Future<void> createTestLocation(String id, String name) async {
+    await locationRepository.save(domain.Location(
+      id: id,
+      name: name,
+      createdAt: DateTime.now(),
+    ));
+  }
 
   group('GoalRepository', () {
     test('save and getById returns the saved goal', () async {
@@ -200,7 +226,9 @@ void main() {
     });
 
     test('save and getById returns relationship goal with personId', () async {
-      // Arrange
+      // Arrange - First create the referenced person
+      await createTestPerson('person_john', 'John');
+      
       final relationshipGoal = Goal(
         id: 'goal_relationship',
         title: 'Spend time with John',
@@ -228,7 +256,10 @@ void main() {
     });
 
     test('getByPerson returns goals for specific person', () async {
-      // Arrange
+      // Arrange - First create the referenced people
+      await createTestPerson('person_john', 'John');
+      await createTestPerson('person_jane', 'Jane');
+      
       final personGoal1 = Goal(
         id: 'goal_1',
         title: 'Spend time with John',
@@ -282,7 +313,9 @@ void main() {
     });
 
     test('relationship goal with all properties', () async {
-      // Arrange
+      // Arrange - First create the referenced person
+      await createTestPerson('person_test', 'Test Person');
+      
       final now = DateTime.now();
       final goal = Goal(
         id: 'goal_full',
@@ -350,7 +383,9 @@ void main() {
     });
 
     test('save and getById returns location goal with locationId', () async {
-      // Arrange
+      // Arrange - First create the referenced location
+      await createTestLocation('location_home', 'Home');
+      
       final locationGoal = Goal(
         id: 'goal_location',
         title: 'Spend time at Home',
@@ -380,7 +415,10 @@ void main() {
     });
 
     test('getByLocation returns goals for specific location', () async {
-      // Arrange
+      // Arrange - First create the referenced locations
+      await createTestLocation('location_home', 'Home');
+      await createTestLocation('location_office', 'Office');
+      
       final homeGoal = Goal(
         id: 'goal_1',
         title: 'Time at Home',
