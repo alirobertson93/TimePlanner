@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'package:drift/drift.dart';
 import '../../domain/entities/event.dart' as domain;
 import '../../domain/entities/category.dart' as domain;
+import '../../domain/entities/scheduling_constraint.dart';
 import '../../domain/enums/event_status.dart';
 import '../../domain/enums/timing_type.dart';
 import '../database/app_database.dart';
@@ -85,6 +87,17 @@ class EventRepository implements IEventRepository {
 
   /// Maps a database event to a domain event entity
   domain.Event _mapToEntity(Event dbEvent) {
+    // Parse scheduling constraints from JSON if present
+    SchedulingConstraint? schedulingConstraint;
+    if (dbEvent.schedulingConstraintsJson != null) {
+      try {
+        final json = jsonDecode(dbEvent.schedulingConstraintsJson!) as Map<String, dynamic>;
+        schedulingConstraint = SchedulingConstraint.fromJson(json);
+      } catch (_) {
+        // If parsing fails, leave constraints as null
+      }
+    }
+
     return domain.Event(
       id: dbEvent.id,
       name: dbEvent.name,
@@ -98,6 +111,7 @@ class EventRepository implements IEventRepository {
       categoryId: dbEvent.categoryId,
       locationId: dbEvent.locationId,
       recurrenceRuleId: dbEvent.recurrenceRuleId,
+      schedulingConstraint: schedulingConstraint,
       appCanMove: dbEvent.appCanMove,
       appCanResize: dbEvent.appCanResize,
       isUserLocked: dbEvent.isUserLocked,
@@ -109,6 +123,12 @@ class EventRepository implements IEventRepository {
 
   /// Maps a domain event entity to a database companion
   EventsCompanion _mapToDbModel(domain.Event event) {
+    // Serialize scheduling constraints to JSON if present
+    String? constraintsJson;
+    if (event.schedulingConstraint != null) {
+      constraintsJson = jsonEncode(event.schedulingConstraint!.toJson());
+    }
+
     return EventsCompanion(
       id: Value(event.id),
       name: Value(event.name),
@@ -120,6 +140,7 @@ class EventRepository implements IEventRepository {
       categoryId: Value(event.categoryId),
       locationId: Value(event.locationId),
       recurrenceRuleId: Value(event.recurrenceRuleId),
+      schedulingConstraintsJson: Value(constraintsJson),
       appCanMove: Value(event.appCanMove),
       appCanResize: Value(event.appCanResize),
       isUserLocked: Value(event.isUserLocked),

@@ -117,6 +117,21 @@ class SettingsScreen extends ConsumerWidget {
 
           const Divider(),
 
+          // Planning Wizard Section
+          _buildSectionHeader(context, 'Planning Wizard'),
+          _buildSwitchTile(
+            context: context,
+            icon: Icons.auto_awesome,
+            title: 'Auto-Select Suggestions',
+            subtitle: 'Automatically use the first suggested event for goals',
+            value: settings.wizardAutoSuggest,
+            onChanged: (value) {
+              settingsNotifier.setWizardAutoSuggest(value);
+            },
+          ),
+
+          const Divider(),
+
           // Appearance Section
           _buildSectionHeader(context, 'Appearance'),
           _buildSettingsTile(

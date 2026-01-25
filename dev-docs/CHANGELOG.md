@@ -33,6 +33,87 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-25 (Evening) - Scheduling Constraints & Settings
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Analyze goals system implementation, add scheduling constraints for events, and add auto-suggest setting for Planning Wizard.
+
+**Work Completed**:
+
+**Analysis & Verification** ✅ **COMPLETE**
+
+- ✅ Verified Phase 9A Goal Form UI is fully implemented (all 4 goal types working)
+- ✅ Confirmed location picker, person picker, and event title field all present
+- ✅ Goal form correctly shows/hides fields based on goal type selection
+
+**Scheduling Constraints (Phase 9C)** ✅ **COMPLETE**
+
+- ✅ Created `SchedulingPreferenceStrength` enum (weak, strong, locked)
+- ✅ Created `SchedulingConstraint` entity with:
+  - Not before time (minutes from midnight)
+  - Not after time (minutes from midnight)
+  - Time constraint strength
+  - JSON serialization/deserialization
+- ✅ Updated Event entity with `schedulingConstraint` field
+- ✅ Updated Events database table with `schedulingConstraintsJson` column
+- ✅ Updated EventRepository to serialize/deserialize constraints
+- ✅ Database migration v12 → v13
+
+**Event Form Provider Updates** ✅ **COMPLETE**
+
+- ✅ Added constraint fields to EventFormState (hasTimeConstraint, notBeforeTime, notAfterTime, timeConstraintStrength)
+- ✅ Added buildSchedulingConstraint() method to create constraint from form state
+- ✅ Added constraint update methods (updateHasTimeConstraint, updateNotBeforeTime, updateNotAfterTime, updateTimeConstraintStrength)
+- ✅ Updated initializeForEdit to load existing constraints
+- ✅ Updated save() to include schedulingConstraint in event
+
+**Event Form UI Updates** ✅ **COMPLETE**
+
+- ✅ Added Time Restrictions section in Scheduling Options (for flexible events)
+- ✅ "Not Before" time picker with clear button
+- ✅ "Not After" time picker with clear button
+- ✅ Constraint strength dropdown (Weak/Strong/Locked) with icons
+- ✅ Help text explaining each strength level
+
+**Settings Updates** ✅ **COMPLETE**
+
+- ✅ Added `wizardAutoSuggest` setting key and default
+- ✅ Added to AppSettings class with copyWith
+- ✅ Added setter method `setWizardAutoSuggest`
+- ✅ Added "Planning Wizard" section to Settings screen
+- ✅ "Auto-Select Suggestions" toggle with description
+
+**Documentation Updates** ✅ **COMPLETE**
+
+- ✅ Updated ROADMAP.md Phase 9 status (Phase A complete, Phase C in progress)
+- ✅ Updated Recent Updates section with today's changes
+- ✅ Added detailed Phase 9C work items
+
+**Files Created**: 2
+- `lib/domain/enums/scheduling_preference_strength.dart`
+- `lib/domain/entities/scheduling_constraint.dart`
+
+**Files Modified**: 8
+- `lib/domain/entities/event.dart`
+- `lib/data/database/tables/events.dart`
+- `lib/data/database/app_database.dart`
+- `lib/data/repositories/event_repository.dart`
+- `lib/presentation/providers/event_form_providers.dart`
+- `lib/presentation/providers/settings_providers.dart`
+- `lib/presentation/screens/event_form/event_form_screen.dart`
+- `lib/presentation/screens/settings/settings_screen.dart`
+- `dev-docs/ROADMAP.md`
+- `dev-docs/CHANGELOG.md`
+
+**Technical Notes**:
+- Schema version is now 13
+- Constraints stored as JSON in events table for flexibility
+- Time constraints only shown for flexible events (fixed events have exact times)
+- Constraint integration with scheduler pending (Phase 9C remaining work)
+
+---
+
 ### Session: 2026-01-25 (PM) - Phase 9A: Enhanced Goals System Foundation
 
 **Author**: AI Assistant (GitHub Copilot)

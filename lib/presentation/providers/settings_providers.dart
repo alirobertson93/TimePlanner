@@ -14,6 +14,7 @@ class SettingsKeys {
   static const String defaultReminderMinutes = 'default_reminder_minutes';
   static const String goalAlertsEnabled = 'goal_alerts_enabled';
   static const String themeMode = 'theme_mode';
+  static const String wizardAutoSuggest = 'wizard_auto_suggest';
 }
 
 /// Default values for settings
@@ -29,6 +30,7 @@ class SettingsDefaults {
   static const int defaultReminderMinutes = 15;
   static const bool goalAlertsEnabled = true;
   static const String themeMode = 'system'; // 'system', 'light', 'dark'
+  static const bool wizardAutoSuggest = false; // When true, auto-take first suggestion in Plan Week wizard
 }
 
 /// Application settings state
@@ -44,6 +46,7 @@ class AppSettings {
   final int defaultReminderMinutes;
   final bool goalAlertsEnabled;
   final String themeMode;
+  final bool wizardAutoSuggest;
 
   const AppSettings({
     this.timeSlotDuration = SettingsDefaults.timeSlotDuration,
@@ -57,6 +60,7 @@ class AppSettings {
     this.defaultReminderMinutes = SettingsDefaults.defaultReminderMinutes,
     this.goalAlertsEnabled = SettingsDefaults.goalAlertsEnabled,
     this.themeMode = SettingsDefaults.themeMode,
+    this.wizardAutoSuggest = SettingsDefaults.wizardAutoSuggest,
   });
 
   AppSettings copyWith({
@@ -71,6 +75,7 @@ class AppSettings {
     int? defaultReminderMinutes,
     bool? goalAlertsEnabled,
     String? themeMode,
+    bool? wizardAutoSuggest,
   }) {
     return AppSettings(
       timeSlotDuration: timeSlotDuration ?? this.timeSlotDuration,
@@ -84,6 +89,7 @@ class AppSettings {
       defaultReminderMinutes: defaultReminderMinutes ?? this.defaultReminderMinutes,
       goalAlertsEnabled: goalAlertsEnabled ?? this.goalAlertsEnabled,
       themeMode: themeMode ?? this.themeMode,
+      wizardAutoSuggest: wizardAutoSuggest ?? this.wizardAutoSuggest,
     );
   }
 
@@ -184,6 +190,7 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
       defaultReminderMinutes: _prefs!.getInt(SettingsKeys.defaultReminderMinutes) ?? SettingsDefaults.defaultReminderMinutes,
       goalAlertsEnabled: _prefs!.getBool(SettingsKeys.goalAlertsEnabled) ?? SettingsDefaults.goalAlertsEnabled,
       themeMode: _prefs!.getString(SettingsKeys.themeMode) ?? SettingsDefaults.themeMode,
+      wizardAutoSuggest: _prefs!.getBool(SettingsKeys.wizardAutoSuggest) ?? SettingsDefaults.wizardAutoSuggest,
     );
   }
 
@@ -236,6 +243,11 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
   Future<void> setThemeMode(String mode) async {
     state = state.copyWith(themeMode: mode);
     await _prefs?.setString(SettingsKeys.themeMode, mode);
+  }
+
+  Future<void> setWizardAutoSuggest(bool value) async {
+    state = state.copyWith(wizardAutoSuggest: value);
+    await _prefs?.setBool(SettingsKeys.wizardAutoSuggest, value);
   }
 }
 

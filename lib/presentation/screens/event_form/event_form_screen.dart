@@ -10,6 +10,8 @@ import '../../widgets/location_picker.dart';
 import '../../widgets/recurrence_picker.dart';
 import '../../widgets/travel_time_prompt.dart';
 import '../../../domain/enums/timing_type.dart';
+import '../../../domain/enums/scheduling_preference_strength.dart';
+import '../../../domain/entities/scheduling_constraint.dart';
 
 // Type aliases for clarity
 typedef FlutterTimeOfDay = TimeOfDay;
@@ -582,9 +584,203 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
             contentPadding: EdgeInsets.zero,
           ),
         ],
+        const SizedBox(height: 8),
+        const Divider(),
+        const SizedBox(height: 8),
+        // Time Constraints Section (for flexible events)
+        if (formState.timingType == TimingType.flexible)
+          _buildTimeConstraintsSection(context, formState, formNotifier),
         const SizedBox(height: 16),
       ],
     );
+  }
+
+  /// Builds the time constraints section for flexible events
+  Widget _buildTimeConstraintsSection(
+    BuildContext context,
+    form_providers.EventFormState formState,
+    dynamic formNotifier,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Toggle for time constraints
+        SwitchListTile(
+          value: formState.hasTimeConstraint,
+          onChanged: (value) => formNotifier.updateHasTimeConstraint(value),
+          title: const Text('Time Restrictions'),
+          subtitle: const Text(
+            'Restrict when this event can be scheduled',
+          ),
+          secondary: const Icon(Icons.access_time),
+          contentPadding: EdgeInsets.zero,
+        ),
+        
+        if (formState.hasTimeConstraint) ...[
+          const SizedBox(height: 16),
+          // Not Before Time picker
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Not Before',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 4),
+                    OutlinedButton(
+                      onPressed: () async {
+                        final time = await showTimePicker(
+                          context: context,
+                          initialTime: _minutesToTimeOfDay(
+                            formState.notBeforeTime,
+                            defaultHour: 7,
+                          ),
+                        );
+                        if (time != null) {
+                          formNotifier.updateNotBeforeTime(time.hour * 60 + time.minute);
+                        }
+                      },
+                      child: Text(
+                        formState.notBeforeTime != null
+                            ? SchedulingConstraint.formatTimeOfDay(formState.notBeforeTime!)
+                            : 'Set time',
+                      ),
+                    ),
+                    if (formState.notBeforeTime != null)
+                      TextButton(
+                        onPressed: () => formNotifier.updateNotBeforeTime(null),
+                        child: const Text('Clear', style: TextStyle(fontSize: 12)),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Not After',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 4),
+                    OutlinedButton(
+                      onPressed: () async {
+                        final time = await showTimePicker(
+                          context: context,
+                          initialTime: _minutesToTimeOfDay(
+                            formState.notAfterTime,
+                            defaultHour: 15,
+                          ),
+                        );
+                        if (time != null) {
+                          formNotifier.updateNotAfterTime(time.hour * 60 + time.minute);
+                        }
+                      },
+                      child: Text(
+                        formState.notAfterTime != null
+                            ? SchedulingConstraint.formatTimeOfDay(formState.notAfterTime!)
+                            : 'Set time',
+                      ),
+                    ),
+                    if (formState.notAfterTime != null)
+                      TextButton(
+                        onPressed: () => formNotifier.updateNotAfterTime(null),
+                        child: const Text('Clear', style: TextStyle(fontSize: 12)),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Preference Strength dropdown
+          DropdownButtonFormField<SchedulingPreferenceStrength>(
+            value: formState.timeConstraintStrength,
+            decoration: const InputDecoration(
+              labelText: 'Constraint Strength',
+              border: OutlineInputBorder(),
+              helperText: 'How strictly should the scheduler follow this rule?',
+            ),
+            items: SchedulingPreferenceStrength.values.map((strength) {
+              return DropdownMenuItem<SchedulingPreferenceStrength>(
+                value: strength,
+                child: Row(
+                  children: [
+                    Icon(
+                      strength == SchedulingPreferenceStrength.locked
+                          ? Icons.lock
+                          : strength == SchedulingPreferenceStrength.strong
+                              ? Icons.priority_high
+                              : Icons.low_priority,
+                      size: 20,
+                      color: strength == SchedulingPreferenceStrength.locked
+                          ? Colors.red
+                          : strength == SchedulingPreferenceStrength.strong
+                              ? Colors.orange
+                              : Colors.grey,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(strength.label),
+                  ],
+                ),
+              );
+            }).toList(),
+            onChanged: (value) {
+              if (value != null) {
+                formNotifier.updateTimeConstraintStrength(value);
+              }
+            },
+          ),
+          const SizedBox(height: 8),
+          // Explanation card
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  size: 20,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    formState.timeConstraintStrength == SchedulingPreferenceStrength.locked
+                        ? 'Locked: Scheduler MUST respect this constraint.'
+                        : formState.timeConstraintStrength == SchedulingPreferenceStrength.strong
+                            ? 'Strong: Scheduler will try hard to respect this.'
+                            : 'Weak: Scheduler may ignore if needed for other priorities.',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  /// Converts minutes from midnight to FlutterTimeOfDay
+  /// If minutesFromMidnight is null, returns default time
+  FlutterTimeOfDay _minutesToTimeOfDay(int? minutesFromMidnight, {int defaultHour = 9}) {
+    if (minutesFromMidnight != null) {
+      return FlutterTimeOfDay(
+        hour: minutesFromMidnight ~/ 60,
+        minute: minutesFromMidnight % 60,
+      );
+    }
+    return FlutterTimeOfDay(hour: defaultHour, minute: 0);
   }
 
   /// Safely parse color hex string to Color
