@@ -6,6 +6,7 @@ import 'package:drift/native.dart';
 import 'package:time_planner/app/router.dart';
 import 'package:time_planner/data/database/app_database.dart';
 import 'package:time_planner/presentation/providers/database_provider.dart';
+import 'package:time_planner/presentation/providers/onboarding_providers.dart';
 
 /// Integration test for the core user flow:
 /// Create Event → View in Day View → Run Planning Wizard → Accept Schedule
@@ -34,9 +35,16 @@ void main() {
         ProviderScope(
           overrides: [
             databaseProvider.overrideWithValue(testDb),
+            // Skip onboarding for tests
+            needsOnboardingProvider.overrideWith((ref) => false),
           ],
-          child: MaterialApp.router(
-            routerConfig: AppRouter.router,
+          child: Consumer(
+            builder: (context, ref, _) {
+              final router = ref.watch(routerProvider);
+              return MaterialApp.router(
+                routerConfig: router,
+              );
+            },
           ),
         ),
       );
@@ -115,9 +123,16 @@ void main() {
         ProviderScope(
           overrides: [
             databaseProvider.overrideWithValue(testDb),
+            // Skip onboarding for tests
+            needsOnboardingProvider.overrideWith((ref) => false),
           ],
-          child: MaterialApp.router(
-            routerConfig: AppRouter.router,
+          child: Consumer(
+            builder: (context, ref, _) {
+              final router = ref.watch(routerProvider);
+              return MaterialApp.router(
+                routerConfig: router,
+              );
+            },
           ),
         ),
       );
@@ -141,9 +156,16 @@ void main() {
         ProviderScope(
           overrides: [
             databaseProvider.overrideWithValue(testDb),
+            // Skip onboarding for tests
+            needsOnboardingProvider.overrideWith((ref) => false),
           ],
-          child: MaterialApp.router(
-            routerConfig: AppRouter.router,
+          child: Consumer(
+            builder: (context, ref, _) {
+              final router = ref.watch(routerProvider);
+              return MaterialApp.router(
+                routerConfig: router,
+              );
+            },
           ),
         ),
       );
@@ -174,9 +196,16 @@ void main() {
         ProviderScope(
           overrides: [
             databaseProvider.overrideWithValue(testDb),
+            // Skip onboarding for tests
+            needsOnboardingProvider.overrideWith((ref) => false),
           ],
-          child: MaterialApp.router(
-            routerConfig: AppRouter.router,
+          child: Consumer(
+            builder: (context, ref, _) {
+              final router = ref.watch(routerProvider);
+              return MaterialApp.router(
+                routerConfig: router,
+              );
+            },
           ),
         ),
       );

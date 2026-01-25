@@ -33,6 +33,36 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-25 - Fix Test Compilation Errors
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Fix Dart compilation errors in integration tests and widget tests
+
+**Work Completed**:
+
+- ✅ **Fixed AppRouter.router undefined getter errors** (`integration_test/app_flow_test.dart`)
+  - The static `AppRouter.router` was removed in a previous session (legacy router)
+  - Updated all 4 test widgets to use `Consumer` with `ref.watch(routerProvider)` pattern
+  - Added import for `onboarding_providers.dart`
+  - Added `needsOnboardingProvider.overrideWith((ref) => false)` to skip onboarding in tests
+  - This pattern matches the main app (`lib/app/app.dart`) which also uses `routerProvider`
+
+- ✅ **Fixed missing debtStrategy parameter errors** (`test/widget/screens/goals_dashboard_screen_test.dart`)
+  - The `Goal` entity now requires `debtStrategy` parameter (added in an earlier phase)
+  - Added import for `debt_strategy.dart`
+  - Added `debtStrategy: DebtStrategy.ignore` to all 3 Goal constructor calls in test data
+
+**Key Files Modified**:
+- `integration_test/app_flow_test.dart` - Fixed 4 `undefined_getter` errors for `AppRouter.router`
+- `test/widget/screens/goals_dashboard_screen_test.dart` - Fixed 3 `missing_required_argument` errors for `debtStrategy`
+
+**Technical Notes**:
+- The errors occurred because tests were written before the router refactoring and Goal entity update
+- Both fixes align the test code with current production code patterns
+
+---
+
 ### Session: 2026-01-25 - Fix Onboarding Wizard Bugs + Add Replay Option
 
 **Author**: AI Assistant (GitHub Copilot)
