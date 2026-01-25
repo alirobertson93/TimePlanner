@@ -5,6 +5,7 @@ import '../../../domain/entities/location.dart';
 import '../../providers/travel_time_providers.dart';
 import '../../providers/location_providers.dart';
 import '../../providers/repository_providers.dart';
+import '../../providers/error_handler_provider.dart';
 
 /// Screen for managing travel times between locations
 class TravelTimesScreen extends ConsumerStatefulWidget {
@@ -257,8 +258,10 @@ class _TravelTimesScreenState extends ConsumerState<TravelTimesScreen> {
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e')),
+          ref.read(errorHandlerProvider).showErrorSnackBar(
+            context,
+            e,
+            operationContext: 'deleting travel time',
           );
         }
       }

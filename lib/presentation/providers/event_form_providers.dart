@@ -4,6 +4,7 @@ import '../../domain/entities/event.dart';
 import '../../domain/enums/timing_type.dart';
 import '../../domain/enums/event_status.dart';
 import 'repository_providers.dart';
+import 'error_handler_provider.dart';
 
 part 'event_form_providers.g.dart';
 
@@ -335,22 +336,34 @@ class EventForm extends _$EventForm {
           eventId: eventId,
           personIds: state.selectedPeopleIds,
         );
-      } catch (peopleError) {
+      } catch (peopleError, stackTrace) {
         // If people save fails, we still consider the event saved but log the error
-        // In a production app, this should use proper logging and potentially a transaction
+        final errorHandler = ref.read(errorHandlerProvider);
+        final message = errorHandler.handleError(
+          peopleError,
+          stackTrace: stackTrace,
+          operationContext: 'saving event people associations',
+          fallbackMessage: 'Event saved but failed to save people associations',
+        );
         state = state.copyWith(
           isSaving: false,
-          error: 'Event saved but failed to save people: $peopleError',
+          error: message,
         );
         return true; // Event was saved, just people associations failed
       }
 
       state = state.copyWith(isSaving: false);
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      final errorHandler = ref.read(errorHandlerProvider);
+      final message = errorHandler.handleError(
+        e,
+        stackTrace: stackTrace,
+        operationContext: 'saving event',
+      );
       state = state.copyWith(
         isSaving: false,
-        error: 'Failed to save event: $e',
+        error: message,
       );
       return false;
     }

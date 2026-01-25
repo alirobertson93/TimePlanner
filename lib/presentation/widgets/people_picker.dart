@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 import '../../domain/entities/person.dart';
 import '../providers/person_providers.dart';
 import '../providers/repository_providers.dart';
+import '../providers/error_handler_provider.dart';
 
 /// A widget for selecting people to associate with an event
 class PeoplePicker extends ConsumerStatefulWidget {
@@ -217,8 +218,10 @@ class _PeoplePickerState extends ConsumerState<PeoplePicker> {
                 }
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: $e')),
+                  ref.read(errorHandlerProvider).showErrorSnackBar(
+                    context,
+                    e,
+                    operationContext: 'saving person',
                   );
                 }
               }

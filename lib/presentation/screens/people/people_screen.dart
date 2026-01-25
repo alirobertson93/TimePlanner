@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 import '../../../domain/entities/person.dart';
 import '../../providers/person_providers.dart';
 import '../../providers/repository_providers.dart';
+import '../../providers/error_handler_provider.dart';
 
 /// Screen for managing people (contacts)
 class PeopleScreen extends ConsumerStatefulWidget {
@@ -390,8 +391,10 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
                 }
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: $e')),
+                  ref.read(errorHandlerProvider).showErrorSnackBar(
+                    context,
+                    e,
+                    operationContext: 'adding person',
                   );
                 }
               }
@@ -500,8 +503,10 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
                 }
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: $e')),
+                  ref.read(errorHandlerProvider).showErrorSnackBar(
+                    context,
+                    e,
+                    operationContext: 'updating person',
                   );
                 }
               }
@@ -553,8 +558,10 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e')),
+          ref.read(errorHandlerProvider).showErrorSnackBar(
+            context,
+            e,
+            operationContext: 'deleting person',
           );
         }
       }

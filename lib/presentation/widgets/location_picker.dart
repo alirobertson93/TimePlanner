@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 import '../../domain/entities/location.dart';
 import '../providers/location_providers.dart';
 import '../providers/repository_providers.dart';
+import '../providers/error_handler_provider.dart';
 
 /// A widget for selecting a location to associate with an event
 class LocationPicker extends ConsumerStatefulWidget {
@@ -230,8 +231,10 @@ class _LocationPickerState extends ConsumerState<LocationPicker> {
                 }
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: $e')),
+                  ref.read(errorHandlerProvider).showErrorSnackBar(
+                    context,
+                    e,
+                    operationContext: 'saving location',
                   );
                 }
               }

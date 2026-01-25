@@ -11,6 +11,7 @@ import '../../scheduler/strategies/least_disruption_strategy.dart';
 import '../../scheduler/strategies/scheduling_strategy.dart';
 import '../../core/utils/date_utils.dart';
 import 'repository_providers.dart';
+import 'error_handler_provider.dart';
 
 part 'planning_wizard_providers.g.dart';
 
@@ -247,10 +248,16 @@ class PlanningWizard extends _$PlanningWizard {
         scheduleResult: result,
         currentStep: 3, // Move to review step
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      final errorHandler = ref.read(errorHandlerProvider);
+      final message = errorHandler.handleError(
+        e,
+        stackTrace: stackTrace,
+        operationContext: 'generating schedule',
+      );
       state = state.copyWith(
         isGenerating: false,
-        error: 'Failed to generate schedule: $e',
+        error: message,
       );
     }
   }
@@ -291,8 +298,14 @@ class PlanningWizard extends _$PlanningWizard {
       }
 
       return true;
-    } catch (e) {
-      state = state.copyWith(error: 'Failed to save schedule: $e');
+    } catch (e, stackTrace) {
+      final errorHandler = ref.read(errorHandlerProvider);
+      final message = errorHandler.handleError(
+        e,
+        stackTrace: stackTrace,
+        operationContext: 'saving schedule',
+      );
+      state = state.copyWith(error: message);
       return false;
     }
   }

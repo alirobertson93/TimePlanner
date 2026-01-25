@@ -6,6 +6,7 @@ import '../../domain/enums/goal_metric.dart';
 import '../../domain/enums/goal_period.dart';
 import '../../domain/enums/debt_strategy.dart';
 import 'repository_providers.dart';
+import 'error_handler_provider.dart';
 
 part 'goal_form_providers.g.dart';
 
@@ -267,10 +268,16 @@ class GoalForm extends _$GoalForm {
       await repository.save(goal);
       state = state.copyWith(isSaving: false);
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      final errorHandler = ref.read(errorHandlerProvider);
+      final message = errorHandler.handleError(
+        e,
+        stackTrace: stackTrace,
+        operationContext: 'saving goal',
+      );
       state = state.copyWith(
         isSaving: false,
-        error: 'Failed to save goal: $e',
+        error: message,
       );
       return false;
     }
@@ -290,10 +297,16 @@ class GoalForm extends _$GoalForm {
       await repository.delete(state.id!);
       state = state.copyWith(isSaving: false);
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      final errorHandler = ref.read(errorHandlerProvider);
+      final message = errorHandler.handleError(
+        e,
+        stackTrace: stackTrace,
+        operationContext: 'deleting goal',
+      );
       state = state.copyWith(
         isSaving: false,
-        error: 'Failed to delete goal: $e',
+        error: message,
       );
       return false;
     }
