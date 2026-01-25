@@ -33,6 +33,74 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-25 - UX Analysis: Settings Menu and Goals Conceptual Model
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Analyze two potential UX issues reported by user and create a detailed remediation plan.
+
+**Issues Analyzed**:
+
+1. **App Bar Overflow - Icons Not Visible in Portrait Mode**
+2. **Goals Conceptual Model**
+
+**Analysis Completed**:
+
+**Issue 1: App Bar Overflow** - ✅ **Responsive Design Issue (High Priority)**
+- The Settings icon IS present in Day View app bar
+- Settings route and screen are fully functional
+- **Root Cause**: Day View has 10 icons which do NOT fit on screen width in portrait mode
+- **Result**: Rightmost icons (including Settings) are rendered off-screen and inaccessible
+- **Solution**: Implement responsive overflow/ellipsis menu pattern
+
+**Issue 2: Goals Conceptual Model** - ✅ Valid Concern
+- User correctly identified that Goals feel like standalone items
+- The Goal form asks for "Goal Title" first, making goals seem independent
+- PRD states goals should track "hours per week on category/person"
+- Current UX inverts the intended mental model
+- **Finding**: Form fields should be reordered to emphasize what is being tracked, not the goal name
+
+**Work Completed**:
+
+- ✅ **Explored codebase** to understand current implementation
+  - Reviewed: PRD.md, goal_form_screen.dart, goals_dashboard_screen.dart
+  - Reviewed: day_view_screen.dart, week_view_screen.dart, settings_screen.dart
+  - Reviewed: DATA_MODEL.md, UX_FLOWS.md, router.dart
+
+- ✅ **Documented findings in ROADMAP.md**
+  - Added "Known Issues & Planned Improvements" section
+  - Detailed Issue 1 analysis with responsive overflow solution
+  - Detailed Issue 2 analysis with proposed solutions (Phase A & B)
+  - Listed all files that need updates for each fix
+
+- ✅ **Updated CHANGELOG.md** with this session entry
+
+**Proposed Solution Summary**:
+
+| Issue | Priority | Effort | Solution |
+|-------|----------|--------|----------|
+| App Bar Overflow | High | 3-4 hrs | Implement responsive overflow menu (ellipsis/⋮) for narrow screens |
+| Goals Conceptual Model (Phase A) | Medium | 2-3 hrs | Reorder form to prioritize Category/Person selection |
+| Goals Conceptual Model (Phase B) | Medium | 3-4 hrs | Make title optional, update onboarding, update docs |
+
+**No Code Changes Made** - This was an analysis/planning session only.
+
+**Key Files Identified for Future Work**:
+- `lib/presentation/screens/day_view/day_view_screen.dart` - Add responsive overflow menu
+- `lib/presentation/screens/week_view/week_view_screen.dart` - Same responsive overflow treatment
+- `lib/presentation/widgets/adaptive_app_bar.dart` - New: reusable overflow pattern (optional)
+- `lib/presentation/screens/goal_form/goal_form_screen.dart` - Reorder form
+- `lib/presentation/providers/goal_form_providers.dart` - Auto-generate title
+- `lib/presentation/screens/onboarding/enhanced_onboarding_screen.dart` - Align Activity Goals step
+- `dev-docs/PRD.md` - Clarify Goals concept (if needed)
+
+**Technical Notes**:
+- The Goal entity's data model is sound (has categoryId, personId, title fields)
+- No database changes needed - this is purely a UX reordering
+- Enhanced onboarding wizard also reinforces incorrect mental model (asks for "Activity Name" first)
+
+---
+
 ### Session: 2026-01-25 - Enhanced Onboarding Wizard
 
 **Author**: AI Assistant (GitHub Copilot)
