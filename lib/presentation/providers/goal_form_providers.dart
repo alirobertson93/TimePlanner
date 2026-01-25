@@ -295,11 +295,13 @@ class GoalForm extends _$GoalForm {
       // Get category name
       final categoryRepo = ref.read(categoryRepositoryProvider);
       final categories = await categoryRepo.getAll();
-      final category = categories.firstWhere(
-        (c) => c.id == state.categoryId,
-        orElse: () => categories.first,
-      );
-      targetName = category.name;
+      if (categories.isNotEmpty) {
+        final category = categories.firstWhere(
+          (c) => c.id == state.categoryId,
+          orElse: () => categories.first,
+        );
+        targetName = category.name;
+      }
     } else if (state.type == GoalType.person && state.personId != null) {
       // Get person name
       final personRepo = ref.read(personRepositoryProvider);

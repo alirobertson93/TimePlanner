@@ -384,7 +384,7 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    _buildGoalSummaryText(formState, context, ref),
+                    _buildGoalSummaryText(formState),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.w500,
@@ -494,13 +494,10 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
   }
 
   /// Builds a human-readable summary of the goal
-  String _buildGoalSummaryText(GoalFormState formState, BuildContext context, WidgetRef ref) {
+  String _buildGoalSummaryText(GoalFormState formState) {
     final targetText = '${formState.targetValue} ${formState.metricDisplayText} ${formState.periodDisplayText}';
     
     if (formState.type == GoalType.category && formState.categoryId != null) {
-      // Try to get category name
-      final categoriesAsync = ref.read(categoryRepositoryProvider).getAll();
-      // This is sync for the summary - in practice we'd use FutureBuilder
       return 'Track $targetText on selected category';
     } else if (formState.type == GoalType.person && formState.personId != null) {
       return 'Track $targetText with selected person';

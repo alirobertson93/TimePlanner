@@ -7,10 +7,9 @@ class AdaptiveAppBarAction {
     required this.label,
     required this.onPressed,
     this.priority = AdaptiveActionPriority.normal,
-    this.badge,
   });
 
-  /// The icon to display
+  /// The icon to display (can be an Icon, Badge-wrapped Icon, or any widget)
   final Widget icon;
 
   /// The label for the tooltip and overflow menu
@@ -21,9 +20,6 @@ class AdaptiveAppBarAction {
 
   /// Priority level for determining which actions stay visible
   final AdaptiveActionPriority priority;
-
-  /// Optional badge widget (e.g., notification count)
-  final Widget? badge;
 }
 
 /// Priority levels for app bar actions
@@ -61,11 +57,13 @@ class AdaptiveAppBarActions extends StatelessWidget {
   /// Tooltip for the overflow menu button
   final String overflowTooltip;
 
-  /// Estimated width for each icon button
+  /// Estimated width for each icon button.
+  /// Flutter's default IconButton has constraints of min 48x48 (kMinInteractiveDimension).
+  /// This is a reasonable estimate that works well across most themes.
   static const double _iconButtonWidth = 48.0;
 
-  /// Minimum width threshold before we start collapsing
-  /// This accounts for the app bar title and some padding
+  /// Minimum width to reserve for app bar title and leading widget.
+  /// This accounts for typical title lengths and back button.
   static const double _minAppBarContentWidth = 200.0;
 
   @override
@@ -121,22 +119,11 @@ class AdaptiveAppBarActions extends StatelessWidget {
   }
 
   Widget _buildIconButton(AdaptiveAppBarAction action) {
-    Widget button = IconButton(
+    return IconButton(
       icon: action.icon,
       onPressed: action.onPressed,
       tooltip: action.label,
     );
-    
-    // Wrap with badge if provided
-    if (action.badge != null) {
-      button = IconButton(
-        icon: action.badge!,
-        onPressed: action.onPressed,
-        tooltip: action.label,
-      );
-    }
-    
-    return button;
   }
 
   Widget _buildOverflowButton(BuildContext context, List<AdaptiveAppBarAction> overflowActions) {
