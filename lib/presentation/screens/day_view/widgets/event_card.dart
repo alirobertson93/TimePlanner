@@ -55,6 +55,10 @@ class EventCard extends ConsumerWidget {
       buffer.write(', recurring event');
     }
 
+    if (event.hasSchedulingConstraints) {
+      buffer.write(', has time constraints');
+    }
+
     if (event.description != null && event.description!.isNotEmpty) {
       buffer.write(', ${event.description}');
     }
@@ -95,6 +99,15 @@ class EventCard extends ConsumerWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    if (event.hasSchedulingConstraints) ...[
+                      const SizedBox(width: 4),
+                      const Icon(
+                        Icons.schedule,
+                        size: 14,
+                        color: Colors.white70,
+                        semanticLabel: 'Time constraints',
+                      ),
+                    ],
                     if (event.isUserLocked) ...[
                       const SizedBox(width: 4),
                       const Icon(

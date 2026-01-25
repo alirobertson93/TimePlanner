@@ -8,14 +8,20 @@ This document is the single source of truth for the project's current status, co
 
 **Project Phase**: Phase 9 In Progress - Enhanced Goals System
 
-**Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9A Complete, Phase 9C UI Complete (70%)
+**Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9A Complete, Phase 9C Complete (100%)
 
-**Active Work**: Phase 9C - Constraints (Scheduler integration remaining) ⏳ 70%
+**Active Work**: Phase 9D - Polish (upcoming) ⏳
 
-**Recent Update (2026-01-25 Late Evening)**:
-- ✅ **Analysis Session**: Reviewed roadmap, changelog, and previous session's work
-- ✅ **Verified Phase 9C Implementation**: All UI and data layer changes confirmed working
-- 📋 **Next Steps Identified**: Scheduler integration for constraints is the primary remaining work
+**Recent Update (2026-01-25 Night)**:
+- ✅ **Phase 9C COMPLETE**: Full scheduler integration for scheduling constraints
+  - All 4 strategies (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption) now respect constraints
+  - Locked constraints = hard rules (slots outside window are rejected)
+  - Strong constraints = significant penalty (100.0 in scoring)
+  - Weak constraints = minor penalty (10.0 in scoring)
+  - ConstraintChecker service for violation detection
+  - ConstraintViolation model for tracking issues
+  - Constraint warnings shown in Planning Wizard
+  - Visual indicators on events with constraints (schedule icon in day/week views)
 
 **Earlier Update (2026-01-25)**: 
 - ✅ **Phase 9A Complete**: All 4 goal types now fully implemented (Category, Person, Location, Event)
@@ -774,7 +780,7 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 
 ### Phase 9: Enhanced Goals System ⏳ (In Progress)
 
-**Status**: Phase A Complete, Phase C In Progress (30%)
+**Status**: Phase A Complete, Phase C Complete (100%), Phase D Planned
 
 **Goal**: Expand goal types to support 4 ways of associating goals with events:
 1. **Event itself** (e.g., "Guitar Practice" - a specific recurring activity) ✅
@@ -840,7 +846,7 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 
 **Dependencies**: Phase A (complete)
 
-#### Phase C: Constraints ⏳ (In Progress - 70%)
+#### Phase C: Constraints ✅ (Complete - 100%)
 
 **Focus**: EventConstraints implementation and scheduler integration
 
@@ -862,19 +868,33 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
   - Constraint strength dropdown (Weak/Strong/Locked)
   - Help text explaining each strength level
 
-**Remaining Work (Scheduler Integration)**:
-- [ ] Integrate constraints into scheduler algorithm
-  - Modify `SchedulingStrategy` interface to accept constraints
-  - Update `BalancedStrategy` to respect time restrictions
-  - Locked constraints become hard rules (reject if violated)
-  - Strong constraints add significant penalty to scheduler score
-  - Weak constraints add minor penalty to scheduler score
-- [ ] Constraint conflict resolution
-  - Detect when constraints conflict with each other or available time
-  - Show user warning when constraint cannot be satisfied
-- [ ] Constraint visualization in day/week views
-  - Visual indicator on events that have time constraints
-  - Maybe show constraint windows on timeline
+**Scheduler Integration (2026-01-25 Night)** ✅ **COMPLETE**:
+- ✅ `ConstraintViolation` model for tracking constraint violations
+  - Violation types: scheduledTooEarly, scheduledTooLate, wrongDay, conflictingConstraints, noValidSlots
+  - Penalty scoring: Weak=10, Strong=100, Locked=infinity
+- ✅ `ConstraintChecker` service for validation
+  - `checkConstraints()` - Detects all violations for proposed slots
+  - `satisfiesLockedConstraints()` - Quick check for hard constraint compliance
+  - `calculatePenaltyScore()` - Computes total penalty for strategy scoring
+- ✅ All 4 strategies updated to respect constraints:
+  - `BalancedStrategy` - Prefers constraint-compliant slots, rejects locked violations
+  - `FrontLoadedStrategy` - Same constraint logic
+  - `MaxFreeTimeStrategy` - Same constraint logic
+  - `LeastDisruptionStrategy` - Same constraint logic
+- ✅ `EventScheduler` tracks constraint violations in results
+- ✅ `ScheduleResult` includes `constraintViolations` list
+- ✅ `Conflict` enum includes `constraintViolation` type
+
+**Constraint Conflict Resolution** ✅ **COMPLETE**:
+- ✅ Detects conflicting constraints (e.g., notBefore > notAfter)
+- ✅ Shows user warnings in Planning Wizard when constraints cannot be fully satisfied
+- ✅ Locked constraint violations for fixed events reported as conflicts
+
+**Constraint Visualization** ✅ **COMPLETE**:
+- ✅ Schedule icon indicator on events with constraints (day view)
+- ✅ Schedule icon indicator on events with constraints (week view)
+- ✅ Constraint warnings section in Planning Wizard results
+- ✅ Accessibility: constraint info included in semantic labels
 
 **Dependencies**: Phase A (complete)
 
@@ -893,7 +913,7 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 - Goal recommendation engine
 - Performance optimization
 
-**Dependencies**: Phase C (in progress)
+**Dependencies**: Phase C (complete)
 
 ---
 
@@ -903,13 +923,13 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 |-----------|--------|------------|-------|
 | **Database Layer** | 🟢 Complete | 100% | Events (with locationId, recurrenceRuleId, schedulingConstraintsJson), Categories, Goals (with personId, locationId, eventTitle), People, EventPeople, Locations, RecurrenceRules, Notifications, TravelTimePairs complete. **Schema v13.** Foreign keys enabled for cascade deletes. |
 | **Domain Entities** | 🟢 Complete | 100% | Core entities + Person + Location + RecurrenceRule + Notification + TravelTimePair + **SchedulingConstraint** done. Event updated with schedulingConstraint. Goal updated with locationId/eventTitle for all 4 goal types. |
-| **Domain Services** | 🟢 Complete | 100% | EventFactory, **NotificationService**, **NotificationSchedulerService**, **OnboardingService**, **SampleDataService**, **RecurrenceService** - centralized service logic |
+| **Domain Services** | 🟢 Complete | 100% | EventFactory, **NotificationService**, **NotificationSchedulerService**, **OnboardingService**, **SampleDataService**, **RecurrenceService**, **ConstraintChecker** - centralized service logic |
 | **Repositories** | 🟢 Complete | 100% | Event, Category, Goal, Person, EventPeople, Location, RecurrenceRule, Notification, TravelTimePair repos complete with tests + interfaces. **EventRepository updated with constraint serialization.** |
-| **Scheduler Engine** | 🟡 Partial | 90% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption). **Constraint integration pending (Phase 9C).** |
-| **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button, Locations button, Settings button, Notifications button (with badge), recurring indicators. **Widget tests added.** |
-| **Week View** | 🟢 Complete | 100% | 7-day grid, event blocks, category colors, navigation, recurring indicators |
+| **Scheduler Engine** | 🟢 Complete | 100% | All 4 strategies implemented (Balanced, FrontLoaded, MaxFreeTime, LeastDisruption). **Constraint integration complete! All strategies respect time and day constraints.** |
+| **Day View** | 🟢 Complete | 100% | Timeline, events, navigation, category colors, Week View link, Plan button, Goals button, People button, Locations button, Settings button, Notifications button (with badge), recurring indicators, **constraint indicators**. **Widget tests added.** |
+| **Week View** | 🟢 Complete | 100% | 7-day grid, event blocks, category colors, navigation, recurring indicators, **constraint indicators** |
 | **Event Form** | 🟢 Complete | 100% | Create, edit, delete, people selection, location selection, recurrence selection, travel time prompt, **time constraints UI** implemented. **Widget tests added.** |
-| **Planning Wizard** | 🟢 Complete | 100% | 4-step flow, schedule generation, all strategies available. **Widget tests added. Provider split into 3 focused providers.** |
+| **Planning Wizard** | 🟢 Complete | 100% | 4-step flow, schedule generation, all strategies available, **constraint warnings display**. **Widget tests added. Provider split into 3 focused providers.** |
 | **Goals Dashboard** | 🟢 Complete | 100% | Progress tracking, status indicators, category grouping, goal CRUD. **Updated to show person info for relationship goals.** |
 | **Goal Form** | 🟢 Complete | 100% | Create, edit, delete with validation. **All 4 goal types (Category, Person, Location, Event) with appropriate pickers.** |
 | **People Management** | 🟢 Complete | 100% | Entity, tables, repositories, providers, UI, event form integration complete |
