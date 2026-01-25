@@ -748,8 +748,8 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 | **Relationship Goals** | 🟢 Complete | 100% | **Fully implemented!** Goal entity with personId, Goal form with type selector, progress tracking via EventPeople, Dashboard display with person info. |
 | **Onboarding** | 🟢 Complete | 100% | **Fully implemented!** OnboardingService, OnboardingScreen (5-page wizard), SampleDataService, auto-redirect via router. **Bug fixes: App now uses correct routerProvider, loading state defaults to true. Added Replay Onboarding in Settings.** |
 | **Accessibility** | 🟢 Complete | 90% | **Screen reader support added!** Semantics widgets in all major screens. Touch targets meet 48dp via Material components. **Color contrast WCAG 2.1 AA compliant.** Keyboard nav remaining. |
-| **Widget Tests** | 🟢 Complete | 100% | **All 10 screen tests implemented!** Day View, Event Form, Planning Wizard, Week View, Goals Dashboard, Settings, Notifications, People, Locations, Onboarding tests added. |
-| **Integration Tests** | 🟡 Partial | 15% | **Core user flow test added** (Create Event → Day View → Planning Wizard). **Audit: Needs more critical flow coverage** |
+| **Widget Tests** | 🟢 Complete | 100% | **All 10 screen tests implemented!** Day View, Event Form, Planning Wizard, Week View, Goals Dashboard, Settings, Notifications, People, Locations, Onboarding tests added. **Bug fix (2026-01-25)**: Fixed missing `debtStrategy` parameter in Goals Dashboard test. |
+| **Integration Tests** | 🟡 Partial | 15% | **Core user flow test added** (Create Event → Day View → Planning Wizard). **Bug fix (2026-01-25)**: Updated to use `routerProvider` with `Consumer` pattern (was using removed `AppRouter.router`). **Audit: Needs more critical flow coverage** |
 | **Error Handling** | 🟢 Complete | 100% | **Centralized ErrorHandler service** with configurable logging, user-friendly message generation, Riverpod provider integration. All catch blocks updated to use consistent error handling. |
 
 **Legend**:

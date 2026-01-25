@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:time_planner/domain/enums/goal_period.dart';
 import 'package:time_planner/domain/enums/goal_type.dart';
 import 'package:time_planner/domain/enums/goal_metric.dart';
+import 'package:time_planner/domain/enums/debt_strategy.dart';
 import 'package:time_planner/domain/entities/goal.dart';
 import 'package:time_planner/presentation/providers/goal_providers.dart';
 import 'package:time_planner/presentation/screens/goals_dashboard/goals_dashboard_screen.dart';
@@ -27,6 +28,7 @@ void main() {
             metric: GoalMetric.hours,
             targetValue: 10,
             period: GoalPeriod.week,
+            debtStrategy: DebtStrategy.ignore,
             createdAt: now,
             updatedAt: now,
           ),
@@ -45,6 +47,7 @@ void main() {
             metric: GoalMetric.hours,
             targetValue: 5,
             period: GoalPeriod.week,
+            debtStrategy: DebtStrategy.ignore,
             createdAt: now,
             updatedAt: now,
           ),
@@ -63,6 +66,7 @@ void main() {
             metric: GoalMetric.events,
             targetValue: 8,
             period: GoalPeriod.month,
+            debtStrategy: DebtStrategy.ignore,
             createdAt: now,
             updatedAt: now,
           ),
