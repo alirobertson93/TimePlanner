@@ -33,6 +33,69 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-25 - Implement Event Timing Constraints UI
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Implement full event timing types and constraints in the UI to expose the existing data model fields (appCanMove, appCanResize, isUserLocked)
+
+**Work Completed**:
+
+- ✅ **Updated EventFormState** (`lib/presentation/providers/event_form_providers.dart`)
+  - Added `appCanMove`, `appCanResize`, `isUserLocked` fields to form state
+  - Added `hasScheduledTime` computed property
+  - Added update methods for each constraint field
+  - Updated `updateTimingType` to reset constraints to defaults when timing type changes
+  - Updated `initializeForEdit` to load constraint values from existing events
+  - Updated `save` to include constraint fields when creating/updating events
+
+- ✅ **Added Scheduling Options Section to Event Form** (`lib/presentation/screens/event_form/event_form_screen.dart`)
+  - Added collapsible `ExpansionTile` labeled "Scheduling Options"
+  - For Fixed Events: "Allow app to suggest changes" toggle (maps to appCanMove)
+  - For Flexible Events: "Lock this time" toggle (maps to isUserLocked) - only shown in edit mode with scheduled time
+  - For Flexible Events: "Allow duration changes" toggle (maps to appCanResize)
+  - Used appropriate icons (Icons.tune, Icons.swap_horiz, Icons.lock, Icons.expand)
+
+- ✅ **Added Lock Icon Visual Indicators**
+  - Day View EventCard: Shows lock icon when event.isUserLocked is true
+  - Week View WeekEventBlock: Shows lock icon when event.isUserLocked is true
+  - Updated semantic labels to mention locked status for accessibility
+
+- ✅ **Added Lock/Unlock Quick Action** (`lib/presentation/screens/day_view/widgets/event_detail_sheet.dart`)
+  - Added Lock/Unlock button for flexible events with scheduled time
+  - Toggles isUserLocked and saves immediately
+  - Shows success snackbar after toggling
+
+- ✅ **Added Tests**
+  - Widget tests for constraint toggles (`test/widget/screens/event_form_constraints_test.dart`)
+  - Unit tests for Event entity computed properties (`test/domain/entities/event_test.dart`)
+
+**Key Files Modified**:
+- `lib/presentation/providers/event_form_providers.dart` - Form state and logic
+- `lib/presentation/screens/event_form/event_form_screen.dart` - Scheduling Options UI
+- `lib/presentation/screens/day_view/widgets/event_card.dart` - Lock icon in day view
+- `lib/presentation/screens/day_view/widgets/event_detail_sheet.dart` - Lock/Unlock action
+- `lib/presentation/screens/week_view/widgets/week_timeline.dart` - Lock icon in week view
+
+**Key Files Added**:
+- `test/widget/screens/event_form_constraints_test.dart` - Constraint toggle tests
+- `test/domain/entities/event_test.dart` - Event entity tests
+
+**Default Values by Timing Type**:
+| Field | Fixed Event Default | Flexible Event Default |
+|-------|---------------------|------------------------|
+| appCanMove | false | true |
+| appCanResize | false | true |
+| isUserLocked | false | false |
+
+**Technical Notes**:
+- The constraint toggles appear in a collapsible section to keep the form clean
+- Lock toggle only appears for existing events with scheduled times (editing mode)
+- When timing type changes, constraints are reset to their defaults
+- The repository already handles these fields, no changes needed there
+
+---
+
 ### Session: 2026-01-25 - Fix Test Compilation Errors
 
 **Author**: AI Assistant (GitHub Copilot)
