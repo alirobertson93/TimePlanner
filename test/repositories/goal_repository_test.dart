@@ -348,5 +348,145 @@ void main() {
       expect(emittedValues[1].length, equals(1)); // After save
       expect(emittedValues[2].length, equals(0)); // After delete
     });
+
+    test('save and getById returns location goal with locationId', () async {
+      // Arrange
+      final locationGoal = Goal(
+        id: 'goal_location',
+        title: 'Spend time at Home',
+        type: GoalType.location,
+        metric: GoalMetric.hours,
+        targetValue: 15,
+        period: GoalPeriod.week,
+        locationId: 'location_home',
+        debtStrategy: DebtStrategy.ignore,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      // Act
+      await repository.save(locationGoal);
+      final retrieved = await repository.getById('goal_location');
+
+      // Assert
+      expect(retrieved, isNotNull);
+      expect(retrieved!.id, equals('goal_location'));
+      expect(retrieved.title, equals('Spend time at Home'));
+      expect(retrieved.type, equals(GoalType.location));
+      expect(retrieved.locationId, equals('location_home'));
+      expect(retrieved.categoryId, isNull);
+      expect(retrieved.personId, isNull);
+      expect(retrieved.eventTitle, isNull);
+    });
+
+    test('getByLocation returns goals for specific location', () async {
+      // Arrange
+      final homeGoal = Goal(
+        id: 'goal_1',
+        title: 'Time at Home',
+        type: GoalType.location,
+        metric: GoalMetric.hours,
+        targetValue: 15,
+        period: GoalPeriod.week,
+        locationId: 'location_home',
+        debtStrategy: DebtStrategy.ignore,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      final officeGoal = Goal(
+        id: 'goal_2',
+        title: 'Time at Office',
+        type: GoalType.location,
+        metric: GoalMetric.hours,
+        targetValue: 40,
+        period: GoalPeriod.week,
+        locationId: 'location_office',
+        debtStrategy: DebtStrategy.ignore,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      // Act
+      await repository.save(homeGoal);
+      await repository.save(officeGoal);
+      final homeGoals = await repository.getByLocation('location_home');
+
+      // Assert
+      expect(homeGoals.length, equals(1));
+      expect(homeGoals.first.id, equals('goal_1'));
+      expect(homeGoals.first.locationId, equals('location_home'));
+      expect(homeGoals.first.type, equals(GoalType.location));
+    });
+
+    test('save and getById returns event goal with eventTitle', () async {
+      // Arrange
+      final eventGoal = Goal(
+        id: 'goal_event',
+        title: 'Guitar Practice',
+        type: GoalType.event,
+        metric: GoalMetric.hours,
+        targetValue: 3,
+        period: GoalPeriod.week,
+        eventTitle: 'Guitar Practice',
+        debtStrategy: DebtStrategy.ignore,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      // Act
+      await repository.save(eventGoal);
+      final retrieved = await repository.getById('goal_event');
+
+      // Assert
+      expect(retrieved, isNotNull);
+      expect(retrieved!.id, equals('goal_event'));
+      expect(retrieved.title, equals('Guitar Practice'));
+      expect(retrieved.type, equals(GoalType.event));
+      expect(retrieved.eventTitle, equals('Guitar Practice'));
+      expect(retrieved.categoryId, isNull);
+      expect(retrieved.personId, isNull);
+      expect(retrieved.locationId, isNull);
+    });
+
+    test('getByEventTitle returns goals for specific event title', () async {
+      // Arrange
+      final guitarGoal = Goal(
+        id: 'goal_1',
+        title: 'Guitar Practice',
+        type: GoalType.event,
+        metric: GoalMetric.hours,
+        targetValue: 3,
+        period: GoalPeriod.week,
+        eventTitle: 'Guitar Practice',
+        debtStrategy: DebtStrategy.ignore,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      final yogaGoal = Goal(
+        id: 'goal_2',
+        title: 'Yoga Sessions',
+        type: GoalType.event,
+        metric: GoalMetric.events,
+        targetValue: 5,
+        period: GoalPeriod.week,
+        eventTitle: 'Yoga',
+        debtStrategy: DebtStrategy.ignore,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      // Act
+      await repository.save(guitarGoal);
+      await repository.save(yogaGoal);
+      final guitarGoals = await repository.getByEventTitle('Guitar Practice');
+
+      // Assert
+      expect(guitarGoals.length, equals(1));
+      expect(guitarGoals.first.id, equals('goal_1'));
+      expect(guitarGoals.first.eventTitle, equals('Guitar Practice'));
+      expect(guitarGoals.first.type, equals(GoalType.event));
+    });
   });
 }
