@@ -1,6 +1,6 @@
 # Project Roadmap
 
-**Last Updated**: 2026-01-24
+**Last Updated**: 2026-01-25
 
 This document is the single source of truth for the project's current status, completed work, and upcoming phases. For session logs and development history, see [CHANGELOG.md](./CHANGELOG.md).
 
@@ -686,7 +686,7 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 1. ~~Link Privacy Policy and Terms of Service in Settings screen (App Store requirement)~~ ✅ **DONE**
 2. Archive/update IMPLEMENTATION_SUMMARY.md and BUILD_INSTRUCTIONS.md
 3. Expand widget test coverage
-4. Implement centralized error handling service
+4. ~~Implement centralized error handling service~~ ✅ **DONE** - ErrorHandler service created with logging, user messages, and Riverpod provider
 5. Remove router duplication
 
 ---
@@ -747,6 +747,7 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 | **Accessibility** | 🟢 Complete | 90% | **Screen reader support added!** Semantics widgets in all major screens. Touch targets meet 48dp via Material components. **Color contrast WCAG 2.1 AA compliant.** Keyboard nav remaining. |
 | **Widget Tests** | 🟢 Complete | 100% | **All 10 screen tests implemented!** Day View, Event Form, Planning Wizard, Week View, Goals Dashboard, Settings, Notifications, People, Locations, Onboarding tests added. |
 | **Integration Tests** | 🟡 Partial | 15% | **Core user flow test added** (Create Event → Day View → Planning Wizard). **Audit: Needs more critical flow coverage** |
+| **Error Handling** | 🟢 Complete | 100% | **Centralized ErrorHandler service** with configurable logging, user-friendly message generation, Riverpod provider integration. All catch blocks updated to use consistent error handling. |
 
 **Legend**:
 - 🟢 Complete: Feature fully implemented (100% or 95%+ with minor gaps)

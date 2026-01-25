@@ -33,6 +33,54 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-25 - Standardize Error Handling
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Implement centralized error handling to provide consistent error logging and user-friendly error messages across the application
+
+**Work Completed**:
+
+- ✅ **Created error handling service** (`lib/core/errors/error_handler.dart`)
+  - Centralized error logging with configurable severity levels (debug, info, warning, error, critical)
+  - User-friendly error message generation that maps common error types to helpful messages
+  - Configurable behavior via `ErrorHandlerConfig` (debug logging, production logging, user message verbosity)
+  - Methods for logging errors, showing error SnackBars, handling warnings, and debug logging
+
+- ✅ **Created Riverpod provider** (`lib/presentation/providers/error_handler_provider.dart`)
+  - Injectable `ErrorHandler` instance via `errorHandlerProvider`
+  - Follows existing Riverpod patterns in the codebase
+
+- ✅ **Created comprehensive tests** (`test/core/errors/error_handler_test.dart`)
+  - Tests for user message generation with various error types
+  - Tests for error handling methods
+  - Tests for configuration options
+  - Tests for severity level ordering
+
+- ✅ **Updated all catch blocks to use the new error handler**:
+  - **Providers**: event_form_providers.dart, goal_form_providers.dart, planning_wizard_providers.dart, schedule_generation_providers.dart
+  - **Widgets**: recurrence_picker.dart, location_picker.dart, travel_time_prompt.dart, people_picker.dart
+  - **Screens**: people_screen.dart, travel_times_screen.dart, event_form_screen.dart, event_detail_sheet.dart, locations_screen.dart
+
+**Key Design Decisions**:
+
+1. **Preserved intentional silent catches**: Color parsing methods (in ColorUtils, event_card, week_timeline) intentionally return default colors on error - this is appropriate behavior
+2. **Preserved navigation fallbacks**: Onboarding screen catches errors and falls back to navigation - this is documented intentional behavior
+3. **Used handleWarning for non-blocking errors**: Travel time checks in event_form_screen use warning-level logging since failures shouldn't block saving
+4. **Consistent user message mapping**: Network errors, timeouts, permissions, database errors, and not-found errors all have user-friendly messages
+
+**Key Files Added**:
+- `lib/core/errors/error_handler.dart` (centralized error handling service)
+- `lib/presentation/providers/error_handler_provider.dart` (Riverpod provider)
+- `test/core/errors/error_handler_test.dart` (unit tests)
+
+**Key Files Modified**:
+- 4 provider files
+- 4 widget files  
+- 5 screen files
+
+---
+
 ### Session: 2026-01-24 - Expand Widget Test Coverage
 
 **Author**: AI Assistant (GitHub Copilot)
