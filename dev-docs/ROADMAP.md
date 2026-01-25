@@ -8,13 +8,13 @@ This document is the single source of truth for the project's current status, co
 
 **Project Phase**: Phase 8 In Progress - Polish & Launch
 
-**Overall Progress**: ~100% Core Features Complete, 95% Phase 8 Complete
+**Overall Progress**: ~100% Core Features Complete, 98% Phase 8 Complete
 
-**Active Work**: Phase 8 - Onboarding ✅ (Enhanced), Performance ✅, Accessibility ✅, Launch Prep ⏳ 60%
+**Active Work**: Phase 8 - Onboarding ✅ (Enhanced), Performance ✅, Accessibility ✅, UX Improvements ✅, Launch Prep ⏳ 60%
 
 **Recent Update (2026-01-25)**: 
-- Enhanced onboarding wizard implemented with 6-step guided setup for recurring events, people, activity goals, and places.
-- Analysis completed for two UX issues: Settings accessibility and Goals conceptual model.
+- ✅ **App Bar Overflow Menu IMPLEMENTED**: Created AdaptiveAppBarActions widget for responsive overflow menu. Navigation icons always visible, lower-priority items (Settings, People, Locations, Notifications) collapse into overflow menu (⋮) on narrow screens.
+- ✅ **Goals Conceptual Model FIXED**: Reordered Goal form to emphasize "What to Track" (Category/Person) as primary selection. Title is now optional with auto-generation. Updated onboarding to use "Activity Time Tracking" language.
 
 **Environment Requirements**: Remaining Phase 8 work (Keyboard Navigation, App Builds) requires Flutter SDK for:
 - Building the app (`flutter build ios`, `flutter build appbundle`)
@@ -793,100 +793,54 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 
 ### Issue 1: App Bar Overflow - Icons Not Visible in Portrait Mode (High Priority)
 
-**Status**: ✅ Analyzed (2026-01-25) - **Responsive Design Issue**
+**Status**: ✅ **RESOLVED** (2026-01-25) - Implemented AdaptiveAppBarActions widget
 
 **Problem Statement**: User reported difficulty finding the Settings menu in the UI. Investigation revealed the Settings icon IS present but not visible on screen in portrait mode because the 10 app bar icons exceed the screen width.
 
-**Analysis**:
-- The Settings icon IS present in the Day View app bar (gear icon on right side)
-- The Settings route `/settings` exists and the SettingsScreen is fully functional
-- **Root Cause**: Day View has 10 icons in the app bar which do NOT fit on the screen width in portrait mode on typical phone screens
-- **Result**: Rightmost icons (including Settings) are rendered off-screen and inaccessible
-- The Week View has the same issue (icons extend beyond visible area)
+**Solution Implemented**:
+- Created `lib/presentation/widgets/adaptive_app_bar.dart` with:
+  - `AdaptiveAppBarAction` class for defining actions with priority levels
+  - `AdaptiveActionPriority` enum (navigation > core > normal > low)
+  - `AdaptiveAppBarActions` widget that uses `LayoutBuilder` + `MediaQuery` to detect available space
+  - Lower-priority items automatically move into `PopupMenuButton` overflow menu (⋮) on narrow screens
+- Updated Day View: Navigation icons always visible, Settings/People/Locations/Notifications collapse into overflow
+- Updated Week View: Same responsive pattern applied
 
-**Proposed Solution**:
-Implement a responsive overflow menu pattern:
-1. Detect available screen width and calculate how many icons can fit
-2. Show high-priority icons directly in the app bar
-3. Group remaining icons into an overflow/ellipsis menu (⋮ or "More" button)
-4. Priority ordering for visible icons: navigation (prev/today/next), core actions (plan week), overflow menu
-5. Lower-priority items (settings, locations, people, notifications) move into overflow menu on narrow screens
-
-**Implementation Options**:
-- **Option A**: Use `PopupMenuButton` for overflow items when screen width < threshold
-- **Option B**: Use `LayoutBuilder` to dynamically show/hide icons based on constraints
-- **Option C**: Implement a custom adaptive app bar widget that handles overflow automatically
-
-**Relevant Files**:
-- `lib/presentation/screens/day_view/day_view_screen.dart` (lines 23-86) - Needs responsive overflow
-- `lib/presentation/screens/week_view/week_view_screen.dart` - Needs same responsive treatment
-- Consider creating: `lib/presentation/widgets/adaptive_app_bar.dart` - Reusable overflow pattern
-
-**Implementation Estimate**: 
-- 3-4 hours for initial implementation + testing
-- Additional time for refinement based on user testing
-
-**Documentation Updates Needed**:
-- UX_FLOWS.md should document the overflow menu behavior
+**Files Changed**:
+- `lib/presentation/widgets/adaptive_app_bar.dart` (NEW)
+- `lib/presentation/screens/day_view/day_view_screen.dart`
+- `lib/presentation/screens/week_view/week_view_screen.dart`
 
 ---
 
 ### Issue 2: Goals Conceptual Model (Medium Priority)
 
-**Status**: ✅ Analyzed (2026-01-25) - Valid concern requiring conceptual refactoring
+**Status**: ✅ **RESOLVED** (2026-01-25) - Implemented Phase A (UI Reordering) + optional title
 
 **Problem Statement**: User noted that Goals feel like standalone items rather than being tied to events, places, or people. The "Goal Title" field makes goals feel independent rather than tracking specific targets.
 
-**Analysis**:
-- **User's understanding is correct** - This is a valid conceptual issue
-- The PRD states: "Define goals (hours per week on category/person)" - Goals should track time spent ON something
-- Current implementation asks for a "Goal Title" as the primary field (`goal_form_screen.dart`, TextField with labelText 'Goal Title *')
-- The Goal entity does have `categoryId` and `personId` fields, but the UX makes the title seem primary
-- Enhanced onboarding also asks for "Activity Goal" names, reinforcing the "goal as item" mental model
+**Solution Implemented (Phase A + title auto-generation)**:
+1. ✅ Moved "What to Track" section to TOP of goal form
+   - Category/Person selector is now the PRIMARY input
+   - Added explanatory text about time tracking
+2. ✅ Made "Goal Title" optional
+   - Title field moved into collapsed ExpansionTile
+   - Auto-generation of title based on selection (e.g., "10 hours per week on Exercise")
+3. ✅ Updated enhanced onboarding
+   - Page renamed "Activity Time Tracking"
+   - Dialog title "Track Time on Activity" instead of "Add Activity Goal"
+   - Button text "Track New Activity"
+   - Summary shows "Activities Tracked"
 
-**Current Flow (Problematic)**:
-```
-1. User clicks "Add Goal"
-2. Form shows: "Goal Title *" as first field
-3. User enters: "Exercise more" (treating goal as an item)
-4. Then selects: Category or Person (feels secondary)
-```
+**Files Changed**:
+- `lib/presentation/screens/goal_form/goal_form_screen.dart` - Reordered form
+- `lib/presentation/providers/goal_form_providers.dart` - Title auto-generation
+- `lib/presentation/screens/onboarding/enhanced_onboarding_screen.dart` - Updated language
 
-**Intended Flow (PRD-aligned)**:
-```
-1. User clicks "Add Goal" 
-2. Form shows: "Track time spent:" with Category/Person selector
-3. User selects: Category (e.g., "Exercise") or Person (e.g., "Mom")
-4. Goal title is auto-generated or optional: "10 hours/week on Exercise"
-```
-
-**Proposed Solution**:
-
-**Phase A: UI Reordering (Quick Fix)**
-1. Move "Goal Target" section (Category/Person selector) to the TOP of the form
-2. Make "Goal Title" optional or auto-generate it from selection
-3. Update form labels to reinforce "tracking time" concept
-4. Update enhanced onboarding "Activity Goals" step to align
-
-**Phase B: Conceptual Alignment (Full Fix)**
-1. Rename GoalType.custom to GoalType.activity (clearer naming)
-2. Consider adding GoalType.location for places
-3. Goals should be framed as "Time Tracking Targets" not independent items
-4. Update PRD to clarify the conceptual model
-5. Update UX_FLOWS.md with corrected flow
-
-**Relevant Files to Update**:
-- `lib/presentation/screens/goal_form/goal_form_screen.dart` - Reorder form fields
-- `lib/presentation/providers/goal_form_providers.dart` - Auto-generate title logic
-- `lib/presentation/screens/onboarding/enhanced_onboarding_screen.dart` - Activity goals step
-- `lib/domain/enums/goal_type.dart` - Consider renaming `custom` to `activity`
-- `dev-docs/PRD.md` - Clarify Goals concept
-- `dev-docs/UX_FLOWS.md` - Update Goal form flow
-- `dev-docs/DATA_MODEL.md` - Add conceptual note
-
-**Implementation Estimate**: 
-- Phase A (UI Reordering): 1-2 hours coding + 1 hour testing
-- Phase B (Conceptual Alignment): 2-3 hours coding + 1 hour testing + documentation updates
+**Remaining (Phase B - deferred)**:
+- Consider renaming GoalType.custom to GoalType.activity
+- Consider adding GoalType.location
+- Update UX_FLOWS.md with new flow documentation
 
 ---
 

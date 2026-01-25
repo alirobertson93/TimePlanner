@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../providers/event_providers.dart';
+import '../../widgets/adaptive_app_bar.dart';
 import 'widgets/week_header.dart';
 import 'widgets/week_timeline.dart';
 
@@ -23,37 +24,8 @@ class WeekViewScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(weekLabel),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.chevron_left),
-            onPressed: () {
-              ref.read(selectedDateProvider.notifier).setDate(
-                    selectedDate.subtract(const Duration(days: 7)),
-                  );
-            },
-            tooltip: 'Previous week',
-          ),
-          IconButton(
-            icon: const Icon(Icons.today),
-            onPressed: () {
-              ref.read(selectedDateProvider.notifier).today();
-            },
-            tooltip: 'This week',
-          ),
-          IconButton(
-            icon: const Icon(Icons.chevron_right),
-            onPressed: () {
-              ref.read(selectedDateProvider.notifier).setDate(
-                    selectedDate.add(const Duration(days: 7)),
-                  );
-            },
-            tooltip: 'Next week',
-          ),
-          IconButton(
-            icon: const Icon(Icons.calendar_view_day),
-            onPressed: () {
-              context.go('/day');
-            },
-            tooltip: 'Day view',
+          AdaptiveAppBarActions(
+            actions: _buildAppBarActions(context, ref, selectedDate),
           ),
         ],
       ),
@@ -117,5 +89,53 @@ class WeekViewScreen extends ConsumerWidget {
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  List<AdaptiveAppBarAction> _buildAppBarActions(
+    BuildContext context,
+    WidgetRef ref,
+    DateTime selectedDate,
+  ) {
+    return [
+      // Navigation actions (highest priority - always visible)
+      AdaptiveAppBarAction(
+        icon: const Icon(Icons.chevron_left),
+        label: 'Previous week',
+        onPressed: () {
+          ref.read(selectedDateProvider.notifier).setDate(
+                selectedDate.subtract(const Duration(days: 7)),
+              );
+        },
+        priority: AdaptiveActionPriority.navigation,
+      ),
+      AdaptiveAppBarAction(
+        icon: const Icon(Icons.today),
+        label: 'This week',
+        onPressed: () {
+          ref.read(selectedDateProvider.notifier).today();
+        },
+        priority: AdaptiveActionPriority.navigation,
+      ),
+      AdaptiveAppBarAction(
+        icon: const Icon(Icons.chevron_right),
+        label: 'Next week',
+        onPressed: () {
+          ref.read(selectedDateProvider.notifier).setDate(
+                selectedDate.add(const Duration(days: 7)),
+              );
+        },
+        priority: AdaptiveActionPriority.navigation,
+      ),
+      
+      // Core action - switch to day view
+      AdaptiveAppBarAction(
+        icon: const Icon(Icons.calendar_view_day),
+        label: 'Day view',
+        onPressed: () {
+          context.go('/day');
+        },
+        priority: AdaptiveActionPriority.core,
+      ),
+    ];
   }
 }

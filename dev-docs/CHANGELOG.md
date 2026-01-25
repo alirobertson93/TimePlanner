@@ -33,6 +33,81 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-25 - App Bar Overflow Menu & Goals Conceptual Model Implementation
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Implement the fixes for both identified UX issues from the previous analysis session.
+
+**Work Completed**:
+
+**Issue 1: App Bar Overflow Menu (High Priority)** ✅ **IMPLEMENTED**
+
+- ✅ Created `lib/presentation/widgets/adaptive_app_bar.dart` - New reusable widget
+  - `AdaptiveAppBarAction` class for defining actions with icons, labels, and priority
+  - `AdaptiveActionPriority` enum (navigation > core > normal > low)
+  - `AdaptiveAppBarActions` widget that uses `LayoutBuilder` to detect available space
+  - Automatically moves lower-priority items into a `PopupMenuButton` overflow menu (⋮)
+  - Responsive: all icons visible on wide screens, overflow menu on narrow screens
+
+- ✅ Updated `lib/presentation/screens/day_view/day_view_screen.dart`
+  - Replaced inline 10 IconButtons with AdaptiveAppBarActions
+  - Navigation actions (prev/today/next) have highest priority - always visible
+  - Core actions (Plan Week, Week View) have high priority
+  - Normal priority: Goals
+  - Low priority (first to go into overflow): People, Locations, Notifications, Settings
+  - Notification badge preserved with unread count
+
+- ✅ Updated `lib/presentation/screens/week_view/week_view_screen.dart`
+  - Applied same AdaptiveAppBarActions pattern
+  - Navigation actions (prev/today/next) always visible
+  - Day View toggle as core action
+
+**Issue 2: Goals Conceptual Model (Medium Priority)** ✅ **IMPLEMENTED**
+
+- ✅ Reordered `lib/presentation/screens/goal_form/goal_form_screen.dart`
+  - **"What to Track" section now FIRST** with Category/Person selector
+  - Added explanatory text: "Goals track how much time you spend..."
+  - Category/Person dropdown now primary input with helper text
+  - **"Time Target" section** follows with hours/metric/period
+  - Goal summary shows what's being tracked
+  - **Title is now OPTIONAL** - collapsed into ExpansionTile
+  - Users can provide custom title or leave blank for auto-generation
+
+- ✅ Updated `lib/presentation/providers/goal_form_providers.dart`
+  - Removed title required validation - title is now optional
+  - Added `_generateTitle()` method for auto-generating titles
+  - Title format: "{hours} {metric} {period} on {category/person name}"
+  - Looks up actual category/person name from repository
+
+- ✅ Updated `lib/presentation/screens/onboarding/enhanced_onboarding_screen.dart`
+  - Renamed "Activity Goals" page to "Activity Time Tracking"
+  - Updated page description to emphasize time tracking concept
+  - Dialog title changed from "Add Activity Goal" to "Track Time on Activity"
+  - Added explanatory text: "What activity do you want to track time for?"
+  - Button changed from "Add Activity Goal" to "Track New Activity"
+  - Summary section shows "Activities Tracked" instead of "Activity Goals"
+
+**Key Files Added**:
+- `lib/presentation/widgets/adaptive_app_bar.dart`
+
+**Key Files Modified**:
+- `lib/presentation/screens/day_view/day_view_screen.dart`
+- `lib/presentation/screens/week_view/week_view_screen.dart`
+- `lib/presentation/screens/goal_form/goal_form_screen.dart`
+- `lib/presentation/providers/goal_form_providers.dart`
+- `lib/presentation/screens/onboarding/enhanced_onboarding_screen.dart`
+- `dev-docs/CHANGELOG.md`
+- `dev-docs/ROADMAP.md`
+
+**Technical Notes**:
+- Responsive overflow uses `MediaQuery.of(context).size.width` to calculate available space
+- Priority sorting ensures navigation controls are never hidden
+- No database changes required - all changes are UI/UX only
+- Goals auto-title generation supports both category and person goals
+
+---
+
 ### Session: 2026-01-25 - UX Analysis: Settings Menu and Goals Conceptual Model
 
 **Author**: AI Assistant (GitHub Copilot)

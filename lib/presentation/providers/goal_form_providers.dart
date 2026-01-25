@@ -79,9 +79,7 @@ class GoalFormState {
 
   /// Validates the form and returns error message if invalid
   String? validate() {
-    if (title.trim().isEmpty) {
-      return 'Title is required';
-    }
+    // Title is now optional - will be auto-generated if empty
 
     if (targetValue <= 0) {
       return 'Target value must be greater than 0';
@@ -250,9 +248,15 @@ class GoalForm extends _$GoalForm {
         }
       }
 
+      // Auto-generate title if empty
+      String title = state.title.trim();
+      if (title.isEmpty) {
+        title = await _generateTitle();
+      }
+
       final goal = Goal(
         id: state.id ?? uuid.v4(),
-        title: state.title.trim(),
+        title: title,
         type: state.type,
         metric: state.metric,
         targetValue: state.targetValue,
@@ -281,6 +285,35 @@ class GoalForm extends _$GoalForm {
       );
       return false;
     }
+  }
+
+  /// Generates a title based on the selected category or person
+  Future<String> _generateTitle() async {
+    String targetName = '';
+    
+    if (state.type == GoalType.category && state.categoryId != null) {
+      // Get category name
+      final categoryRepo = ref.read(categoryRepositoryProvider);
+      final categories = await categoryRepo.getAll();
+      final category = categories.firstWhere(
+        (c) => c.id == state.categoryId,
+        orElse: () => categories.first,
+      );
+      targetName = category.name;
+    } else if (state.type == GoalType.person && state.personId != null) {
+      // Get person name
+      final personRepo = ref.read(personRepositoryProvider);
+      final person = await personRepo.getById(state.personId!);
+      if (person != null) {
+        targetName = 'Time with ${person.name}';
+      }
+    }
+    
+    if (targetName.isEmpty) {
+      return '${state.targetValue} ${state.metricDisplayText} ${state.periodDisplayText}';
+    }
+    
+    return '${state.targetValue} ${state.metricDisplayText} ${state.periodDisplayText} on $targetName';
   }
 
   /// Delete the goal

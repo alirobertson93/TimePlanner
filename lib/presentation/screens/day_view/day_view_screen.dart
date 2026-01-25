@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../providers/event_providers.dart';
 import '../../providers/notification_providers.dart';
+import '../../widgets/adaptive_app_bar.dart';
 import 'widgets/day_timeline.dart';
 import 'widgets/event_detail_sheet.dart';
 
@@ -20,69 +21,8 @@ class DayViewScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(DateFormat.yMMMMd().format(selectedDate)),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.chevron_left),
-            onPressed: () {
-              ref.read(selectedDateProvider.notifier).previousDay();
-            },
-            tooltip: 'Previous day',
-          ),
-          IconButton(
-            icon: const Icon(Icons.today),
-            onPressed: () {
-              ref.read(selectedDateProvider.notifier).today();
-            },
-            tooltip: 'Today',
-          ),
-          IconButton(
-            icon: const Icon(Icons.chevron_right),
-            onPressed: () {
-              ref.read(selectedDateProvider.notifier).nextDay();
-            },
-            tooltip: 'Next day',
-          ),
-          IconButton(
-            icon: const Icon(Icons.location_on),
-            onPressed: () {
-              context.push('/locations');
-            },
-            tooltip: 'Locations',
-          ),
-          IconButton(
-            icon: const Icon(Icons.people),
-            onPressed: () {
-              context.push('/people');
-            },
-            tooltip: 'People',
-          ),
-          IconButton(
-            icon: const Icon(Icons.track_changes),
-            onPressed: () {
-              context.push('/goals');
-            },
-            tooltip: 'Goals',
-          ),
-          IconButton(
-            icon: const Icon(Icons.auto_awesome),
-            onPressed: () {
-              context.push('/plan');
-            },
-            tooltip: 'Plan week',
-          ),
-          IconButton(
-            icon: const Icon(Icons.calendar_view_week),
-            onPressed: () {
-              context.go('/week');
-            },
-            tooltip: 'Week view',
-          ),
-          _buildNotificationButton(context, ref),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              context.push('/settings');
-            },
-            tooltip: 'Settings',
+          AdaptiveAppBarActions(
+            actions: _buildAppBarActions(context, ref),
           ),
         ],
       ),
@@ -139,13 +79,84 @@ class DayViewScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildNotificationButton(BuildContext context, WidgetRef ref) {
+  List<AdaptiveAppBarAction> _buildAppBarActions(BuildContext context, WidgetRef ref) {
     final unreadCountAsync = ref.watch(unreadCountProvider);
-
-    return unreadCountAsync.when(
-      data: (count) {
-        return IconButton(
-          icon: Badge(
+    
+    return [
+      // Navigation actions (highest priority - always visible)
+      AdaptiveAppBarAction(
+        icon: const Icon(Icons.chevron_left),
+        label: 'Previous day',
+        onPressed: () {
+          ref.read(selectedDateProvider.notifier).previousDay();
+        },
+        priority: AdaptiveActionPriority.navigation,
+      ),
+      AdaptiveAppBarAction(
+        icon: const Icon(Icons.today),
+        label: 'Today',
+        onPressed: () {
+          ref.read(selectedDateProvider.notifier).today();
+        },
+        priority: AdaptiveActionPriority.navigation,
+      ),
+      AdaptiveAppBarAction(
+        icon: const Icon(Icons.chevron_right),
+        label: 'Next day',
+        onPressed: () {
+          ref.read(selectedDateProvider.notifier).nextDay();
+        },
+        priority: AdaptiveActionPriority.navigation,
+      ),
+      
+      // Core actions (high priority)
+      AdaptiveAppBarAction(
+        icon: const Icon(Icons.auto_awesome),
+        label: 'Plan week',
+        onPressed: () {
+          context.push('/plan');
+        },
+        priority: AdaptiveActionPriority.core,
+      ),
+      AdaptiveAppBarAction(
+        icon: const Icon(Icons.calendar_view_week),
+        label: 'Week view',
+        onPressed: () {
+          context.go('/week');
+        },
+        priority: AdaptiveActionPriority.core,
+      ),
+      
+      // Normal priority actions
+      AdaptiveAppBarAction(
+        icon: const Icon(Icons.track_changes),
+        label: 'Goals',
+        onPressed: () {
+          context.push('/goals');
+        },
+        priority: AdaptiveActionPriority.normal,
+      ),
+      
+      // Low priority actions (first to go into overflow)
+      AdaptiveAppBarAction(
+        icon: const Icon(Icons.people),
+        label: 'People',
+        onPressed: () {
+          context.push('/people');
+        },
+        priority: AdaptiveActionPriority.low,
+      ),
+      AdaptiveAppBarAction(
+        icon: const Icon(Icons.location_on),
+        label: 'Locations',
+        onPressed: () {
+          context.push('/locations');
+        },
+        priority: AdaptiveActionPriority.low,
+      ),
+      AdaptiveAppBarAction(
+        icon: unreadCountAsync.when(
+          data: (count) => Badge(
             isLabelVisible: count > 0,
             label: Text(
               count > 99 ? '99+' : count.toString(),
@@ -153,26 +164,27 @@ class DayViewScreen extends ConsumerWidget {
             ),
             child: const Icon(Icons.notifications),
           ),
-          onPressed: () {
-            context.push('/notifications');
-          },
-          tooltip: 'Notifications${count > 0 ? ' ($count unread)' : ''}',
-        );
-      },
-      loading: () => IconButton(
-        icon: const Icon(Icons.notifications),
+          loading: () => const Icon(Icons.notifications),
+          error: (_, __) => const Icon(Icons.notifications),
+        ),
+        label: unreadCountAsync.when(
+          data: (count) => count > 0 ? 'Notifications ($count unread)' : 'Notifications',
+          loading: () => 'Notifications',
+          error: (_, __) => 'Notifications',
+        ),
         onPressed: () {
           context.push('/notifications');
         },
-        tooltip: 'Notifications',
+        priority: AdaptiveActionPriority.low,
       ),
-      error: (_, __) => IconButton(
-        icon: const Icon(Icons.notifications),
+      AdaptiveAppBarAction(
+        icon: const Icon(Icons.settings),
+        label: 'Settings',
         onPressed: () {
-          context.push('/notifications');
+          context.push('/settings');
         },
-        tooltip: 'Notifications',
+        priority: AdaptiveActionPriority.low,
       ),
-    );
+    ];
   }
 }
