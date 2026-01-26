@@ -7,13 +7,15 @@ import '../../domain/enums/edit_scope.dart';
 /// series. The user can choose to apply the changes to just this activity,
 /// all activities in the series, or (for recurring activities) this and
 /// all future activities.
+/// 
+/// Use [showEditScopeDialog] for the standard use case which returns the
+/// selected scope through the dialog's Future.
 class EditScopeDialog extends StatefulWidget {
   const EditScopeDialog({
     super.key,
     required this.activityTitle,
     required this.seriesCount,
     required this.isRecurring,
-    required this.onScopeSelected,
   });
 
   /// The title of the activity being edited
@@ -24,9 +26,6 @@ class EditScopeDialog extends StatefulWidget {
 
   /// Whether the activity is part of a recurring schedule
   final bool isRecurring;
-
-  /// Callback when the user selects a scope
-  final void Function(EditScope scope) onScopeSelected;
 
   @override
   State<EditScopeDialog> createState() => _EditScopeDialogState();
@@ -98,10 +97,7 @@ class _EditScopeDialogState extends State<EditScopeDialog> {
           child: const Text('Cancel'),
         ),
         FilledButton(
-          onPressed: () {
-            Navigator.pop(context);
-            widget.onScopeSelected(_selectedScope);
-          },
+          onPressed: () => Navigator.pop(context, _selectedScope),
           child: const Text('Continue'),
         ),
       ],
@@ -137,17 +133,12 @@ Future<EditScope?> showEditScopeDialog(
   required int seriesCount,
   required bool isRecurring,
 }) {
-  EditScope? selectedScope;
-  
   return showDialog<EditScope>(
     context: context,
     builder: (context) => EditScopeDialog(
       activityTitle: activityTitle,
       seriesCount: seriesCount,
       isRecurring: isRecurring,
-      onScopeSelected: (scope) {
-        selectedScope = scope;
-      },
     ),
-  ).then((_) => selectedScope);
+  );
 }

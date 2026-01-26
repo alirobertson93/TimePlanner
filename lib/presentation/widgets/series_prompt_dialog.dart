@@ -163,18 +163,14 @@ Future<bool?> showSeriesPromptDialog(
   BuildContext context, {
   required ActivitySeries matchingSeries,
 }) {
-  bool? result;
-  
   return showDialog<bool>(
     context: context,
     builder: (context) => SeriesPromptDialog(
       matchingSeries: matchingSeries,
       onAddToSeries: () {
-        result = true;
         Navigator.pop(context, true);
       },
       onKeepStandalone: () {
-        result = false;
         Navigator.pop(context, false);
       },
     ),
