@@ -6,13 +6,31 @@ This document is the single source of truth for the project's current status, co
 
 ## Current Status
 
-**Project Phase**: Phase 10C Complete - Activity Model Refactor (Series Support Integration)
+**Project Phase**: Phase 10D Complete - Activity Model Refactor Complete
 
-**Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9 Complete (100%), Phase 10A ~80% Complete, Phase 10B Complete (100%), Phase 10C Complete (100%)
+**Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9 Complete (100%), Phase 10A ~80% Complete, Phase 10B Complete (100%), Phase 10C Complete (100%), Phase 10D Complete (100%)
 
-**Active Work**: Activity Model Refactor - Phase 10C complete, ready for Phase 10D
+**Active Work**: Activity Model Refactor Complete - Ready for Phase 5 Planning Wizard Updates (optional)
 
-**Latest Update (2026-01-26 - Phase 10C Series Integration)**:
+**Latest Update (2026-01-26 - Phase 10D Onboarding Wizard Updates)**:
+- ✅ **Phase 10D Complete**:
+  - Updated `_ActivityGoalData` with duration, category, and createGoal fields
+  - Onboarding now creates unscheduled Activity entities for activity bank
+  - Activities have no start/end time (for planning wizard scheduling)
+  - Optional goal creation with `GoalType.activity`
+  - Updated dialog to "Add Unscheduled Activity" with duration/category pickers
+  - Updated page title to "Unscheduled Activities"
+  - Updated summary page to reflect new terminology
+- ✅ **Activity Model Refactor Complete**:
+  - Phase 10A: Terminology refactor, Activity entity, seriesId support
+  - Phase 10B: Optional title, DisplayTitleService, validation
+  - Phase 10C: Series support, matching service, edit service, UI dialogs, form integration
+  - Phase 10D: Onboarding wizard updates for activity bank
+- 🔄 **Optional Next Steps**:
+  - Phase 5: Planning Wizard Updates for activity bank integration
+  - Run Flutter tests (requires Flutter SDK)
+
+**Previous Update (2026-01-26 - Phase 10C Series Integration)**:
 - ✅ **Phase 10C Complete**:
   - Created ActivitySeries model class for grouping related activities
   - Created EditScope enum (thisOnly, allInSeries, thisAndFuture)
@@ -26,10 +44,6 @@ This document is the single source of truth for the project's current status, co
   - **Integrated edit scope dialog into activity form edit flow**
   - Updated EventFormState with seriesId support
   - Created _saveWithSeriesIntegration method for form save with series logic
-- 🔄 **Next: Phase 10D - Onboarding Wizard Updates**:
-  - Rename Step 2 to "Recurring Activities"
-  - Refactor Step 4 to create unscheduled Activities
-  - Add optional goal creation for activities
 
 **Previous Update (2026-01-26 - Phase 10B Optional Title + Display Logic)**:
 - ✅ **Phase 10B Complete**:

@@ -34,6 +34,67 @@ This changelog serves multiple purposes:
 ## Session Log
 
 
+### Session: 2026-01-26 (Activity Model Refactor - Phase 10D Implementation)
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Update Onboarding Wizard to create unscheduled Activities for the activity bank
+
+**Work Completed**:
+
+**Data Model Updates** ✅
+
+- ✅ Updated `_ActivityGoalData` class:
+  - Added `durationMinutes` field for default activity duration
+  - Added `categoryId` field for category association
+  - Added `createGoal` field to make goal creation optional
+
+**Save Flow Updates** ✅
+
+- ✅ Updated activity save flow in `_saveOnboardingData()`:
+  - Now creates unscheduled Activity entities (no start/end time)
+  - Activities go to the activity bank for planning wizard scheduling
+  - Default duration of 1 hour if not specified
+  - Category association supported
+  - Optionally creates associated Goal with `GoalType.activity`
+
+**UI Updates** ✅
+
+- ✅ Updated `_showAddActivityGoalDialog()`:
+  - Renamed dialog title to "Add Unscheduled Activity"
+  - Added duration picker (15min to 3 hours)
+  - Added category dropdown
+  - Added "Set Time Goal" toggle
+  - Goal fields only shown when toggle enabled
+
+- ✅ Updated `_buildActivityGoalsPage()`:
+  - Renamed title to "Unscheduled Activities"
+  - Updated icon to `widgets_outlined`
+  - Updated description to explain activity bank concept
+  - Updated button text to "Add Activity"
+  - Updated card icon to `event_available`
+
+- ✅ Created `_buildActivitySubtitle()`:
+  - Formats duration and goal info for card display
+
+- ✅ Updated summary page:
+  - Changed "Activities Tracked" to "Unscheduled Activities"
+
+- ✅ Updated suggestion chips with `createGoal: true`
+
+**Files Modified**:
+- lib/presentation/screens/onboarding/enhanced_onboarding_screen.dart
+
+**Phase 10D Complete** ✅
+
+**Activity Model Refactor Complete**:
+- Phase 10A: ✅ Terminology refactor, Activity entity, seriesId support
+- Phase 10B: ✅ Optional title, DisplayTitleService, validation
+- Phase 10C: ✅ Series support, matching service, edit service, UI dialogs, form integration
+- Phase 10D: ✅ Onboarding wizard updates for activity bank
+
+---
+
 ### Session: 2026-01-26 (Activity Model Refactor - Phase 10C Integration)
 
 **Author**: AI Assistant (GitHub Copilot)

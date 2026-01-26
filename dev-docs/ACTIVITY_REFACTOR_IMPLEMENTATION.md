@@ -1314,4 +1314,73 @@ Integrated series support into the activity form save/edit flow:
 
 ---
 
+**Session: 2026-01-26 (Phase 10D Implementation - Onboarding Wizard Updates)**
+
+Implemented Phase 10D - Onboarding Wizard Updates for activity bank integration:
+
+### Phase 10D Completed Work:
+
+1. **Updated `_ActivityGoalData` Class**:
+   - Added `durationMinutes` field for default activity duration
+   - Added `categoryId` field for category association
+   - Added `createGoal` field to make goal creation optional
+   - All fields properly documented
+
+2. **Updated Activity Save Flow** (`enhanced_onboarding_screen.dart`):
+   - Now creates unscheduled Activity entities for the activity bank
+   - Activities have no start/end time (for planning wizard scheduling)
+   - Default duration of 1 hour if not specified
+   - Category association supported
+   - Optionally creates associated Goal with `GoalType.activity`
+   - Uses `Event.fromActivity()` for repository compatibility
+
+3. **Updated `_showAddActivityGoalDialog`**:
+   - Renamed dialog title to "Add Unscheduled Activity"
+   - Added duration picker (15min to 3 hours options)
+   - Added category dropdown (loads from categoryRepository)
+   - Added "Set Time Goal" toggle to make goal creation optional
+   - Goal fields only shown when toggle is enabled
+   - Clear explanation that activities go to activity bank
+
+4. **Updated `_buildActivityGoalsPage`**:
+   - Renamed title to "Unscheduled Activities"
+   - Updated icon to `widgets_outlined`
+   - Updated description to explain activity bank concept
+   - Updated button text to "Add Activity"
+   - Updated card icon to `event_available`
+
+5. **Created `_buildActivitySubtitle` Helper**:
+   - Formats duration in hours and minutes
+   - Shows goal info if goal is enabled
+   - Returns "Unscheduled" if no details set
+
+6. **Updated Summary Page**:
+   - Changed "Activities Tracked" to "Unscheduled Activities"
+   - Updated icon to match new theme
+
+7. **Updated Suggestion Chips**:
+   - Added `createGoal: true` for suggested activities
+
+### Files Modified:
+- `lib/presentation/screens/onboarding/enhanced_onboarding_screen.dart` - Onboarding wizard updates
+
+### Phase 10D Complete:
+✅ Step 2 renamed to "Recurring Activities" (already done in previous session)
+✅ Step 4 refactored to create unscheduled Activities for activity bank
+✅ Optional goal creation for activities
+✅ Duration and category support added
+✅ UI updated to reflect activity bank concept
+
+### Activity Model Refactor Complete:
+Phase 10A: ✅ Terminology refactor, Activity entity, seriesId support
+Phase 10B: ✅ Optional title, DisplayTitleService, validation
+Phase 10C: ✅ Series support, matching service, edit service, UI dialogs, form integration
+Phase 10D: ✅ Onboarding wizard updates for activity bank
+
+### Remaining:
+- Run Flutter tests (requires Flutter SDK)
+- Optional: Phase 5 - Planning Wizard Updates for activity bank integration
+
+---
+
 *Last updated: 2026-01-26*
