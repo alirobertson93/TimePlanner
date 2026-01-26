@@ -57,7 +57,7 @@ class GoalProgress {
       case GoalMetric.hours:
         return 'hours';
       case GoalMetric.activities:
-        return 'events';
+        return 'activities';
       case GoalMetric.completions:
         return 'completions';
     }
