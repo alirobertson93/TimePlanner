@@ -6,13 +6,31 @@ This document is the single source of truth for the project's current status, co
 
 ## Current Status
 
-**Project Phase**: Phase 10B Complete - Activity Model Refactor (Optional Title + Display Logic)
+**Project Phase**: Phase 10C Complete - Activity Model Refactor (Series Support)
 
-**Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9 Complete (100%), Phase 10A ~80% Complete, Phase 10B Complete (100%)
+**Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9 Complete (100%), Phase 10A ~80% Complete, Phase 10B Complete (100%), Phase 10C Complete (90%)
 
-**Active Work**: Activity Model Refactor - Phase 10B optional title and display logic complete, ready for Phase 10C
+**Active Work**: Activity Model Refactor - Phase 10C series support implementation complete, integration pending
 
-**Latest Update (2026-01-26 - Phase 10B Optional Title + Display Logic)**:
+**Latest Update (2026-01-26 - Phase 10C Series Support)**:
+- ✅ **Phase 10C Complete**:
+  - Created ActivitySeries model class for grouping related activities
+  - Created EditScope enum (thisOnly, allInSeries, thisAndFuture)
+  - Created SeriesMatchingService for finding matching series
+  - Created SeriesEditService for bulk edit operations with scope
+  - Created SeriesPromptDialog UI widget
+  - Created EditScopeDialog UI widget
+  - Created series_providers.dart with Riverpod providers
+  - Created comprehensive unit tests for services
+- 🔄 **Remaining for Phase 10C**:
+  - Integrate series prompt into activity form save flow
+  - Integrate edit scope dialog into activity form edit flow
+- 🔄 **Next: Phase 10D - Onboarding Wizard Updates**:
+  - Rename Step 2 to "Recurring Activities"
+  - Refactor Step 4 to create unscheduled Activities
+  - Add optional goal creation for activities
+
+**Previous Update (2026-01-26 - Phase 10B Optional Title + Display Logic)**:
 - ✅ **Phase 10B Complete**:
   - Made Activity.name nullable (optional titles)
   - Made Event.name nullable for consistency
@@ -22,11 +40,6 @@ This document is the single source of truth for the project's current status, co
   - Updated EventCard, EventDetailSheet, WeekTimeline to use displayTitle
   - Updated PlanReviewStep with null-safe handling
   - Created activity_test.dart and display_title_service_test.dart
-- 🔄 **Next: Phase 10C - Series Support**:
-  - Create SeriesMatchingService
-  - Create series matching prompt UI
-  - Create edit scope prompt UI
-  - Implement bulk edit with property variance handling
 
 **Previous Update (2026-01-26 - Phase 10A Code Implementation)**:
 - ✅ **Phase 10A Code Implementation** (Major Progress):
@@ -61,7 +74,6 @@ This document is the single source of truth for the project's current status, co
   - Migration guide with SQL examples
   - Testing guidance for each phase
 
-**Previous Update (2026-01-25 - Onboarding Wizard Bug Fixes)**:
 **Previous Update (2026-01-25 - Onboarding Wizard Bug Fixes)**:
 - ✅ **BUG-001 FIXED**: Replay Onboarding from settings now works correctly
   - Added provider invalidation after `resetOnboarding()` to force state refresh

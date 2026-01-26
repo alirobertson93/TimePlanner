@@ -33,6 +33,92 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+
+### Session: 2026-01-26 (Activity Model Refactor - Phase 10C Implementation)
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Implement Phase 10C - Series Support for grouping related activities
+
+**Work Completed**:
+
+**Model Layer** ✅
+
+- ✅ Created `lib/domain/entities/activity_series.dart`:
+  - `ActivitySeries` class for representing grouped activities
+  - Properties: `id`, `activities`, `displayTitle`, `count`
+  - Full copyWith, equality, and hashCode implementations
+
+- ✅ Created `lib/domain/enums/edit_scope.dart`:
+  - `EditScope` enum for edit scope selection
+  - Values: `thisOnly`, `allInSeries`, `thisAndFuture`
+  - Includes `label` and `description` getters
+
+**Service Layer** ✅
+
+- ✅ Created `lib/domain/services/series_matching_service.dart`:
+  - `findMatchingSeries()` - Find existing series matching an activity
+  - `hasMatchingSeries()` - Quick check for matches
+  - `getSeriesCount()` - Get count of activities in a series
+  - Matching rules: same title OR 2+ property matches
+
+- ✅ Created `lib/domain/services/series_edit_service.dart`:
+  - `updateWithScope()` - Update activities based on edit scope
+  - `detectVariance()` - Detect varying properties in a series
+  - `addToSeries()` - Add an activity to a series
+  - `removeFromSeries()` - Remove an activity from a series
+
+**Provider Layer** ✅
+
+- ✅ Created `lib/presentation/providers/series_providers.dart`:
+  - `seriesMatchingServiceProvider` for finding matching series
+  - `seriesEditServiceProvider` for bulk edit operations
+
+**UI Layer** ✅
+
+- ✅ Created `lib/presentation/widgets/series_prompt_dialog.dart`:
+  - Dialog shown when new activity matches existing series
+  - Options: "Add to this series" or "Keep as standalone"
+  - Material Design 3 styling with icons
+
+- ✅ Created `lib/presentation/widgets/edit_scope_dialog.dart`:
+  - Dialog shown when editing activity in a series
+  - Radio button selection for edit scope
+  - Conditionally shows "This and future" for recurring activities
+
+**Tests** ✅
+
+- ✅ Created `test/domain/services/series_matching_service_test.dart`:
+  - Tests for title matching (case-insensitive)
+  - Tests for property matching (2+ properties required)
+  - Tests for series grouping and sorting
+  - Tests for person overlap matching
+  - Tests for ActivitySeries model
+
+- ✅ Created `test/domain/services/series_edit_service_test.dart`:
+  - Tests for updateWithScope (all three scopes)
+  - Tests for detectVariance
+  - Tests for addToSeries/removeFromSeries
+  - Tests for EditScope enum properties
+
+**Files Created**:
+- lib/domain/entities/activity_series.dart (NEW)
+- lib/domain/enums/edit_scope.dart (NEW)
+- lib/domain/services/series_matching_service.dart (NEW)
+- lib/domain/services/series_edit_service.dart (NEW)
+- lib/presentation/widgets/series_prompt_dialog.dart (NEW)
+- lib/presentation/widgets/edit_scope_dialog.dart (NEW)
+- lib/presentation/providers/series_providers.dart (NEW)
+- test/domain/services/series_matching_service_test.dart (NEW)
+- test/domain/services/series_edit_service_test.dart (NEW)
+
+**Next Steps**:
+- Integrate series prompt into activity form save flow
+- Integrate edit scope dialog into activity form edit flow
+- Continue with Phase 10D: Onboarding Wizard Updates
+
+---
+
 ### Session: 2026-01-26 (Activity Model Refactor - Phase 10B Implementation)
 
 **Author**: AI Assistant (GitHub Copilot)

@@ -1027,12 +1027,12 @@ If issues are encountered:
 
 ### Phase 3: Series Support
 - [x] Add seriesId field to Activity - added to entity and database
-- [ ] Create SeriesMatchingService
-- [ ] Create series prompt dialog
-- [ ] Create edit scope dialog
-- [ ] Implement bulk edit logic
+- [x] Create SeriesMatchingService
+- [x] Create series prompt dialog
+- [x] Create edit scope dialog
+- [x] Implement bulk edit logic
 - [ ] Integrate with activity form
-- [ ] Add tests for series functionality
+- [x] Add tests for series functionality
 
 ### Phase 4: Onboarding Wizard Updates
 - [x] Rename Step 2 to "Recurring Activities"
@@ -1164,6 +1164,86 @@ Significant progress made on Phase 10A - Terminology Refactor:
 
 ### Note:
 The Flutter SDK is required to run build_runner for database code generation. Current changes maintain backward compatibility using the Event entity while introducing Activity.
+
+---
+
+**Session: 2026-01-26 (Phase 10C Implementation - Series Support)**
+
+Implemented series support features for grouping related activities:
+
+### Phase 10C Completed Work:
+
+1. **Created ActivitySeries Model** (`lib/domain/entities/activity_series.dart`):
+   - `id` - Unique identifier for the series
+   - `activities` - List of activities in the series
+   - `displayTitle` - Human-readable title
+   - `count` - Number of activities in the series
+   - Full copyWith, equality, and hashCode implementations
+
+2. **Created EditScope Enum** (`lib/domain/enums/edit_scope.dart`):
+   - `thisOnly` - Edit only this activity
+   - `allInSeries` - Edit all activities in the series
+   - `thisAndFuture` - Edit this and all future activities
+   - Includes `label` and `description` getters
+
+3. **Created SeriesMatchingService** (`lib/domain/services/series_matching_service.dart`):
+   - `findMatchingSeries()` - Find existing series matching an activity
+   - `hasMatchingSeries()` - Quick check for matches
+   - `getSeriesCount()` - Get count of activities in a series
+   - Matching rules:
+     - Same title (case-insensitive) = automatic match
+     - 2+ property matches (category, location, person) = match
+
+4. **Created SeriesEditService** (`lib/domain/services/series_edit_service.dart`):
+   - `updateWithScope()` - Update activities based on edit scope
+   - `detectVariance()` - Detect varying properties in a series
+   - `addToSeries()` - Add an activity to a series
+   - `removeFromSeries()` - Remove an activity from a series
+   - Handles bulk edits with proper date filtering for "this and future"
+
+5. **Created SeriesPromptDialog** (`lib/presentation/widgets/series_prompt_dialog.dart`):
+   - Shows when a new activity matches an existing series
+   - Options: "Add to this series" or "Keep as standalone"
+   - `showSeriesPromptDialog()` helper function
+   - Material Design 3 styling
+
+6. **Created EditScopeDialog** (`lib/presentation/widgets/edit_scope_dialog.dart`):
+   - Shows when editing an activity in a series
+   - Radio button selection for scope
+   - Conditionally shows "This and future" option for recurring activities
+   - `showEditScopeDialog()` helper function
+
+7. **Created Series Providers** (`lib/presentation/providers/series_providers.dart`):
+   - `seriesMatchingServiceProvider` - Provider for SeriesMatchingService
+   - `seriesEditServiceProvider` - Provider for SeriesEditService
+
+8. **Created Tests**:
+   - `test/domain/services/series_matching_service_test.dart`:
+     - Tests for title matching (case-insensitive)
+     - Tests for property matching (2+ properties)
+     - Tests for series grouping
+     - Tests for ActivitySeries model
+   - `test/domain/services/series_edit_service_test.dart`:
+     - Tests for updateWithScope (all three scopes)
+     - Tests for detectVariance
+     - Tests for addToSeries/removeFromSeries
+     - Tests for EditScope enum
+
+### Files Created:
+- `lib/domain/entities/activity_series.dart` - **NEW**
+- `lib/domain/enums/edit_scope.dart` - **NEW**
+- `lib/domain/services/series_matching_service.dart` - **NEW**
+- `lib/domain/services/series_edit_service.dart` - **NEW**
+- `lib/presentation/widgets/series_prompt_dialog.dart` - **NEW**
+- `lib/presentation/widgets/edit_scope_dialog.dart` - **NEW**
+- `lib/presentation/providers/series_providers.dart` - **NEW**
+- `test/domain/services/series_matching_service_test.dart` - **NEW**
+- `test/domain/services/series_edit_service_test.dart` - **NEW**
+
+### Remaining for Phase 10C Completion:
+- Integrate series prompt into activity form save flow
+- Integrate edit scope dialog into activity form edit flow
+- Run Flutter tests (requires Flutter SDK)
 
 ---
 
