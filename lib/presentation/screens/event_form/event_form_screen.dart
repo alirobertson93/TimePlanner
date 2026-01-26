@@ -37,6 +37,8 @@ class EventFormScreen extends ConsumerStatefulWidget {
 }
 
 class _EventFormScreenState extends ConsumerState<EventFormScreen> {
+  static const _uuid = Uuid();
+  
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   bool _isInitialized = false;
@@ -814,7 +816,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
     final seriesEditService = ref.read(seriesEditServiceProvider);
 
     // Generate ID for new activities
-    final activityId = formState.id ?? const Uuid().v4();
+    final activityId = formState.id ?? _uuid.v4();
 
     // For editing existing activities that are in a series, show edit scope dialog
     if (formState.isEditMode && formState.isInSeries) {

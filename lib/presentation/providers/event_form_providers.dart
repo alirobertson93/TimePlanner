@@ -109,10 +109,12 @@ class EventFormState {
   /// used when saving.
   Activity buildActivity({required String activityId}) {
     final now = DateTime.now();
+    final trimmedTitle = title.trim();
+    final trimmedDescription = description.trim();
     return Activity(
       id: activityId,
-      name: title.trim().isEmpty ? null : title.trim(),
-      description: description.trim().isEmpty ? null : description.trim(),
+      name: trimmedTitle.isEmpty ? null : trimmedTitle,
+      description: trimmedDescription.isEmpty ? null : trimmedDescription,
       timingType: timingType,
       startTime: timingType == TimingType.fixed && startDate != null && startTime != null
           ? DateTime(

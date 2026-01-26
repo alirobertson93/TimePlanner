@@ -204,14 +204,16 @@ class _EnhancedOnboardingScreenState
     for (final activityData in _activityGoals) {
       // Create unscheduled Activity (goes to activity bank)
       // These activities have no start/end time - they'll be scheduled by the planning wizard
+      final activityDuration = activityData.durationMinutes != null 
+          ? Duration(minutes: activityData.durationMinutes!) 
+          : const Duration(hours: 1); // Default 1 hour if not specified
+      
       final activity = Activity(
         id: uuid.v4(),
         name: activityData.name,
         timingType: TimingType.flexible,
         // No startTime/endTime - unscheduled activity for the activity bank
-        duration: activityData.durationMinutes != null 
-            ? Duration(minutes: activityData.durationMinutes!) 
-            : const Duration(hours: 1), // Default 1 hour if not specified
+        duration: activityDuration,
         categoryId: activityData.categoryId,
         appCanMove: true,
         appCanResize: true,
