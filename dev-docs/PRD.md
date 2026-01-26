@@ -113,27 +113,34 @@ TimePlanner is an AI-powered time planning application that intelligently schedu
 ### Priority Tier 0: MVP (Must Have)
 
 **Core Data Model**
-- ✅ Events with fixed/flexible timing
-- ✅ Categories for organizing events
+- ✅ Activities with fixed/flexible timing
+- ✅ Categories for organizing activities
 - ✅ Basic constraints (movable, resizable, locked)
-- ✅ Event status tracking
+- ✅ Activity status tracking
+- ⏳ Series support for grouping related activities (Planned - Activity Model Refactor)
 
-**Event Management**
-- Create, edit, delete events
-- Support duration-based and time-bound events
+**Activity Management**
+- Create, edit, delete activities
+- Support duration-based and time-bound activities
 - Assign categories
 - Set timing constraints
+- Optional title (with at least one of: title, person, location, category required)
+
+**Activity Bank** (NEW - Activity Model Refactor)
+- Unscheduled activities stored without dates/times
+- Planning wizard draws from activity bank
+- Activities can be scheduled from bank or created as scheduled directly
 
 **Basic Scheduling** (PLANNED)
 - Schedule one week at a time
-- Respect fixed events
-- Place flexible events in available slots
+- Respect fixed activities
+- Place flexible activities in available slots
 - Handle basic conflicts
 
 **Daily View** (PLANNED)
-- See today's scheduled events
-- Mark events as complete
-- Quick add new event
+- See today's scheduled activities
+- Mark activities as complete
+- Quick add new activity
 
 **Weekly Planning** (PLANNED)
 - Simple wizard to generate schedule
@@ -149,34 +156,43 @@ TimePlanner is an AI-powered time planning application that intelligently schedu
 - Multi-pass algorithm with priority levels
 
 **Goals & Progress**
-- Define goals (hours per week on category/person)
+- Define goals (hours per week on category/person/location/activity)
 - Track progress toward goals
 - Show goal status in planning wizard
 - Alert when goals can't be met
+- Activities contribute to all relevant goals when completed
 
-> **Conceptual Note (2026-01-25)**: Goals are **time tracking targets**, not independent items. A goal answers the question "How much time do I want to spend on [X]?" where X is a category (e.g., "Exercise", "Deep Work") or a person (e.g., "Mom", "Partner"). The goal title should be derived from or secondary to the target being tracked. For example: "10 hours/week on Exercise" not "Get more exercise" as a standalone goal.
+> **Conceptual Note (2026-01-25)**: Goals are **time tracking targets**, not independent items. A goal answers the question "How much time do I want to spend on [X]?" where X is a category (e.g., "Exercise", "Deep Work"), a person (e.g., "Mom", "Partner"), a location (e.g., "Home Office"), or a specific activity title (e.g., "Guitar Practice"). The goal title should be derived from or secondary to the target being tracked.
 
 **People & Relationships**
-- Associate people with events
+- Associate people with activities
 - Schedule time with specific people
 - Track relationship goals
 
 **Recurrence**
-- Recurring events (daily, weekly, monthly)
+- Recurring activities (daily, weekly, monthly)
 - Exceptions to recurrence rules
 - Templates for common recurring patterns
 
+**Series Support** (NEW - Activity Model Refactor)
+- Group related activities with seriesId
+- Detect similar activities and prompt to add to series
+- Edit scope options: this one, all in series, this and future
+- Property variance handling for bulk edits
+
 **Rescheduling**
-- Dynamic rescheduling of incomplete events
+- Dynamic rescheduling of incomplete activities
 - Conflict resolution UI
-- Move/resize events with constraint validation
+- Move/resize activities with constraint validation
 
 **Enhanced UI**
 - Week view
-- Event detail modal
-- Full event form with all fields
+- Activity detail modal
+- Full activity form with all fields
 - Constraint picker
 - Plan comparison view
+- Series matching prompt
+- Edit scope selection dialog
 
 ### Priority Tier 2: V1.x (Nice to Have)
 
@@ -187,15 +203,15 @@ TimePlanner is an AI-powered time planning application that intelligently schedu
 - User preference learning
 
 **Smart Templates**
-- Learn from past events
-- Suggest similar events
+- Learn from past activities
+- Suggest similar activities
 - Template library with presets
 
 **Advanced Constraints**
 - Time-of-day preferences (morning person vs night owl)
 - Energy levels throughout day
 - Required breaks between certain activities
-- Maximum events per day
+- Maximum activities per day
 
 **Notifications**
 - Event reminders
@@ -370,16 +386,24 @@ TimePlanner is an AI-powered time planning application that intelligently schedu
 - As a user, I want to generate a schedule for next week so I can see if my commitments are realistic
 - As a user, I want to see multiple schedule options so I can choose what works best
 - As a user, I want to know which goals I'll meet so I can adjust if needed
+- As a user, I want the wizard to draw from my activity bank so unscheduled tasks get placed
 
 ### Daily Execution
 - As a user, I want to see what I should work on now so I don't waste time deciding
-- As a user, I want to mark events as complete so the schedule adjusts for remaining work
+- As a user, I want to mark activities as complete so the schedule adjusts for remaining work
 - As a user, I want to quickly add urgent tasks so they get scheduled appropriately
 
-### Event Management
-- As a user, I want to create recurring events so I don't have to re-enter weekly meetings
-- As a user, I want to set time preferences so flexible events are scheduled when I'm most productive
-- As a user, I want to lock important events so they never get moved
+### Activity Management
+- As a user, I want to create recurring activities so I don't have to re-enter weekly meetings
+- As a user, I want to set time preferences so flexible activities are scheduled when I'm most productive
+- As a user, I want to lock important activities so they never get moved
+- As a user, I want to create activities without titles (just a person or location) for simple tracking
+- As a user, I want to add unscheduled activities to my activity bank for future planning
+
+### Activity Series
+- As a user, I want similar activities to be detected so I can link them together
+- As a user, I want to edit all activities in a series at once so I don't have to repeat changes
+- As a user, I want to choose whether a new activity joins an existing series or stays standalone
 
 ### Goal Tracking
 - As a user, I want to define how much time I spend on each area so I maintain balance

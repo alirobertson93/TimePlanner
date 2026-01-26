@@ -4,7 +4,9 @@ Complete specification for the TimePlanner scheduling engine.
 
 ## Overview
 
-The scheduling engine is the core intelligence of TimePlanner. It takes a set of events (fixed and flexible) along with constraints and generates an optimal schedule.
+The scheduling engine is the core intelligence of TimePlanner. It takes a set of activities (fixed and flexible, scheduled and unscheduled) along with constraints and generates an optimal schedule.
+
+> **Note**: This document uses the term "Activity" as the unified model for all calendar items. The term "Event" may still appear in the current codebase but will be renamed to "Activity" as part of the Activity Model Refactor (see `ACTIVITY_REFACTOR_IMPLEMENTATION.md`).
 
 **Status**: 🟢 Implemented (All 4 strategies complete)
 
@@ -23,7 +25,7 @@ The scheduler is implemented as **pure Dart code with zero Flutter dependencies*
 
 ```
 lib/scheduler/
-├── event_scheduler.dart        # Main scheduling engine
+├── activity_scheduler.dart     # Main scheduling engine (currently: event_scheduler.dart)
 ├── models/
 │   ├── schedule_request.dart   # Input model
 │   ├── schedule_result.dart    # Output model
@@ -53,14 +55,14 @@ lib/scheduler/
 
 ```dart
 class ScheduleRequest {
-  /// Events to schedule (mix of fixed and flexible)
-  final List<Event> events;
+  /// Activities to schedule (mix of fixed and flexible, scheduled and unscheduled)
+  final List<Activity> activities;  // Currently: List<Event> events
   
   /// Time window for scheduling
   final DateTime windowStart;
   final DateTime windowEnd;
   
-  /// User's working hours (for flexible event placement)
+  /// User's working hours (for flexible activity placement)
   final TimeOfDay workDayStart;
   final TimeOfDay workDayEnd;
   
@@ -75,10 +77,10 @@ class ScheduleRequest {
   final Map<(String, String), Duration> travelTimes;
   
   /// Constraints
-  final List<EventConstraint> constraints;
+  final List<ActivityConstraint> constraints;  // Currently: EventConstraint
   
   ScheduleRequest({
-    required this.events,
+    required this.activities,
     required this.windowStart,
     required this.windowEnd,
     required this.strategy,
@@ -99,11 +101,11 @@ class ScheduleResult {
   /// Whether scheduling succeeded
   final bool success;
   
-  /// Scheduled events with assigned times
-  final List<ScheduledEvent> scheduledEvents;
+  /// Scheduled activities with assigned times
+  final List<ScheduledActivity> scheduledActivities;  // Currently: ScheduledEvent
   
-  /// Events that couldn't be scheduled
-  final List<Event> unscheduledEvents;
+  /// Activities that couldn't be scheduled
+  final List<Activity> unscheduledActivities;  // Currently: Event
   
   /// Conflicts detected
   final List<Conflict> conflicts;
@@ -121,8 +123,8 @@ class ScheduleResult {
   
   ScheduleResult({
     required this.success,
-    required this.scheduledEvents,
-    required this.unscheduledEvents,
+    required this.scheduledActivities,
+    required this.unscheduledActivities,
     required this.conflicts,
     required this.goalProgress,
     required this.computationTime,
@@ -133,11 +135,11 @@ class ScheduleResult {
 }
 ```
 
-### ScheduledEvent
+### ScheduledActivity
 
 ```dart
-class ScheduledEvent {
-  final Event event;
+class ScheduledActivity {  // Currently: ScheduledEvent
+  final Activity activity;  // Currently: Event event
   final DateTime scheduledStart;
   final DateTime scheduledEnd;
   final Location? location;
@@ -146,8 +148,8 @@ class ScheduledEvent {
   /// How well this placement satisfies constraints
   final double confidenceScore;
   
-  ScheduledEvent({
-    required this.event,
+  ScheduledActivity({
+    required this.activity,
     required this.scheduledStart,
     required this.scheduledEnd,
     this.location,
@@ -229,41 +231,48 @@ class TimeWindow {
 
 ---
 
-## Event Classification
+## Activity Classification
 
-Events are classified for scheduling:
+Activities are classified for scheduling:
 
-### 1. Fixed Events
+### 1. Fixed Activities
 
 - Have explicit `startTime` and `endTime`
 - Cannot be moved (`isMovable = false` or `timingType = fixed`)
 - Scheduled first, occupy time slots
-- Block slots for flexible events
+- Block slots for flexible activities
 
-### 2. Flexible Events
+### 2. Flexible Activities
 
 - Have `durationMinutes` but no fixed time
 - Can be placed anywhere in available slots
 - Subject to constraints and optimization
 
-### 3. Locked Events
+### 3. Unscheduled Activities (Activity Bank)
+
+- Have no `startTime` (null)
+- Stored in activity bank for planning wizard to draw from
+- May have default `durationMinutes` for when scheduled
+- Converted to scheduled activities when placed
+
+### 4. Locked Activities
 
 - Already scheduled but cannot be changed
-- Treated like fixed events during scheduling
+- Treated like fixed activities during scheduling
 
-### 4. Priority Levels
+### 5. Priority Levels
 
-Events have implicit priority for scheduling:
+Activities have implicit priority for scheduling:
 
 ```dart
-enum EventPriority {
+enum ActivityPriority {  // Currently: EventPriority
   critical,  // Must be scheduled (deadlines, appointments)
   high,      // Should be scheduled
   medium,    // Nice to schedule
   low        // Filler tasks
 }
 
-EventPriority _inferPriority(Event event) {
+ActivityPriority _inferPriority(Activity activity) {
   // Logic to infer priority from:
   // - Explicit priority field (if added)
   // - Category
@@ -276,26 +285,27 @@ EventPriority _inferPriority(Event event) {
 
 ## Multi-Pass Scheduling Algorithm
 
-The core algorithm processes events in multiple passes:
+The core algorithm processes activities in multiple passes:
 
 ### Algorithm Pseudocode
 
 ```
 function schedule(request: ScheduleRequest): ScheduleResult
   1. Initialize availability grid (all slots available)
-  2. Pass 1: Place fixed events
+  2. Pass 1: Place fixed activities
      - Mark their slots as occupied
-     - Detect conflicts between fixed events
-  3. Pass 2: Place locked flexible events
-     - Events previously scheduled and locked
-  4. Pass 3: Place high-priority flexible events
+     - Detect conflicts between fixed activities
+  3. Pass 2: Place locked flexible activities
+     - Activities previously scheduled and locked
+  4. Pass 3: Place high-priority flexible activities
      - Sort by priority
-     - For each event:
+     - For each activity:
        * Find best available window
-       * Place event
+       * Place activity
        * Mark slots occupied
-  5. Pass 4: Place remaining flexible events
+  5. Pass 4: Place remaining flexible activities (including from activity bank)
      - Apply strategy-specific logic
+     - Series matching integration (check for matches, update seriesId)
   6. Pass 5: Optimize placement
      - Try to improve goal satisfaction
      - Minimize fragmentation
@@ -306,58 +316,58 @@ function schedule(request: ScheduleRequest): ScheduleResult
 
 ### Detailed Pass Descriptions
 
-#### Pass 1: Fixed Events
+#### Pass 1: Fixed Activities
 
 ```dart
-void _placeFixedEvents(
-  List<Event> fixedEvents,
+void _placeFixedActivities(
+  List<Activity> fixedActivities,
   AvailabilityGrid grid,
   List<Conflict> conflicts,
 ) {
-  for (final event in fixedEvents) {
-    final window = TimeWindow(event.startTime!, event.endTime!);
+  for (final activity in fixedActivities) {
+    final window = TimeWindow(activity.startTime!, activity.endTime!);
     final slots = window.getSlots();
     
     // Check for conflicts
     for (final slot in slots) {
       if (!grid.isAvailable(slot)) {
         conflicts.add(Conflict(
-          event1: grid.getEventAt(slot),
-          event2: event,
+          activity1: grid.getActivityAt(slot),
+          activity2: activity,
           slot: slot,
           type: ConflictType.overlap,
         ));
       }
     }
     
-    // Place regardless (fixed events have priority)
-    grid.occupy(slots, event);
+    // Place regardless (fixed activities have priority)
+    grid.occupy(slots, activity);
   }
 }
 ```
 
-#### Pass 2: High-Priority Flexible Events
+#### Pass 2: High-Priority Flexible Activities
 
 ```dart
 void _placeHighPriorityFlexible(
-  List<Event> events,
+  List<Activity> activities,
   AvailabilityGrid grid,
   SchedulingStrategy strategy,
 ) {
   // Sort by priority
-  final sorted = events.sortedBy((e) => _getPriority(e));
+  final sorted = activities.sortedBy((a) => _getPriority(a));
   
-  for (final event in sorted) {
-    final slots = _findBestSlots(event, grid, strategy);
+  for (final activity in sorted) {
+    final slots = _findBestSlots(activity, grid, strategy);
     
     if (slots.isEmpty) {
-      unscheduledEvents.add(event);
+      unscheduledActivities.add(activity);
       continue;
     }
     
-    grid.occupy(slots, event);
-    scheduledEvents.add(ScheduledEvent(
-      event: event,
+    grid.occupy(slots, activity);
+    scheduledActivities.add(ScheduledActivity(
+      activity: activity,
       scheduledStart: slots.first.start,
       scheduledEnd: slots.last.end,
     ));
@@ -365,19 +375,26 @@ void _placeHighPriorityFlexible(
 }
 ```
 
-#### Pass 3: Strategy-Specific Placement
+#### Pass 3: Strategy-Specific Placement (Including Activity Bank)
 
-Each strategy implements its own logic for remaining events:
+Each strategy implements its own logic for remaining activities:
 
 ```dart
 abstract class SchedulingStrategy {
   List<TimeSlot> findSlots(
-    Event event,
+    Activity activity,
     AvailabilityGrid grid,
     ScheduleRequest request,
   );
 }
 ```
+
+**Activity Bank Integration**:
+When the wizard schedules an activity from the bank:
+1. Check for series matches using SeriesMatchingService
+2. If match found → prompt user (add to series or standalone)
+3. Create new Activity record with assigned time and seriesId
+4. The scheduled instance is its own Activity (not an "instance" of a template)
 
 ---
 
@@ -652,43 +669,51 @@ class GoalCalculator {
 Goals can now track time in 4 different ways:
 
 1. **Category Goals** (`GoalType.category`):
-   - Match events by `categoryId`
+   - Match activities by `categoryId`
    - Example: "10 hours per week on Work"
    
 2. **Person Goals** (`GoalType.person`):
-   - Match events by `personId` (via EventPeople junction table)
+   - Match activities by `personId` (via ActivityPeople junction table)
    - Example: "5 hours per week with Girlfriend"
    
 3. **Location Goals** (`GoalType.location`) - **Added in Phase 9A**:
-   - Match events by `locationId`
+   - Match activities by `locationId`
    - Example: "15 hours per week at Home"
-   - Tracks all events that occur at the specified location
+   - Tracks all activities that occur at the specified location
    
-4. **Event Goals** (`GoalType.event`) - **Added in Phase 9A**:
-   - Match events by exact title (case-insensitive)
+4. **Activity Goals** (`GoalType.activity`) - **Added in Phase 9A** (renamed from `event`):
+   - Match activities by exact title (case-insensitive)
    - Example: "3 hours per week on Guitar Practice"
    - Useful for tracking specific recurring activities
-   - Title matching uses case-insensitive comparison: `event.title.toLowerCase() == goal.eventTitle.toLowerCase()`
+   - Title matching uses case-insensitive comparison: `activity.title.toLowerCase() == goal.activityTitle.toLowerCase()`
 
 **Implementation**:
 ```dart
-List<Event> _filterRelevantEvents(List<Event> events, Goal goal) {
+List<Activity> _filterRelevantActivities(List<Activity> activities, Goal goal) {
   switch (goal.type) {
     case GoalType.category:
-      return events.where((e) => e.categoryId == goal.categoryId).toList();
+      return activities.where((a) => a.categoryId == goal.categoryId).toList();
     case GoalType.person:
-      // Join with EventPeople table
-      return events.where((e) => _eventHasPerson(e.id, goal.personId)).toList();
+      // Join with ActivityPeople table
+      return activities.where((a) => _activityHasPerson(a.id, goal.personId)).toList();
     case GoalType.location:
-      return events.where((e) => e.locationId == goal.locationId).toList();
-    case GoalType.event:
-      return events.where((e) => 
-        e.title.toLowerCase() == goal.eventTitle?.toLowerCase()).toList();
+      return activities.where((a) => a.locationId == goal.locationId).toList();
+    case GoalType.activity:
+      return activities.where((a) => 
+        a.title?.toLowerCase() == goal.activityTitle?.toLowerCase()).toList();
     case GoalType.custom:
-      return events; // Future implementation
+      return activities; // Future implementation
   }
 }
 ```
+
+**Goal Contribution** (Activity Model Refactor):
+When a scheduled Activity is completed, it contributes to ALL relevant goals:
+
+Example: Activity "Cinema" with person "Girlfriend" and category "Relaxation"
+- Contributes to "Cinema" activity goal (if exists)
+- Contributes to "Girlfriend" person goal (if exists)
+- Contributes to "Relaxation" category goal (if exists)
 
 ---
 
@@ -914,4 +939,4 @@ See TESTING.md for full testing strategy. Key test categories:
 
 ---
 
-*Last updated: 2026-01-25 (Phase 9A: Enhanced Goals System)*
+*Last updated: 2026-01-26 (Activity Model Refactor documentation)*

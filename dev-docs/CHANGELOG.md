@@ -33,6 +33,87 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-26 (Activity Model Refactor - Documentation)
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Establish unified "Activity" model replacing "Event" terminology, add series support for grouping related activities, and enable unscheduled activities as a planning bank.
+
+**Work Completed**:
+
+**Documentation Updates** ✅ **COMPLETE**
+
+- ✅ **Updated DATA_MODEL.md**:
+  - Renamed all Event references to Activity throughout
+  - Renamed Events table documentation to Activities
+  - Renamed EventPeople to ActivityPeople
+  - Documented the new `seriesId` field with full explanation
+  - Documented that `title` (name) is now nullable
+  - Documented the validation rule (must have at least one of: title, person, location, category)
+  - Documented the `displayTitle` computed property with examples
+  - Updated all relationship diagrams and code examples
+  - Updated GoalType enum documentation (event → activity)
+  - Updated Goal entity documentation (eventTitle → activityTitle)
+
+- ✅ **Updated UX_FLOWS.md**:
+  - Updated Onboarding Wizard Step 2: "Recurring Fixed Events" → "Recurring Activities"
+  - Updated Onboarding Wizard Step 4: "Activity Goals" → "Unscheduled Activities" (creates Activity entities, not just Goals)
+  - Added new flow: Series Matching Prompt (when it appears, user options, UI mockup)
+  - Added new flow: Edit Scope Prompt (editing activity in a series, options, property variance handling)
+  - Updated Planning Wizard flow (draws from scheduled and unscheduled activities, series matching integration)
+  - Updated all "event" terminology to "activity" throughout
+
+- ✅ **Updated ARCHITECTURE.md**:
+  - Updated entity references (Event → Activity)
+  - Documented SeriesMatchingService location and purpose
+  - Updated folder structure with renamed files
+  - Updated all code examples with Activity terminology
+  - Added series matching providers documentation
+
+- ✅ **Updated USER_GUIDE.md**:
+  - Changed all user-facing "event" terminology to "activity"
+  - Added new section explaining Activity Series (user-friendly explanation)
+  - Updated Key Concepts with activity bank and series
+  - Updated all instructions and examples
+
+- ✅ **Updated PRD.md**:
+  - Updated terminology throughout
+  - Documented the activity bank concept
+  - Documented the series concept
+  - Added new user stories for series functionality
+
+- ✅ **Updated ALGORITHM.md**:
+  - Updated planning wizard algorithm documentation
+  - Included series matching in the scheduling flow
+  - Documented activity bank integration
+  - Updated all Event references to Activity
+
+- ✅ **Created ACTIVITY_REFACTOR_IMPLEMENTATION.md**:
+  - Comprehensive 5-phase implementation guide
+  - Phase 1: Terminology Refactor (database, entities, repositories, UI)
+  - Phase 2: Optional Title + Display Logic (validation, displayTitle)
+  - Phase 3: Series Support (seriesId, SeriesMatchingService, prompts, bulk edit)
+  - Phase 4: Onboarding Wizard Updates
+  - Phase 5: Planning Wizard Updates
+  - Full file reference tables (rename, modify, create)
+  - Migration guide with SQL examples
+  - Testing guidance for each phase
+
+**Files Changed/Created**:
+- `dev-docs/DATA_MODEL.md` - Updated with Activity terminology
+- `dev-docs/UX_FLOWS.md` - Updated with Activity terminology and new flows
+- `dev-docs/ARCHITECTURE.md` - Updated with Activity terminology
+- `dev-docs/USER_GUIDE.md` - Updated with Activity terminology and series section
+- `dev-docs/PRD.md` - Updated with Activity terminology and new features
+- `dev-docs/ALGORITHM.md` - Updated with Activity terminology
+- `dev-docs/ACTIVITY_REFACTOR_IMPLEMENTATION.md` - **NEW** comprehensive implementation guide
+- `dev-docs/CHANGELOG.md` - This entry
+- `dev-docs/ROADMAP.md` - Added Phase 10 section
+
+**Implementation Status**: Documentation complete, code implementation to follow
+
+---
+
 ### Session: 2026-01-25 (Bug Fix - Onboarding Wizard Replay)
 
 **Author**: AI Assistant (GitHub Copilot)

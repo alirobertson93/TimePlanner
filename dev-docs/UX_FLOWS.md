@@ -6,7 +6,9 @@ User journey documentation for TimePlanner.
 
 This document defines all user interactions and workflows in TimePlanner. Use this as a reference when implementing features or designing UI.
 
-**Last Updated**: 2026-01-25
+> **Note**: This document uses the term "Activity" as the unified model for all calendar items. The term "Event" may still appear in the current codebase but will be renamed to "Activity" as part of the Activity Model Refactor (see `ACTIVITY_REFACTOR_IMPLEMENTATION.md`).
+
+**Last Updated**: 2026-01-26
 
 ---
 
@@ -16,7 +18,7 @@ This document defines all user interactions and workflows in TimePlanner. Use th
 
 **Entry Point**: App first launch
 
-**Purpose**: Guide users through establishing their recurring week-by-week schedule, including fixed events, people they want to spend time with, activity goals, and locations.
+**Purpose**: Guide users through establishing their recurring week-by-week schedule, including recurring activities, people they want to spend time with, unscheduled activities (activity bank), and locations.
 
 **Progress Indicator**: Linear progress bar showing completion percentage across all steps
 
@@ -25,24 +27,24 @@ This document defines all user interactions and workflows in TimePlanner. Use th
 1. **Welcome Screen**
    - Welcome message with app logo/icon
    - Brief explanation of what the wizard will help set up:
-     - Recurring events (work, gym, etc.)
+     - Recurring activities (work, gym, etc.)
      - People you want to spend time with
-     - Activity goals (exercise, reading, etc.)
+     - Unscheduled activities (activity bank)
      - Main locations
    - "Get Started" button (Next)
    - "Skip" option (goes to main app with defaults)
 
-2. **Recurring Fixed Events Setup**
-   - Header: "Recurring Fixed Events" with repeat icon
-   - Description: "Add events that happen at the same time each week"
-   - List of added recurring events (with delete option)
-   - "Add Recurring Event" button opens dialog:
-     - Event Name (required)
+2. **Recurring Activities Setup**
+   - Header: "Recurring Activities" with repeat icon
+   - Description: "Add activities that happen at the same time each week"
+   - List of added recurring activities (with delete option)
+   - "Add Recurring Activity" button opens dialog:
+     - Activity Name (required)
      - Description (optional)
      - Start time picker
      - End time picker
      - Day selector chips (S, M, T, W, T, F, S)
-   - Empty state: "No recurring events added yet. You can skip this step or add them later."
+   - Empty state: "No recurring activities added yet. You can skip this step or add them later."
    - Back/Next navigation
 
 3. **People & Time Goals Setup**
@@ -59,14 +61,17 @@ This document defines all user interactions and workflows in TimePlanner. Use th
    - Examples: "Mum - 5 hours per week", "Girlfriend - 8 hours per week"
    - Back/Next navigation
 
-4. **Activity Goals Setup**
-   - Header: "Activity Goals" with flag icon
-   - Description: "Set goals for activities you want to make time for"
-   - List of added activity goals
-   - "Add Activity Goal" button opens dialog:
+4. **Unscheduled Activities Setup** (Activity Bank)
+   - Header: "Unscheduled Activities" with flag icon
+   - Description: "Add activities you want to make time for. These go into your activity bank for the planning wizard to schedule."
+   - List of added unscheduled activities with optional time goals
+   - "Add Activity" button opens dialog:
      - Activity Name (required)
-     - Hours dropdown (1-20)
-     - Period dropdown (Per week / Per month)
+     - Duration (optional) - default duration for when scheduled
+     - Category (optional)
+     - Time Goal section (optional):
+       - Hours dropdown (0-20, 0 = "No goal")
+       - Period dropdown (Per week / Per month)
    - Suggested activities as quick-add chips:
      - Exercise (3 hrs/week)
      - Reading (2 hrs/week)
@@ -75,6 +80,7 @@ This document defines all user interactions and workflows in TimePlanner. Use th
      - Hobbies (3 hrs/week)
      - Side Project (5 hrs/week)
    - Back/Next navigation
+   - **Data Created**: Unscheduled Activity entities (no startTime/endTime) + optional associated Goals
 
 5. **Places Setup**
    - Header: "Your Places" with location icon
@@ -96,18 +102,18 @@ This document defines all user interactions and workflows in TimePlanner. Use th
 6. **Summary & Completion**
    - Success icon and "You're All Set!" message
    - Summary counts:
-     - Recurring Events: X
+     - Recurring Activities: X
      - People Added: X
-     - Activity Goals: X
+     - Unscheduled Activities: X
      - Locations: X
-   - Tip: "Use the Planning Wizard to automatically schedule your flexible events around your fixed commitments."
+   - Tip: "Use the Planning Wizard to automatically schedule your flexible activities around your fixed commitments."
    - "Get Started" button → Saves all data and goes to main app
 
 **Data Created**:
-- Recurring events are saved with weekly recurrence rules
+- Recurring activities are saved with weekly recurrence rules
 - People are saved with associated time goals (GoalType.person)
-- Activity goals are saved as custom goals (GoalType.custom)
-- Locations are saved with optional time goals
+- Unscheduled activities are saved as Activity entities WITHOUT dates (activity bank) + optional time goals (GoalType.activity)
+- Locations are saved with optional time goals (GoalType.location)
 
 **Exit Points**:
 - ✅ Complete onboarding → Day View (all data saved)
@@ -117,7 +123,7 @@ This document defines all user interactions and workflows in TimePlanner. Use th
 **Time Goal Periods**:
 - **Per Week**: Progress tracked against current week (Monday-Sunday)
 - **Per Month**: Progress tracked against current calendar month
-  - The app calculates boundaries and aggregates events accordingly
+  - The app calculates boundaries and aggregates activities accordingly
   - See `goal_providers.dart` for implementation details
 
 ---
@@ -147,6 +153,20 @@ This document defines all user interactions and workflows in TimePlanner. Use th
 - "Create Schedule" from Week View
 - Automatic prompt on Sunday evening
 
+**Source Activities**:
+The wizard draws from ALL activities:
+- **Unscheduled activities** (the activity bank) - Activities without dates/times
+- **Previously scheduled activities** (historical) - Can suggest scheduling again
+- **Recurring activities** - Expanded based on recurrence rules
+
+**Series Integration**:
+When the wizard schedules an activity:
+1. Check for series matches (same title OR 2+ property matches)
+2. If match found → show series prompt (add to series or standalone)
+3. Create new Activity record with appropriate seriesId
+
+**Important**: Each scheduled instance is its own Activity record. The wizard doesn't create "instances" of a template - it creates new Activities that may or may not be linked via seriesId.
+
 #### Step 1: Date Range Selection
 
 **Screen**: Date range picker
@@ -156,7 +176,7 @@ This document defines all user interactions and workflows in TimePlanner. Use th
 - Week selector (defaults to upcoming week)
 - Start date: [Date Picker] (defaults to next Monday)
 - End date: [Date Picker] (defaults to next Sunday)
-- Info: Shows count of existing events in range
+- Info: Shows count of existing activities in range
 - "Next" button
 
 **Validation**:
@@ -228,12 +248,12 @@ This document defines all user interactions and workflows in TimePlanner. Use th
   - Green (on track), Yellow (at risk), Red (behind)
 - Schedule preview:
   - Day-by-day view
-  - Event count per day
+  - Activity count per day
   - Visual timeline
-- Expand button for each day → Shows all events
+- Expand button for each day → Shows all activities
 - Conflicts/Warnings section (if any):
-  - "3 events couldn't be scheduled"
-  - List of unscheduled events
+  - "3 activities couldn't be scheduled"
+  - List of unscheduled activities
   - Suggested actions
 - "Accept Schedule" button (primary)
 - "Try Different Strategy" button (secondary)
@@ -242,8 +262,8 @@ This document defines all user interactions and workflows in TimePlanner. Use th
 **Actions**:
 - Accept → Saves schedule, goes to Week View
 - Try Different → Goes back to Step 3
-- Tap day → Expand to show events
-- Tap unscheduled event → Options to remove/shorten
+- Tap day → Expand to show activities
+- Tap unscheduled activity → Options to remove/shorten
 
 **Exit Points**:
 - ✅ Accept → Week View with new schedule
@@ -275,6 +295,117 @@ This document defines all user interactions and workflows in TimePlanner. Use th
 
 ---
 
+### Series Matching Prompt (NEW - Activity Model Refactor)
+
+**Entry Point**: 
+- When saving a new activity (from activity form)
+- When scheduling an activity (from planning wizard)
+
+**Trigger Conditions** (prompt if ANY are true):
+- Same title (case-insensitive) as an existing activity
+- At least 2 matches among: person(s), location, category
+
+**Screen** (Bottom Sheet):
+```
+┌─────────────────────────────────────────────────┐
+│  This looks similar to an existing activity     │
+│                                                 │
+│  "Cinema with Girlfriend" (3 previous times)    │
+│                                                 │
+│  ┌─────────────────────────────────────────┐   │
+│  │  Add to this series                     │   │
+│  │  Changes to shared properties will      │   │
+│  │  apply to all activities in the series  │   │
+│  └─────────────────────────────────────────┘   │
+│                                                 │
+│  ┌─────────────────────────────────────────┐   │
+│  │  Keep as standalone                     │   │
+│  │  This activity won't be linked to      │   │
+│  │  any others                             │   │
+│  └─────────────────────────────────────────┘   │
+│                                                 │
+└─────────────────────────────────────────────────┘
+```
+
+**Actions**:
+- "Add to this series" → Sets `seriesId` to match existing series
+- "Keep as standalone" → Creates activity with unique `seriesId` (or null)
+
+**Logic**:
+```dart
+// SeriesMatchingService.findMatchingSeries(Activity)
+bool isMatch(Activity newActivity, Activity existing) {
+  // Title match (case-insensitive)
+  if (newActivity.title?.toLowerCase() == existing.title?.toLowerCase() &&
+      newActivity.title != null) {
+    return true;
+  }
+  
+  // Property match (2+ of: person, location, category)
+  int matchCount = 0;
+  if (newActivity.categoryId != null && 
+      newActivity.categoryId == existing.categoryId) matchCount++;
+  if (newActivity.locationId != null && 
+      newActivity.locationId == existing.locationId) matchCount++;
+  if (hasSamePerson(newActivity, existing)) matchCount++;
+  
+  return matchCount >= 2;
+}
+```
+
+---
+
+### Edit Scope Prompt (NEW - Activity Model Refactor)
+
+**Entry Point**: When editing an activity that belongs to a series (`seriesId` is not null AND other activities share the same `seriesId`)
+
+**Screen** (Dialog):
+```
+┌─────────────────────────────────────────────────┐
+│  Edit Activity                                  │
+│                                                 │
+│  This activity is part of a series (5 total)   │
+│                                                 │
+│  What would you like to edit?                   │
+│                                                 │
+│  ○ This activity only                          │
+│  ○ All activities in this series               │
+│  ○ This and all future activities              │  ← only if recurring
+│                                                 │
+│           [Cancel]    [Continue]                │
+└─────────────────────────────────────────────────┘
+```
+
+**Options**:
+1. **This activity only** → Normal edit, doesn't affect other activities
+2. **All activities in this series** → Bulk edit all activities with same `seriesId`
+3. **This and all future activities** → Only shown for recurring activities; edits this and future instances
+
+**Property Variance Handling** (when "All in series" selected):
+
+If properties vary across activities in the series, show a second step:
+
+```
+┌─────────────────────────────────────────────────┐
+│  Some properties differ across this series:     │
+│                                                 │
+│  • Duration: varies (30min, 45min, 1hr)        │
+│  • Location: varies (Cinema A, Cinema B)        │
+│                                                 │
+│  ☑ Update Duration to match (1hr)              │
+│  ☐ Update Location to match (Cinema A)          │
+│                                                 │
+│           [Cancel]    [Save Changes]            │
+└─────────────────────────────────────────────────┘
+```
+
+**Logic**:
+- Detect which properties vary across series
+- For checked properties: update all activities to match current values
+- For unchecked properties: leave unchanged in each activity
+
+---
+
 ## Layer 3: Daily/Live Adjustment Flows
 
 ### Day View (Main Screen)
@@ -300,21 +431,21 @@ This document defines all user interactions and workflows in TimePlanner. Use th
 │ 1:00 PM └──────────────────┘ │
 │         ...                  │
 └──────────────────────────────┘
-         [+ Add Event] ← FAB
+         [+ Add Activity] ← FAB
 ```
 
 **Interactions**:
 - Swipe left/right → Next/previous day
-- Tap event → Opens Event Detail modal
-- Long press event → Quick actions menu
+- Tap activity → Opens Activity Detail modal
+- Long press activity → Quick actions menu
 - Tap empty space → Quick Add at that time
-- [+] FAB → Full Event Form
+- [+] FAB → Full Activity Form
 - [Week] button → Week View
-- Pull to refresh → Reload events
+- Pull to refresh → Reload activities
 
 **Status Indicators**:
 - Current time marker (red line)
-- Event status:
+- Activity status:
   - Pending (default)
   - In Progress (green border)
   - Completed (checkmark, dimmed)
@@ -322,20 +453,21 @@ This document defines all user interactions and workflows in TimePlanner. Use th
 
 ---
 
-### Event Tap Actions (Event Detail Modal)
+### Activity Tap Actions (Activity Detail Modal)
 
-**Trigger**: Tap event in Day View
+**Trigger**: Tap activity in Day View
 
 **Modal Content** (Bottom Sheet):
 ```
 ┌──────────────────────────────┐
-│         [Event Title]        │
+│         [Activity Title]     │
 │                              │
 │ 📅 Thu, Jan 16               │
 │ 🕐 10:00 AM - 11:30 AM       │
 │ 📁 Category: Work            │
 │ 📍 Location: Office          │
 │ 👤 With: Alice, Bob          │
+│ 🔗 Part of series (5 total)  │  ← Only if seriesId exists
 │                              │
 │ [Description text...]        │
 │                              │
@@ -346,15 +478,16 @@ This document defines all user interactions and workflows in TimePlanner. Use th
 ```
 
 **Actions**:
-1. **Edit** → Opens Event Form (edit mode)
+1. **Edit** → Opens Activity Form (edit mode); shows Edit Scope Prompt if part of series
 2. **Move** → Opens Reschedule flow
 3. **Done** → Marks complete, reschedules remaining
-4. **Delete** → Confirmation dialog → Deletes
+4. **Delete** → Confirmation dialog → Deletes (with series options if applicable)
 
 **Variations**:
-- Fixed events: "Move" button disabled or warning
-- Locked events: "Edit" and "Move" disabled
-- Recurring events: "Edit This" vs "Edit Series"
+- Fixed activities: "Move" button disabled or warning
+- Locked activities: "Edit" and "Move" disabled
+- Recurring activities: "Edit This" vs "Edit Series"
+- Series activities: Shows "Part of series (N total)" indicator
 
 ---
 
@@ -404,7 +537,7 @@ Options:
 **Modal** (Small):
 ```
 ┌──────────────────────────┐
-│ Quick Add Event          │
+│ Quick Add Activity       │
 │                          │
 │ Title: [_____________]   │
 │                          │
@@ -417,69 +550,79 @@ Options:
 ```
 
 **Fields**:
-- Title (required)
+- Title (optional - see validation rules)
 - Time (pre-filled from tap location)
 - Duration dropdown (15min, 30min, 1hr, 2hr, custom)
 - Category dropdown
 
 **Actions**:
-- "Add" → Creates event, closes modal
-- "More Options" → Opens full Event Form with prefilled data
+- "Add" → Creates activity (with series matching check), closes modal
+- "More Options" → Opens full Activity Form with prefilled data
 
 ---
 
-### Event Completion
+### Activity Completion
 
-**Trigger**: Tap "Done" on event
+**Trigger**: Tap "Done" on activity
 
 **Actions**:
-1. Marks event as completed
-2. Prompts: "Reschedule remaining flexible events?"
+1. Marks activity as completed
+2. Prompts: "Reschedule remaining flexible activities?"
    - "Yes" → Triggers rescheduling in background
    - "No" → Just marks complete
-3. Updates goal progress
+3. Updates goal progress (contributes to ALL relevant goals)
 4. Shows brief success message
 
+**Goal Contribution** (when activity completes):
+A completed activity contributes to ALL matching goals:
+- Title goal (if `GoalType.activity` with matching `activityTitle`)
+- Person goal (if `GoalType.person` with matching person via ActivityPeople)
+- Location goal (if `GoalType.location` with matching `locationId`)
+- Category goal (if `GoalType.category` with matching `categoryId`)
+
 **Visual Feedback**:
-- Event dims and shows checkmark
+- Activity dims and shows checkmark
 - Confetti animation (optional)
 - Goal progress updates
 
 ---
 
-### Full Event Form
+### Full Activity Form
 
 **Entry Point**: 
 - FAB (+) button
 - "More Options" from Quick Add
-- "Edit" from Event Detail
+- "Edit" from Activity Detail
 
 **Form Fields**:
 
 **Basic**:
-- Title* (text input)
+- Title (text input) - **OPTIONAL** (see validation)
 - Description (text area)
-- Category (dropdown)
+- Category (dropdown) - can satisfy minimum requirement
 
 **Timing**:
 - Type selector:
-  - [Fixed Time] [Flexible]
+  - [Fixed Time] [Flexible] [Unscheduled]
 - If Fixed:
   - Start Date/Time picker
   - End Date/Time picker
 - If Flexible:
   - Duration picker (hours, minutes)
   - Preferred time of day (morning/afternoon/evening)
+- If Unscheduled:
+  - Default Duration picker (for when scheduled)
+  - Goes into Activity Bank
 
 **Details**:
-- Location (dropdown + create new)
-- People (multi-select + create new)
+- Location (dropdown + create new) - can satisfy minimum requirement
+- People (multi-select + create new) - can satisfy minimum requirement
 - Goals (multi-select from active goals)
 
 **Constraints** (Expandable):
 - Movable (toggle)
 - Resizable (toggle)
-- Lock this event (toggle)
+- Lock this activity (toggle)
 - Must occur between (time window picker)
 
 **Recurrence** (Expandable):
@@ -488,15 +631,20 @@ Options:
 - On [days of week]
 - Ends [Never/On date/After N times]
 
+**Validation**:
+- Must have at least ONE of: title, person, location, category
+- Invalid if none of the above are provided
+- Conflict warning if fixed time overlaps
+- Invalid time range errors
+
+**Series Integration**:
+- On save, check for series matches
+- Show Series Matching Prompt if match found
+
 **Actions**:
 - "Save" button (primary)
 - "Cancel" button (secondary)
 - "Delete" button (if editing, destructive style)
-
-**Validation**:
-- Required fields highlighted
-- Conflict warning if fixed time overlaps
-- Invalid time range errors
 
 ---
 
@@ -505,8 +653,8 @@ Options:
 ### Conflict Detection
 
 **When**: 
-- Creating fixed event
-- Moving event
+- Creating fixed activity
+- Moving activity
 - Accepting schedule
 
 **Alert**:
@@ -514,7 +662,7 @@ Options:
 ┌──────────────────────────────┐
 │ ⚠️ Scheduling Conflict       │
 │                              │
-│ "New Event" (2:00 - 3:00 PM) │
+│ "New Activity" (2:00 - 3:00) │
 │        conflicts with        │
 │ "Meeting" (2:30 - 3:30 PM)   │
 │                              │
@@ -522,18 +670,18 @@ Options:
 │ resolve this?                │
 │                              │
 │ ┌──────────────────────────┐ │
-│ │ Move "New Event"         │ │
+│ │ Move "New Activity"      │ │
 │ │ Move "Meeting"           │ │
-│ │ Shorten "New Event"      │ │
+│ │ Shorten "New Activity"   │ │
 │ │ Cancel                   │ │
 │ └──────────────────────────┘ │
 └──────────────────────────────┘
 ```
 
 **Resolution Options**:
-1. **Move newer event** → Opens time picker
-2. **Move existing event** → Opens time picker (if movable)
-3. **Shorten event** → Adjusts duration to fit
+1. **Move newer activity** → Opens time picker
+2. **Move existing activity** → Opens time picker (if movable)
+3. **Shorten activity** → Adjusts duration to fit
 4. **Cancel** → Discards changes
 
 ---
@@ -583,7 +731,7 @@ Options:
 
 ### Event Reminders
 
-**Trigger**: 15 minutes before event (configurable)
+**Trigger**: 15 minutes before activity (configurable)
 
 **Notification**:
 ```
@@ -597,7 +745,7 @@ TimePlanner
 
 **Actions**:
 - Tap notification → Opens app to Day View
-- "View" → Opens Event Detail
+- "View" → Opens Activity Detail
 - "Snooze" → Reminds again in 5 minutes
 
 ---
@@ -611,7 +759,7 @@ TimePlanner
 TimePlanner
 ──────────────────
 ✅ Your schedule is ready!
-   15 events scheduled
+   15 activities scheduled
    2 goals on track
    
 [View Schedule]
@@ -642,7 +790,7 @@ TimePlanner
 
 ## Error States
 
-### No Events
+### No Activities
 
 **Day View**:
 ```
@@ -650,9 +798,9 @@ TimePlanner
 │                              │
 │      📅                      │
 │                              │
-│  No events today             │
+│  No activities today         │
 │                              │
-│  [Add Event]                 │
+│  [Add Activity]              │
 │                              │
 └──────────────────────────────┘
 ```
@@ -669,11 +817,11 @@ TimePlanner
 │ your requirements.           │
 │                              │
 │ Suggestions:                 │
-│ • Remove some events         │
+│ • Remove some activities     │
 │ • Relax time constraints     │
 │ • Extend the time window     │
 │                              │
-│ [Try Again] [Adjust Events]  │
+│ [Try Again] [Adjust Activities]│
 └──────────────────────────────┘
 ```
 
@@ -690,4 +838,4 @@ Changes saved locally.
 
 ---
 
-*Last updated: 2026-01-16*
+*Last updated: 2026-01-26 (Activity Model Refactor documentation)*

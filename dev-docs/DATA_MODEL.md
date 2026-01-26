@@ -10,24 +10,26 @@ This document defines the complete data model for TimePlanner. The database is i
 
 **Current Schema Version**: 12 (Phase 9A in progress)
 
+> **Note**: This document uses the term "Activity" as the unified model for all calendar items. The term "Event" may still appear in the current codebase but will be renamed to "Activity" as part of the Activity Model Refactor (see `ACTIVITY_REFACTOR_IMPLEMENTATION.md`).
+
 **Implemented Tables** (9 total):
-- Events ✅
+- Activities (currently named Events) ✅
 - Categories ✅
 - Goals ✅ (with personId for relationship goals, added v9)
 - People ✅
-- EventPeople ✅
+- ActivityPeople (currently named EventPeople) ✅
 - Locations ✅
 - RecurrenceRules ✅
 - Notifications ✅
 - TravelTimePairs ✅ (added v10)
 
 **Not Yet Implemented Tables** (7 total):
-- EventConstraints ❌
-- EventGoals ❌
+- ActivityConstraints (currently named EventConstraints) ❌
+- ActivityGoals (currently named EventGoals) ❌
 - GoalProgress ❌
-- EventTemplates ❌
+- ActivityTemplates (currently named EventTemplates) ❌
 - Schedules ❌
-- ScheduledEvents ❌
+- ScheduledActivities (currently named ScheduledEvents) ❌
 - UserSettings ❌ (Note: User settings use SharedPreferences instead)
 
 ## Database Architecture
@@ -46,22 +48,31 @@ This document defines the complete data model for TimePlanner. The database is i
 
 ---
 
-### 1. Events Table ✅
+### 1. Activities Table ✅
 
-Core table for all events (fixed and flexible).
+> **Naming Note**: Currently implemented as `Events` table in codebase. Will be renamed to `Activities` as part of the Activity Model Refactor.
+
+Core table for all activities (scheduled and unscheduled, fixed and flexible).
+
+**What is an Activity?**
+An Activity is any item the user wants to track or schedule. An Activity can be:
+- **Scheduled** - Has a specific date/time, appears on the calendar
+- **Unscheduled** - No date/time, exists in an "activity bank" for the planning wizard
+
+Both are the same entity type - the difference is whether time properties are populated.
 
 ```dart
-class Events extends Table {
+class Activities extends Table {  // Currently: Events
   // Primary key
   TextColumn get id => text()();
   
   // Basic properties
-  TextColumn get title => text()();
+  TextColumn get title => text().nullable()();  // NOW NULLABLE - see validation rules
   TextColumn get description => text().nullable()();
   IntColumn get timingType => intEnum<TimingType>()();
-  IntColumn get status => intEnum<EventStatus>()();
+  IntColumn get status => intEnum<ActivityStatus>()();  // Currently: EventStatus
   
-  // Time properties
+  // Time properties (null for unscheduled activities)
   DateTimeColumn get startTime => dateTime().nullable()();
   DateTimeColumn get endTime => dateTime().nullable()();
   IntColumn get durationMinutes => integer().nullable()();
@@ -74,11 +85,14 @@ class Events extends Table {
   // Relationships
   TextColumn get categoryId => text().nullable().references(Categories, #id)();
   TextColumn get locationId => text().nullable().references(Locations, #id)();
-  TextColumn get templateId => text().nullable().references(EventTemplates, #id)();
+  TextColumn get templateId => text().nullable().references(ActivityTemplates, #id)();  // Currently: EventTemplates
   
   // Recurrence
   TextColumn get recurrenceRuleId => text().nullable().references(RecurrenceRules, #id)();
   DateTimeColumn get recurrenceParentDate => dateTime().nullable()();
+  
+  // Series grouping (NEW - Activity Model Refactor)
+  TextColumn get seriesId => text().nullable()();  // Groups related activities together
   
   // Metadata
   DateTimeColumn get createdAt => dateTime()();
@@ -89,24 +103,66 @@ class Events extends Table {
 }
 ```
 
+**Validation Rules**:
+
+An Activity must have **at least one** of the following (enforced in repository/entity):
+- `title` (non-empty)
+- Person (via ActivityPeople junction)
+- `locationId`
+- `categoryId`
+
+This makes `title` optional - an activity can exist with just a person, location, or category.
+
+**Display Title Logic** (computed property):
+
+Since title is now optional, the app uses a computed `displayTitle` for UI rendering:
+
+```dart
+String get displayTitle {
+  if (title != null && title!.isNotEmpty) {
+    return title!;
+  }
+  // Concatenate available properties with separator
+  return [person?.name, location?.name, category?.name]
+    .where((s) => s != null && s.isNotEmpty)
+    .join(' · ');
+}
+```
+
+**Series Field** (`seriesId`):
+
+The `seriesId` field groups related activities together, independent of recurrence:
+
+| Concept | Field | Purpose |
+|---------|-------|---------|
+| Recurrence | `recurrenceRuleId` | Defines a pattern (every Monday, monthly on 15th) |
+| Series | `seriesId` | Groups related activities regardless of pattern |
+
+- Recurring activities have BOTH `recurrenceRuleId` AND `seriesId`
+- Ad-hoc matched activities have only `seriesId`
+- Standalone activities have neither (or a unique `seriesId`)
+
 **Indexes** (added in schema v11):
 ```dart
-@TableIndex(name: 'idx_events_start_time', columns: {#fixedStartTime})
-@TableIndex(name: 'idx_events_end_time', columns: {#fixedEndTime})
-@TableIndex(name: 'idx_events_category', columns: {#categoryId})
-@TableIndex(name: 'idx_events_status', columns: {#status})
+@TableIndex(name: 'idx_activities_start_time', columns: {#startTime})  // Currently: idx_events_start_time
+@TableIndex(name: 'idx_activities_end_time', columns: {#endTime})  // Currently: idx_events_end_time
+@TableIndex(name: 'idx_activities_category', columns: {#categoryId})  // Currently: idx_events_category
+@TableIndex(name: 'idx_activities_status', columns: {#status})  // Currently: idx_events_status
+@TableIndex(name: 'idx_activities_series', columns: {#seriesId})  // NEW - for series lookups
 ```
 
 ---
 
-### 2. EventConstraints Table ❌
+### 2. ActivityConstraints Table ❌
 
-Detailed constraints for event scheduling (time preferences, energy levels, etc.).
+> **Naming Note**: Currently documented as `EventConstraints`. Will be renamed to `ActivityConstraints` as part of the Activity Model Refactor.
+
+Detailed constraints for activity scheduling (time preferences, energy levels, etc.).
 
 ```dart
-class EventConstraints extends Table {
+class ActivityConstraints extends Table {  // Currently: EventConstraints
   TextColumn get id => text()();
-  TextColumn get eventId => text().references(Events, #id, onDelete: KeyAction.cascade)();
+  TextColumn get activityId => text().references(Activities, #id, onDelete: KeyAction.cascade)();  // Currently: eventId
   
   // Constraint details
   IntColumn get constraintType => intEnum<ConstraintType>()();
@@ -223,17 +279,19 @@ class People extends Table {
 
 ---
 
-### 6. EventPeople Table ✅
+### 6. ActivityPeople Table ✅
 
-Many-to-many relationship between Events and People.
+> **Naming Note**: Currently implemented as `EventPeople` table in codebase. Will be renamed to `ActivityPeople` as part of the Activity Model Refactor.
+
+Many-to-many relationship between Activities and People.
 
 ```dart
-class EventPeople extends Table {
-  TextColumn get eventId => text().references(Events, #id, onDelete: KeyAction.cascade)();
+class ActivityPeople extends Table {  // Currently: EventPeople
+  TextColumn get activityId => text().references(Activities, #id, onDelete: KeyAction.cascade)();  // Currently: eventId
   TextColumn get personId => text().references(People, #id, onDelete: KeyAction.cascade)();
   
   @override
-  Set<Column> get primaryKey => {eventId, personId};
+  Set<Column> get primaryKey => {activityId, personId};  // Currently: {eventId, personId}
 }
 ```
 
@@ -298,7 +356,7 @@ class Goals extends Table {
   IntColumn get type => intEnum<GoalType>()();
   
   // Goal target
-  IntColumn get metric => intEnum<GoalMetric>()(); // hours, events, etc.
+  IntColumn get metric => intEnum<GoalMetric>()(); // hours, activities, etc.
   IntColumn get targetValue => integer()(); // e.g., 10 for "10 hours"
   IntColumn get period => intEnum<GoalPeriod>()(); // per week, per month
   
@@ -306,7 +364,7 @@ class Goals extends Table {
   TextColumn get categoryId => text().nullable().references(Categories, #id)();
   TextColumn get personId => text().nullable().references(People, #id)();
   TextColumn get locationId => text().nullable().references(Locations, #id)(); // Added in v12
-  TextColumn get eventTitle => text().nullable()(); // Added in v12 - for event-type goals
+  TextColumn get activityTitle => text().nullable()(); // Added in v12 - for activity-type goals (renamed from eventTitle)
   
   // Debt handling
   IntColumn get debtStrategy => intEnum<DebtStrategy>()();
@@ -333,32 +391,34 @@ class Goals extends Table {
 - `category`: Track time spent on a specific category (e.g., "Work", "Exercise")
 - `person`: Track time spent with a specific person (e.g., "Girlfriend", "Mom")
 - `location`: Track time spent at a specific location (e.g., "Home", "Office") - **Added in v12**
-- `event`: Track time spent on a specific recurring event by title (e.g., "Guitar Practice") - **Added in v12**
+- `activity`: Track time spent on a specific recurring activity by title (e.g., "Guitar Practice") - **Added in v12** (renamed from `event`)
 - `custom`: Custom goal (future use)
 
 **Field Usage by Goal Type**:
 - Category goals: use `categoryId`
 - Person goals: use `personId`
 - Location goals: use `locationId` - **Added in v12**
-- Event goals: use `eventTitle` (matches event title, case-insensitive) - **Added in v12**
+- Activity goals: use `activityTitle` (matches activity title, case-insensitive) - **Added in v12** (renamed from `eventTitle`)
 - Custom goals: may use any combination
 
 ---
 
-### 10. EventGoals Table ❌
+### 10. ActivityGoals Table ❌
 
-Many-to-many relationship between Events and Goals.
+> **Naming Note**: Currently documented as `EventGoals`. Will be renamed to `ActivityGoals` as part of the Activity Model Refactor.
+
+Many-to-many relationship between Activities and Goals.
 
 ```dart
-class EventGoals extends Table {
-  TextColumn get eventId => text().references(Events, #id, onDelete: KeyAction.cascade)();
+class ActivityGoals extends Table {  // Currently: EventGoals
+  TextColumn get activityId => text().references(Activities, #id, onDelete: KeyAction.cascade)();  // Currently: eventId
   TextColumn get goalId => text().references(Goals, #id, onDelete: KeyAction.cascade)();
   
-  // How much this event contributes to the goal
+  // How much this activity contributes to the goal
   IntColumn get contributionMinutes => integer()();
   
   @override
-  Set<Column> get primaryKey => {eventId, goalId};
+  Set<Column> get primaryKey => {activityId, goalId};  // Currently: {eventId, goalId}
 }
 ```
 
@@ -393,17 +453,19 @@ class GoalProgress extends Table {
 
 ---
 
-### 12. EventTemplates Table ❌
+### 12. ActivityTemplates Table ❌
 
-Reusable templates for common events.
+> **Naming Note**: Currently documented as `EventTemplates`. Will be renamed to `ActivityTemplates` as part of the Activity Model Refactor.
+
+Reusable templates for common activities.
 
 ```dart
-class EventTemplates extends Table {
+class ActivityTemplates extends Table {  // Currently: EventTemplates
   TextColumn get id => text()();
   TextColumn get name => text()();
   TextColumn get description => text().nullable()();
   
-  // Template properties (same as Events table)
+  // Template properties (same as Activities table)
   IntColumn get timingType => intEnum<TimingType>()();
   IntColumn get durationMinutes => integer().nullable()();
   BoolColumn get isMovable => boolean().withDefault(const Constant(true))();
@@ -453,17 +515,19 @@ class Schedules extends Table {
 
 ---
 
-### 14. ScheduledEvents Table ❌
+### 14. ScheduledActivities Table ❌
 
-Links events to schedules with specific times.
+> **Naming Note**: Currently documented as `ScheduledEvents`. Will be renamed to `ScheduledActivities` as part of the Activity Model Refactor.
+
+Links activities to schedules with specific times.
 
 ```dart
-class ScheduledEvents extends Table {
+class ScheduledActivities extends Table {  // Currently: ScheduledEvents
   TextColumn get id => text()();
   TextColumn get scheduleId => text().references(Schedules, #id, onDelete: KeyAction.cascade)();
-  TextColumn get eventId => text().references(Events, #id, onDelete: KeyAction.cascade)();
+  TextColumn get activityId => text().references(Activities, #id, onDelete: KeyAction.cascade)();  // Currently: eventId
   
-  // Scheduled time (may differ from Event.startTime for flexible events)
+  // Scheduled time (may differ from Activity.startTime for flexible activities)
   DateTimeColumn get scheduledStartTime => dateTime()();
   DateTimeColumn get scheduledEndTime => dateTime()();
   
@@ -472,7 +536,7 @@ class ScheduledEvents extends Table {
 }
 ```
 
-**Unique Constraint**: `(scheduleId, eventId)` - Each event appears once per schedule
+**Unique Constraint**: `(scheduleId, activityId)` - Each activity appears once per schedule
 
 **Index**: `(scheduleId, scheduledStartTime)`
 
@@ -515,14 +579,14 @@ class UserSettings extends Table {
 
 ### 16. Notifications Table ✅
 
-Stores scheduled and delivered notifications for events, goals, etc.
+Stores scheduled and delivered notifications for activities, goals, etc.
 
 ```dart
 class Notifications extends Table {
   // Primary key
   TextColumn get id => text()();
 
-  // Type of notification (event reminder, schedule change, etc.)
+  // Type of notification (activity reminder, schedule change, etc.)
   IntColumn get type => intEnum<NotificationType>()();
 
   // Title of the notification
@@ -531,8 +595,8 @@ class Notifications extends Table {
   // Optional body/description
   TextColumn get body => text().nullable()();
 
-  // Reference to related event (optional)
-  TextColumn get eventId => text().nullable()();
+  // Reference to related activity (optional)
+  TextColumn get activityId => text().nullable()();  // Currently: eventId
 
   // Reference to related goal (optional)
   TextColumn get goalId => text().nullable()();
@@ -561,7 +625,7 @@ class Notifications extends Table {
 ```dart
 @TableIndex(name: 'idx_notifications_scheduled', columns: {#scheduledAt})
 @TableIndex(name: 'idx_notifications_status', columns: {#status})
-@TableIndex(name: 'idx_notifications_event', columns: {#eventId})
+@TableIndex(name: 'idx_notifications_activity', columns: {#activityId})  // Currently: idx_notifications_event
 ```
 
 **Note**: Added in schema version 8.
@@ -579,10 +643,12 @@ enum TimingType {
 }
 ```
 
-### EventStatus
+### ActivityStatus
+
+> **Naming Note**: Currently implemented as `EventStatus` in codebase. Will be renamed to `ActivityStatus` as part of the Activity Model Refactor.
 
 ```dart
-enum EventStatus {
+enum ActivityStatus {  // Currently: EventStatus
   pending,     // Not yet started
   inProgress,  // Currently happening
   completed,   // Finished
@@ -632,7 +698,7 @@ enum GoalType {
   category,  // Time spent on a category
   person,    // Time spent with a person
   location,  // Time spent at a location (added in v12)
-  event,     // Specific recurring event by title (added in v12)
+  activity,  // Specific recurring activity by title (added in v12, renamed from 'event')
   custom     // Custom goal (future)
 }
 ```
@@ -642,7 +708,7 @@ enum GoalType {
 ```dart
 enum GoalMetric {
   hours,         // Track hours
-  events,        // Track number of events
+  activities,    // Track number of activities (renamed from 'events')
   completions    // Track completion percentage
 }
 ```
@@ -694,12 +760,12 @@ enum ScheduleStatus {
 
 ```dart
 enum NotificationType {
-  eventReminder,    // Reminder before an event starts
-  scheduleChange,   // Alert when schedule changes occur
-  goalProgress,     // Notification about goal progress
-  conflictWarning,  // Warning about scheduling conflicts
-  goalAtRisk,       // Alert when a goal is at risk of not being met
-  goalCompleted     // Notification when a goal is completed
+  activityReminder,   // Reminder before an activity starts (renamed from eventReminder)
+  scheduleChange,     // Alert when schedule changes occur
+  goalProgress,       // Notification about goal progress
+  conflictWarning,    // Warning about scheduling conflicts
+  goalAtRisk,         // Alert when a goal is at risk of not being met
+  goalCompleted       // Notification when a goal is completed
 }
 ```
 
@@ -721,14 +787,16 @@ enum NotificationStatus {
 
 The following shows the actual implemented database schema (version 11):
 
+> **Note**: Table and class names will be renamed as part of the Activity Model Refactor. Current names are shown with planned names in comments.
+
 ```dart
 @DriftDatabase(
   tables: [
     Categories,
-    Events,
+    Activities,     // Currently: Events
     Goals,
     People,
-    EventPeople,
+    ActivityPeople, // Currently: EventPeople
     Locations,
     RecurrenceRules,
     Notifications,
@@ -760,22 +828,22 @@ class AppDatabase extends _$AppDatabase {
       if (from <= 2) {
         await m.createTable(people);
       }
-      // Migration from version 3 to 4: Add EventPeople junction table
+      // Migration from version 3 to 4: Add ActivityPeople junction table (currently EventPeople)
       if (from <= 3) {
-        await m.createTable(eventPeople);
+        await m.createTable(activityPeople);  // Currently: eventPeople
       }
       // Migration from version 4 to 5: Add Locations table
       if (from <= 4) {
         await m.createTable(locations);
       }
-      // Migration from version 5 to 6: Add locationId column to Events table
+      // Migration from version 5 to 6: Add locationId column to Activities table (currently Events)
       if (from <= 5) {
-        await m.addColumn(events, events.locationId);
+        await m.addColumn(activities, activities.locationId);  // Currently: events, events.locationId
       }
-      // Migration from version 6 to 7: Add RecurrenceRules table and recurrenceRuleId column to Events
+      // Migration from version 6 to 7: Add RecurrenceRules table and recurrenceRuleId column to Activities
       if (from <= 6) {
         await m.createTable(recurrenceRules);
-        await m.addColumn(events, events.recurrenceRuleId);
+        await m.addColumn(activities, activities.recurrenceRuleId);  // Currently: events
       }
       // Migration from version 7 to 8: Add Notifications table
       if (from <= 7) {
@@ -791,11 +859,11 @@ class AppDatabase extends _$AppDatabase {
       }
       // Migration from version 10 to 11: Add indexes for query performance optimization
       if (from <= 10) {
-        // Events indexes
-        await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_events_start_time ON events (fixed_start_time)');
-        await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_events_end_time ON events (fixed_end_time)');
-        await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_events_category ON events (category_id)');
-        await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_events_status ON events (status)');
+        // Activities indexes (currently Events)
+        await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_activities_start_time ON activities (start_time)');  // Currently: idx_events_start_time ON events
+        await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_activities_end_time ON activities (end_time)');  // Currently: idx_events_end_time ON events
+        await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_activities_category ON activities (category_id)');  // Currently: idx_events_category ON events
+        await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_activities_status ON activities (status)');  // Currently: idx_events_status ON events
         // Goals indexes
         await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_goals_category ON goals (category_id)');
         await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_goals_person ON goals (person_id)');
@@ -803,7 +871,7 @@ class AppDatabase extends _$AppDatabase {
         // Notifications indexes
         await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_notifications_scheduled ON notifications (scheduled_at)');
         await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_notifications_status ON notifications (status)');
-        await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_notifications_event ON notifications (event_id)');
+        await m.database.customStatement('CREATE INDEX IF NOT EXISTS idx_notifications_activity ON notifications (activity_id)');  // Currently: idx_notifications_event ON notifications (event_id)
       }
     },
   );
@@ -818,41 +886,41 @@ class AppDatabase extends _$AppDatabase {
 
 ## Key Queries
 
-### Get Events for Date Range
+### Get Activities for Date Range
 
 ```dart
-Future<List<Event>> getEventsForDateRange(DateTime start, DateTime end) {
-  return (select(events)
-    ..where((e) => 
-      e.startTime.isBiggerOrEqualValue(start) &
-      e.startTime.isSmallerThanValue(end))
-    ..orderBy([(e) => OrderingTerm.asc(e.startTime)]))
+Future<List<Activity>> getActivitiesForDateRange(DateTime start, DateTime end) {  // Currently: getEventsForDateRange
+  return (select(activities)  // Currently: events
+    ..where((a) =>   // Currently: (e) =>
+      a.startTime.isBiggerOrEqualValue(start) &
+      a.startTime.isSmallerThanValue(end))
+    ..orderBy([(a) => OrderingTerm.asc(a.startTime)]))
     .get();
 }
 ```
 
-### Get Events by Status
+### Get Activities by Status
 
 ```dart
-Stream<List<Event>> watchEventsByStatus(EventStatus status) {
-  return (select(events)
-    ..where((e) => e.status.equals(status.index))
-    ..orderBy([(e) => OrderingTerm.asc(e.startTime)]))
+Stream<List<Activity>> watchActivitiesByStatus(ActivityStatus status) {  // Currently: watchEventsByStatus(EventStatus)
+  return (select(activities)  // Currently: events
+    ..where((a) => a.status.equals(status.index))
+    ..orderBy([(a) => OrderingTerm.asc(a.startTime)]))
     .watch();
 }
 ```
 
-### Get Events with Category
+### Get Activities with Category
 
 ```dart
-Future<List<EventWithCategory>> getEventsWithCategory() {
-  final query = select(events).join([
-    leftOuterJoin(categories, categories.id.equalsExp(events.categoryId)),
+Future<List<ActivityWithCategory>> getActivitiesWithCategory() {  // Currently: getEventsWithCategory
+  final query = select(activities).join([  // Currently: events
+    leftOuterJoin(categories, categories.id.equalsExp(activities.categoryId)),  // Currently: events.categoryId
   ]);
   
   return query.map((row) {
-    return EventWithCategory(
-      event: row.readTable(events),
+    return ActivityWithCategory(  // Currently: EventWithCategory
+      activity: row.readTable(activities),  // Currently: event: row.readTable(events)
       category: row.readTableOrNull(categories),
     );
   }).get();
@@ -863,7 +931,7 @@ Future<List<EventWithCategory>> getEventsWithCategory() {
 
 ```dart
 Future<GoalProgressSummary> getGoalProgress(String goalId, DateTime periodStart) {
-  // Join goals, events, and event_goals to calculate actual progress
+  // Join goals, activities, and activity_goals to calculate actual progress
 }
 ```
 
@@ -872,13 +940,14 @@ Future<GoalProgressSummary> getGoalProgress(String goalId, DateTime periodStart)
 ## Indexes
 
 ```dart
-// Events table
-@TableIndex(name: 'events_start_time_idx', columns: {#startTime})
-@TableIndex(name: 'events_status_idx', columns: {#status})
-@TableIndex(name: 'events_category_idx', columns: {#categoryId})
+// Activities table (currently Events)
+@TableIndex(name: 'activities_start_time_idx', columns: {#startTime})  // Currently: events_start_time_idx
+@TableIndex(name: 'activities_status_idx', columns: {#status})  // Currently: events_status_idx
+@TableIndex(name: 'activities_category_idx', columns: {#categoryId})  // Currently: events_category_idx
+@TableIndex(name: 'activities_series_idx', columns: {#seriesId})  // NEW - for series lookups
 
-// ScheduledEvents table
-@TableIndex(name: 'scheduled_events_schedule_idx', columns: {#scheduleId, #scheduledStartTime})
+// ScheduledActivities table (currently ScheduledEvents)
+@TableIndex(name: 'scheduled_activities_schedule_idx', columns: {#scheduleId, #scheduledStartTime})  // Currently: scheduled_events_schedule_idx
 
 // GoalProgress table
 @TableIndex(name: 'goal_progress_goal_period_idx', columns: {#goalId, #periodStart})
@@ -890,22 +959,23 @@ Future<GoalProgressSummary> getGoalProgress(String goalId, DateTime periodStart)
 
 ### Cascade Deletes
 
-- Deleting an Event cascades to EventConstraints, EventPeople, EventGoals, ScheduledEvents
-- Deleting a Category does NOT cascade (sets event.categoryId to null)
-- Deleting a Goal cascades to EventGoals and GoalProgress
-- Deleting a Schedule cascades to ScheduledEvents
+- Deleting an Activity cascades to ActivityConstraints, ActivityPeople, ActivityGoals, ScheduledActivities
+- Deleting a Category does NOT cascade (sets activity.categoryId to null)
+- Deleting a Goal cascades to ActivityGoals and GoalProgress
+- Deleting a Schedule cascades to ScheduledActivities
 
 ### Validation Rules
 
-**Events**:
-- Fixed events must have startTime and endTime
-- Flexible events must have durationMinutes
+**Activities**:
+- Must have at least one of: title, person (via ActivityPeople), locationId, categoryId
+- Fixed activities must have startTime and endTime
+- Flexible activities must have durationMinutes
 - endTime must be after startTime (if both present)
 - durationMinutes must be > 0 and <= 1440 (24 hours)
 
 **Goals**:
 - targetValue must be > 0
-- Must have either categoryId or personId (depending on type)
+- Must have categoryId, personId, locationId, or activityTitle (depending on type)
 
 **RecurrenceRules**:
 - interval must be >= 1
@@ -916,17 +986,19 @@ Future<GoalProgressSummary> getGoalProgress(String goalId, DateTime periodStart)
 
 ## Domain Model Mapping
 
-### Event Entity
+### Activity Entity
+
+> **Naming Note**: Currently implemented as `Event` in codebase. Will be renamed to `Activity` as part of the Activity Model Refactor.
 
 ```dart
-class Event {
+class Activity {  // Currently: Event
   final String id;
-  final String title;
+  final String? title;  // NOW NULLABLE
   final String? description;
   final TimingType timingType;
-  final EventStatus status;
+  final ActivityStatus status;  // Currently: EventStatus
   
-  // Time
+  // Time (null for unscheduled activities)
   final DateTime? startTime;
   final DateTime? endTime;
   final int? durationMinutes;
@@ -940,6 +1012,7 @@ class Event {
   final String? categoryId;
   final String? locationId;
   final String? recurrenceRuleId;
+  final String? seriesId;  // NEW - for grouping related activities
   
   // Computed properties
   Duration get duration {
@@ -949,12 +1022,23 @@ class Event {
     if (durationMinutes != null) {
       return Duration(minutes: durationMinutes!);
     }
-    throw StateError('Cannot compute duration for event');
+    throw StateError('Cannot compute duration for activity');
   }
   
   bool get isFixed => timingType == TimingType.fixed;
   bool get isFlexible => timingType == TimingType.flexible;
   bool get isSchedulable => isFlexible && !isLocked;
+  bool get isScheduled => startTime != null;  // NEW - scheduled vs unscheduled
+  bool get isUnscheduled => startTime == null;  // NEW - for activity bank
+  
+  /// Display title for UI (handles nullable title)
+  String get displayTitle {
+    if (title != null && title!.isNotEmpty) {
+      return title!;
+    }
+    // Populated by repository with related entity names
+    return _computedDisplayTitle ?? 'Untitled Activity';
+  }
 }
 ```
 
@@ -962,33 +1046,61 @@ class Event {
 
 Repositories handle:
 - Mapping between database models and domain entities
-- Validation before insert/update
-- Computing derived fields
+- Validation before insert/update (including the new "at least one property" rule)
+- Computing derived fields (including displayTitle with related entities)
 - Handling cascade logic
 - Exposing streams for reactive UI
 
 Example:
 ```dart
-class EventRepository {
+class ActivityRepository {  // Currently: EventRepository
   final AppDatabase _db;
   
   // Convert database model to domain entity
-  Event _toEntity(EventsCompanion data) { ... }
+  Activity _toEntity(ActivityData data) { ... }  // Currently: Event _toEntity(EventData data)
   
   // Convert domain entity to database model
-  EventsCompanion _toCompanion(Event entity) { ... }
+  ActivitiesCompanion _toCompanion(Activity entity) { ... }  // Currently: EventsCompanion _toCompanion(Event entity)
   
-  // CRUD operations
-  Future<Event> create(Event event) async {
-    await _validate(event);
-    final id = await _db.into(_db.events).insert(_toCompanion(event));
-    return event;
+  // Validation (NEW - Activity Model Refactor)
+  void _validate(Activity activity, {List<String>? personIds}) {
+    final hasTitle = activity.title != null && activity.title!.isNotEmpty;
+    final hasPerson = personIds != null && personIds.isNotEmpty;
+    final hasLocation = activity.locationId != null;
+    final hasCategory = activity.categoryId != null;
+    
+    if (!hasTitle && !hasPerson && !hasLocation && !hasCategory) {
+      throw ValidationException('Activity must have at least one of: title, person, location, or category');
+    }
   }
   
-  Stream<List<Event>> watchAll() {
-    return _db.select(_db.events).watch().map(
+  // CRUD operations
+  Future<Activity> create(Activity activity, {List<String>? personIds}) async {
+    _validate(activity, personIds: personIds);
+    final id = await _db.into(_db.activities).insert(_toCompanion(activity));
+    return activity;
+  }
+  
+  Stream<List<Activity>> watchAll() {
+    return _db.select(_db.activities).watch().map(
       (rows) => rows.map(_toEntity).toList()
     );
+  }
+  
+  // NEW - Get unscheduled activities (activity bank)
+  Stream<List<Activity>> watchUnscheduled() {
+    return (_db.select(_db.activities)
+      ..where((a) => a.startTime.isNull()))
+      .watch()
+      .map((rows) => rows.map(_toEntity).toList());
+  }
+  
+  // NEW - Find activities by series
+  Future<List<Activity>> getBySeriesId(String seriesId) async {
+    final results = await (_db.select(_db.activities)
+      ..where((a) => a.seriesId.equals(seriesId)))
+      .get();
+    return results.map(_toEntity).toList();
   }
 }
 ```
@@ -1083,4 +1195,4 @@ if (from < 2) {
 
 ---
 
-*Last updated: 2026-01-23*
+*Last updated: 2026-01-26 (Activity Model Refactor documentation)*
