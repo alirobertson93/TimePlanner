@@ -111,7 +111,7 @@ class _LocationsScreenState extends ConsumerState<LocationsScreen> {
           if (_searchQuery.isEmpty) ...[
             const SizedBox(height: 8),
             Text(
-              'Add locations to associate with your events',
+              'Add locations to associate with your activities',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),

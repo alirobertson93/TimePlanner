@@ -48,11 +48,11 @@ class EventCard extends ConsumerWidget {
     }
 
     if (event.isUserLocked) {
-      buffer.write(', locked event');
+      buffer.write(', locked activity');
     }
 
     if (event.isRecurring) {
-      buffer.write(', recurring event');
+      buffer.write(', recurring activity');
     }
 
     if (event.hasSchedulingConstraints) {

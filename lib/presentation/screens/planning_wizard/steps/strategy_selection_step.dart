@@ -118,7 +118,7 @@ class StrategySelectionStep extends ConsumerWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Tap "Generate Schedule" to see how your events will be arranged. You can review and adjust before accepting.',
+                    'Tap "Generate Schedule" to see how your activities will be arranged. You can review and adjust before accepting.',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.onSurface,
                         ),

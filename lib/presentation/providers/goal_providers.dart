@@ -56,7 +56,7 @@ class GoalProgress {
     switch (goal.metric) {
       case GoalMetric.hours:
         return 'hours';
-      case GoalMetric.events:
+      case GoalMetric.activities:
         return 'events';
       case GoalMetric.completions:
         return 'completions';
@@ -275,7 +275,7 @@ double _calculateProgress(List<Event> events, GoalMetric metric) {
       }
       return totalMinutes / 60.0;
 
-    case GoalMetric.events:
+    case GoalMetric.activities:
       // Count number of events
       return events.length.toDouble();
 

@@ -899,8 +899,8 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
     switch (metric) {
       case GoalMetric.hours:
         return 'Hours';
-      case GoalMetric.events:
-        return 'Events';
+      case GoalMetric.activities:
+        return 'Activities';
       case GoalMetric.completions:
         return 'Completions';
     }

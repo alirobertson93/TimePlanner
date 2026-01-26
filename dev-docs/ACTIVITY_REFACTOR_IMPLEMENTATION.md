@@ -1004,17 +1004,18 @@ If issues are encountered:
 
 ---
 
+
 ## Checklist Summary
 
 ### Phase 1: Terminology Refactor
 - [ ] Database table renames (Events → Activities, EventPeople → ActivityPeople)
-- [ ] Entity class renames
-- [ ] Repository renames
-- [ ] Provider renames
-- [ ] Screen and widget renames
-- [ ] Enum updates (EventStatus → ActivityStatus, GoalType.event → GoalType.activity)
-- [ ] Goal entity updates (eventTitle → activityTitle)
-- [ ] UI string updates
+- [x] Entity class renames - created Activity entity with backward compatibility
+- [ ] Repository renames (file renames pending - currently using compatibility)
+- [ ] Provider renames (file renames pending - currently using compatibility)
+- [ ] Screen and widget renames (file renames pending)
+- [x] Enum updates (ActivityStatus created, GoalType.event → GoalType.activity, GoalMetric.events → GoalMetric.activities)
+- [x] Goal entity updates (eventTitle → activityTitle)
+- [x] UI string updates (major screens updated)
 - [ ] Test updates
 
 ### Phase 2: Optional Title + Display Logic
@@ -1025,7 +1026,7 @@ If issues are encountered:
 - [ ] Add tests for validation and displayTitle
 
 ### Phase 3: Series Support
-- [ ] Add seriesId field to Activity
+- [x] Add seriesId field to Activity - added to entity and database
 - [ ] Create SeriesMatchingService
 - [ ] Create series prompt dialog
 - [ ] Create edit scope dialog
@@ -1034,7 +1035,7 @@ If issues are encountered:
 - [ ] Add tests for series functionality
 
 ### Phase 4: Onboarding Wizard Updates
-- [ ] Rename Step 2 to "Recurring Activities"
+- [x] Rename Step 2 to "Recurring Activities"
 - [ ] Refactor Step 4 to create unscheduled Activities
 - [ ] Add optional goal creation for activities
 - [ ] Update onboarding tests
@@ -1044,6 +1045,71 @@ If issues are encountered:
 - [ ] Implement goal-based activity ranking
 - [ ] Integrate series matching when scheduling
 - [ ] Update planning wizard tests
+
+---
+
+## Implementation Progress
+
+**Session: 2026-01-26 (Phase 10A Implementation)**
+
+Significant progress made on Phase 10A - Terminology Refactor:
+
+### Completed Work:
+1. **Created Activity Entity** (`lib/domain/entities/activity.dart`):
+   - New unified Activity class with seriesId field
+   - isScheduled/isUnscheduled computed properties
+   - Full copyWith, equality, and hashCode implementations
+
+2. **Created ActivityStatus Enum** (`lib/domain/enums/activity_status.dart`):
+   - Renamed from EventStatus with same values
+
+3. **Updated Event Entity for Backward Compatibility**:
+   - Added seriesId field
+   - Added toActivity() conversion method
+   - Added Event.fromActivity() factory constructor
+
+4. **Updated Goal Entity**:
+   - Renamed eventTitle → activityTitle
+
+5. **Updated Goal Type Enum**:
+   - Renamed GoalType.event → GoalType.activity
+
+6. **Updated Goal Metric Enum**:
+   - Renamed GoalMetric.events → GoalMetric.activities
+
+7. **Updated Database**:
+   - Added seriesId column to Events table
+   - Added idx_events_series index
+   - Schema version bumped to 14
+
+8. **Updated Repositories**:
+   - EventRepository: Added getBySeriesId(), countInSeries()
+   - GoalRepository: Renamed getByEventTitle() → getByActivityTitle()
+
+9. **Updated Domain Services**:
+   - HistoricalEventService: Updated pattern types
+   - GoalRecommendationService: Updated terminology
+   - GoalWarningService: Updated terminology
+
+10. **Updated Providers**:
+    - All goal-related providers updated
+    - Historical analysis providers updated
+
+11. **Updated UI Screens**:
+    - Day View, Week View, Event Form, Goal Form
+    - Planning Wizard steps
+    - Onboarding Wizard
+    - Settings Screen
+    - Goals Dashboard
+
+### Remaining for Full Phase 1 Completion:
+- File renames (event.dart → activity.dart as primary, etc.)
+- Database table renames (Events → Activities)
+- Test file updates
+- Run build_runner to regenerate database code
+
+### Note:
+The Flutter SDK is required to run build_runner for database code generation. Current changes maintain backward compatibility using the Event entity while introducing Activity.
 
 ---
 

@@ -122,7 +122,7 @@ class GoalFormState {
     switch (metric) {
       case GoalMetric.hours:
         return 'hours';
-      case GoalMetric.events:
+      case GoalMetric.activities:
         return 'events';
       case GoalMetric.completions:
         return 'completions';

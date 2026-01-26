@@ -143,7 +143,7 @@ class SampleDataService {
         id: _uuid.v4(),
         title: 'Learning Spanish',
         type: GoalType.category,
-        metric: GoalMetric.events,
+        metric: GoalMetric.activities,
         targetValue: 5, // 5 sessions per week
         period: GoalPeriod.week,
         debtStrategy: DebtStrategy.ignore,

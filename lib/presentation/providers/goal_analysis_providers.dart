@@ -177,7 +177,7 @@ Future<double> _calculateProgress({
       }
       return totalMinutes / 60.0;
 
-    case GoalMetric.events:
+    case GoalMetric.activities:
       return relevantEvents.length.toDouble();
 
     case GoalMetric.completions:

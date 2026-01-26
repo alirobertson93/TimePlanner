@@ -151,7 +151,7 @@ class EventDetailSheet extends ConsumerWidget {
                             event.isUserLocked ? Icons.lock_open : Icons.lock,
                           ),
                           label: Text(
-                            event.isUserLocked ? 'Unlock Event' : 'Lock Event',
+                            event.isUserLocked ? 'Unlock Activity' : 'Lock Activity',
                           ),
                         ),
                       ),
@@ -247,7 +247,7 @@ class EventDetailSheet extends ConsumerWidget {
     showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete Event'),
+        title: const Text('Delete Activity'),
         content: Text(
           'Are you sure you want to delete "${event.name}"? This action cannot be undone.',
         ),
@@ -278,7 +278,7 @@ class EventDetailSheet extends ConsumerWidget {
             // Show success message
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Event "${event.name}" deleted successfully'),
+                content: Text('Activity "${event.name}" deleted successfully'),
                 backgroundColor: Colors.green,
               ),
             );
@@ -289,7 +289,7 @@ class EventDetailSheet extends ConsumerWidget {
             ref.read(errorHandlerProvider).showErrorSnackBar(
               context,
               e,
-              operationContext: 'deleting event',
+              operationContext: 'deleting activity',
             );
           }
         }
@@ -320,8 +320,8 @@ class EventDetailSheet extends ConsumerWidget {
           SnackBar(
             content: Text(
               updatedEvent.isUserLocked 
-                  ? 'Event "${updatedEvent.name}" locked'
-                  : 'Event "${updatedEvent.name}" unlocked',
+                  ? 'Activity "${updatedEvent.name}" locked'
+                  : 'Activity "${updatedEvent.name}" unlocked',
             ),
             backgroundColor: Colors.green,
           ),
@@ -333,7 +333,7 @@ class EventDetailSheet extends ConsumerWidget {
         ref.read(errorHandlerProvider).showErrorSnackBar(
           context,
           e,
-          operationContext: 'updating event lock status',
+          operationContext: 'updating activity lock status',
         );
       }
     }

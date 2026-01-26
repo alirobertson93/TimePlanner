@@ -402,7 +402,7 @@ class _EnhancedOnboardingScreenState
                   style: theme.textTheme.titleSmall,
                 ),
                 const SizedBox(height: 8),
-                _buildSetupItem(Icons.repeat, 'Recurring events (work, gym, etc.)'),
+                _buildSetupItem(Icons.repeat, 'Recurring activities (work, gym, etc.)'),
                 _buildSetupItem(Icons.people, 'People you want to spend time with'),
                 _buildSetupItem(Icons.flag, 'Activity goals (exercise, reading, etc.)'),
                 _buildSetupItem(Icons.location_on, 'Your main locations'),
@@ -439,7 +439,7 @@ class _EnhancedOnboardingScreenState
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Recurring Fixed Events',
+                  'Recurring Activities',
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -449,7 +449,7 @@ class _EnhancedOnboardingScreenState
           ),
           const SizedBox(height: 8),
           Text(
-            'Add events that happen at the same time each week, like work shifts, classes, or regular appointments.',
+            'Add activities that happen at the same time each week, like work shifts, classes, or regular appointments.',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.withOpacity(0.7),
             ),
@@ -487,7 +487,7 @@ class _EnhancedOnboardingScreenState
           OutlinedButton.icon(
             onPressed: () => _showAddRecurringEventDialog(),
             icon: const Icon(Icons.add),
-            label: const Text('Add Recurring Event'),
+            label: const Text('Add Recurring Activity'),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
             ),
@@ -497,7 +497,7 @@ class _EnhancedOnboardingScreenState
             const SizedBox(height: 24),
             Center(
               child: Text(
-                'No recurring events added yet.\nYou can skip this step or add them later.',
+                'No recurring activities added yet.\nYou can skip this step or add them later.',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurface.withOpacity(0.5),
@@ -873,7 +873,7 @@ class _EnhancedOnboardingScreenState
           if (totalItems > 0) ...[
             _buildSummarySection(
               theme,
-              'Recurring Events',
+              'Recurring Activities',
               Icons.repeat,
               _recurringEvents.length,
             ),
@@ -913,7 +913,7 @@ class _EnhancedOnboardingScreenState
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Tip: Use the Planning Wizard to automatically schedule your flexible events around your fixed commitments.',
+                    'Tip: Use the Planning Wizard to automatically schedule your flexible activities around your fixed commitments.',
                     style: theme.textTheme.bodyMedium,
                   ),
                 ),
@@ -973,7 +973,7 @@ class _EnhancedOnboardingScreenState
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('Add Recurring Event'),
+          title: const Text('Add Recurring Activity'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -982,7 +982,7 @@ class _EnhancedOnboardingScreenState
                 TextField(
                   controller: nameController,
                   decoration: const InputDecoration(
-                    labelText: 'Event Name *',
+                    labelText: 'Activity Name *',
                     hintText: 'e.g., Work, Gym, Class',
                   ),
                   autofocus: true,
@@ -1066,7 +1066,7 @@ class _EnhancedOnboardingScreenState
               onPressed: () {
                 if (nameController.text.trim().isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please enter an event name')),
+                    const SnackBar(content: Text('Please enter an activity name')),
                   );
                   return;
                 }

@@ -52,7 +52,7 @@ class DayViewScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'Error loading events',
+                'Error loading activities',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 8),
@@ -67,13 +67,13 @@ class DayViewScreen extends ConsumerWidget {
       ),
       floatingActionButton: Semantics(
         button: true,
-        label: 'Create new event',
+        label: 'Create new activity',
         child: FloatingActionButton(
           onPressed: () {
             context.push('/event/new', extra: selectedDate);
           },
-          tooltip: 'Create new event',
-          child: const Icon(Icons.add, semanticLabel: 'Add event'),
+          tooltip: 'Create new activity',
+          child: const Icon(Icons.add, semanticLabel: 'Add activity'),
         ),
       ),
     );
