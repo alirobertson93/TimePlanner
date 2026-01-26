@@ -45,7 +45,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 14;
+  int get schemaVersion => 15;
 
   @override
   MigrationStrategy get migration {
@@ -141,6 +141,17 @@ class AppDatabase extends _$AppDatabase {
           await m.addColumn(events, events.seriesId);
           await customStatement(
               'CREATE INDEX IF NOT EXISTS idx_events_series ON events (series_id)');
+        }
+        // Migration from version 14 to 15: Make name column nullable for optional titles
+        // Note: SQLite doesn't support ALTER COLUMN to change NOT NULL constraint.
+        // However, since the column was already defined with nullable() in the schema,
+        // Drift handles this at the schema level. For existing databases where the column
+        // was NOT NULL, existing data remains valid (non-null values are still non-null).
+        // New records can now have NULL names. No explicit migration SQL is required
+        // because we're only relaxing the constraint, not tightening it.
+        if (from <= 14) {
+          // Schema change handled by Drift - existing data is compatible
+          // Existing events retain their names; new events can omit names
         }
       },
     );

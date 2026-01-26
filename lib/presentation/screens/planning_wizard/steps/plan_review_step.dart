@@ -414,7 +414,7 @@ class PlanReviewStep extends ConsumerWidget {
                   ),
                 ),
                 title: Text(
-                  event.event.name,
+                  event.event.name ?? 'Untitled Activity',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
@@ -483,7 +483,7 @@ class PlanReviewStep extends ConsumerWidget {
                       children: [
                         const Icon(Icons.circle, size: 8),
                         const SizedBox(width: 8),
-                        Text(event.name),
+                        Text(event.name ?? 'Untitled Activity'),
                         if (event.hasSchedulingConstraints) ...[
                           const SizedBox(width: 4),
                           const Icon(Icons.schedule, size: 14, color: Colors.orange),

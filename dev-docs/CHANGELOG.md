@@ -33,6 +33,112 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-26 (Activity Model Refactor - Phase 10B Implementation)
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Implement Phase 10B - Optional Title + Display Logic for activities
+
+**Work Completed**:
+
+**Entity Layer** ✅
+
+- ✅ Updated `lib/domain/entities/activity.dart`:
+  - Made `name` property nullable (`String?`)
+  - Added `hasName`, `hasLocation`, `hasCategory` computed properties
+  - Added `isValid()` validation method with personIds parameter
+
+- ✅ Updated `lib/domain/entities/event.dart`:
+  - Made `name` property nullable for consistency
+  - Added `hasName` computed property
+
+**Service Layer** ✅
+
+- ✅ Created `lib/domain/services/display_title_service.dart`:
+  - `getDisplayTitle()` - Full display title from associated entities
+  - `getShortDisplayTitle()` - Compact title for week view blocks
+  - Priority: name → people → location → category → fallback
+  - Supports multiple properties joined with " · " separator
+
+**Database Updates** ✅
+
+- ✅ Updated `lib/data/database/tables/events.dart`:
+  - Made `name` column nullable with `nullable()` constraint
+  - Changed min length from 1 to 0
+
+- ✅ Updated `lib/data/database/app_database.dart`:
+  - Schema version bumped to 15
+  - Added migration comment for v14 → v15
+
+**Provider Updates** ✅
+
+- ✅ Created `lib/presentation/providers/display_title_providers.dart`:
+  - `displayTitleServiceProvider` for dependency injection
+
+**UI Screen Updates** ✅
+
+- ✅ Updated `lib/presentation/screens/day_view/widgets/event_card.dart`:
+  - Now fetches people, location, category for displayTitle
+  - Uses DisplayTitleService for title computation
+  - Updated semantic labels to use displayTitle
+
+- ✅ Updated `lib/presentation/screens/day_view/widgets/event_detail_sheet.dart`:
+  - Uses displayTitle for sheet title
+  - Uses displayTitle in delete confirmation dialog
+  - Uses displayTitle in lock/unlock messages
+
+- ✅ Updated `lib/presentation/screens/week_view/widgets/week_timeline.dart`:
+  - Uses getShortDisplayTitle for compact event blocks
+  - Fetches people, location, category for displayTitle
+
+- ✅ Updated `lib/presentation/screens/planning_wizard/steps/plan_review_step.dart`:
+  - Added null-safe handling with `?? 'Untitled Activity'` fallback
+
+- ✅ Updated `lib/presentation/providers/event_form_providers.dart`:
+  - Added null-safe handling for loading event name into form
+
+- ✅ Updated `lib/scheduler/models/scheduled_event.dart`:
+  - Added null-safe handling in toString()
+
+**Tests** ✅
+
+- ✅ Created `test/domain/entities/activity_test.dart`:
+  - Tests for hasName, hasLocation, hasCategory
+  - Tests for isValid() with various property combinations
+  - Tests for isScheduled/isUnscheduled
+  - Tests for constraint properties
+
+- ✅ Created `test/domain/services/display_title_service_test.dart`:
+  - Tests for getDisplayTitle with name present
+  - Tests for getDisplayTitle with people fallback
+  - Tests for getDisplayTitle with multiple properties joined
+  - Tests for getShortDisplayTitle with truncation
+  - Tests for fallback to "Untitled Activity"
+
+**Files Changed**:
+- lib/domain/entities/activity.dart
+- lib/domain/entities/event.dart
+- lib/domain/services/display_title_service.dart (NEW)
+- lib/data/database/tables/events.dart
+- lib/data/database/app_database.dart
+- lib/presentation/providers/display_title_providers.dart (NEW)
+- lib/presentation/screens/day_view/widgets/event_card.dart
+- lib/presentation/screens/day_view/widgets/event_detail_sheet.dart
+- lib/presentation/screens/week_view/widgets/week_timeline.dart
+- lib/presentation/screens/planning_wizard/steps/plan_review_step.dart
+- lib/presentation/providers/event_form_providers.dart
+- lib/scheduler/models/scheduled_event.dart
+- test/domain/entities/activity_test.dart (NEW)
+- test/domain/services/display_title_service_test.dart (NEW)
+
+**Next Steps**:
+- Continue with Phase 10C: Series Support implementation
+- Create SeriesMatchingService
+- Create series matching prompt UI
+- Create edit scope prompt UI
+
+---
+
 ### Session: 2026-01-26 (Activity Model Refactor - Phase 10A Code Implementation)
 
 **Author**: AI Assistant (GitHub Copilot)

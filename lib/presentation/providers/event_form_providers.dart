@@ -270,7 +270,7 @@ class EventForm extends _$EventForm {
 
     state = EventFormState(
       id: event.id,
-      title: event.name,
+      title: event.name ?? '',
       description: event.description ?? '',
       categoryId: event.categoryId,
       locationId: event.locationId,

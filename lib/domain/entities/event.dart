@@ -11,7 +11,7 @@ import 'activity.dart';
 class Event {
   const Event({
     required this.id,
-    required this.name,
+    this.name,
     this.description,
     required this.timingType,
     this.startTime,
@@ -31,7 +31,9 @@ class Event {
   });
 
   final String id;
-  final String name;
+  /// The name/title of the event. Can be null if the event has
+  /// associated people, locations, or categories.
+  final String? name;
   final String? description;
   final TimingType timingType;
   final DateTime? startTime;
@@ -51,6 +53,9 @@ class Event {
   final EventStatus status;
   final DateTime createdAt;
   final DateTime updatedAt;
+
+  /// Returns true if the event has a non-empty name
+  bool get hasName => name != null && name!.isNotEmpty;
 
   /// Returns true if this is a fixed-time event
   bool get isFixed => timingType == TimingType.fixed;
@@ -131,9 +136,14 @@ class Event {
   }
 
   /// Creates a copy of this event with the given fields replaced
+  /// 
+  /// Note: Due to Dart's null-aware operator (??) behavior, passing `null`
+  /// for a parameter will use the existing value rather than setting it to null.
+  /// To explicitly clear the name, use `clearName: true` parameter.
   Event copyWith({
     String? id,
     String? name,
+    bool clearName = false,
     String? description,
     TimingType? timingType,
     DateTime? startTime,
@@ -154,7 +164,7 @@ class Event {
   }) {
     return Event(
       id: id ?? this.id,
-      name: name ?? this.name,
+      name: clearName ? null : (name ?? this.name),
       description: description ?? this.description,
       timingType: timingType ?? this.timingType,
       startTime: startTime ?? this.startTime,

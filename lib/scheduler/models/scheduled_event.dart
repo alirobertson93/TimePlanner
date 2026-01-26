@@ -22,6 +22,6 @@ class ScheduledEvent {
 
   @override
   String toString() {
-    return 'ScheduledEvent(${event.name}, $scheduledStart - $scheduledEnd)';
+    return 'ScheduledEvent(${event.name ?? 'Untitled'}, $scheduledStart - $scheduledEnd)';
   }
 }

@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../domain/entities/event.dart';
 import '../../../../domain/entities/category.dart';
+import '../../../../domain/entities/person.dart';
+import '../../../../domain/entities/location.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../../../providers/category_providers.dart';
+import '../../../providers/location_providers.dart';
+import '../../../providers/person_providers.dart';
+import '../../../providers/display_title_providers.dart';
 
 /// Timeline widget showing a 7-day grid with events
 class WeekTimeline extends ConsumerWidget {
@@ -169,6 +174,12 @@ class _WeekEventBlock extends ConsumerWidget {
         ? ref.watch(categoryByIdProvider(event.categoryId!))
         : const AsyncValue<Category?>.data(null);
 
+    final locationAsync = event.locationId != null
+        ? ref.watch(locationByIdProvider(event.locationId!))
+        : const AsyncValue<Location?>.data(null);
+
+    final peopleAsync = ref.watch(peopleForEventProvider(event.id));
+
     final top = _getTopPosition();
     final height = _getEventHeight();
 
@@ -179,13 +190,36 @@ class _WeekEventBlock extends ConsumerWidget {
     }
 
     return categoryAsync.when(
-      data: (category) => _buildBlock(context, category, top, height),
-      loading: () => _buildBlock(context, null, top, height),
-      error: (_, __) => _buildBlock(context, null, top, height),
+      data: (category) => locationAsync.when(
+        data: (location) => peopleAsync.when(
+          data: (people) => _buildBlock(context, ref, category, location, people, top, height),
+          loading: () => _buildBlock(context, ref, category, location, null, top, height),
+          error: (_, __) => _buildBlock(context, ref, category, location, null, top, height),
+        ),
+        loading: () => _buildBlock(context, ref, category, null, null, top, height),
+        error: (_, __) => _buildBlock(context, ref, category, null, null, top, height),
+      ),
+      loading: () => _buildBlock(context, ref, null, null, null, top, height),
+      error: (_, __) => _buildBlock(context, ref, null, null, null, top, height),
     );
   }
 
-  Widget _buildBlock(BuildContext context, Category? category, double top, double height) {
+  /// Get the display title for the event
+  String _getDisplayTitle(WidgetRef ref, Category? category, Location? location, List<Person>? people) {
+    final service = ref.read(displayTitleServiceProvider);
+    final activity = event.toActivity();
+    
+    return service.getShortDisplayTitle(
+      activity,
+      people: people,
+      location: location,
+      category: category,
+      maxLength: 30,
+    );
+  }
+
+  Widget _buildBlock(BuildContext context, WidgetRef ref, Category? category, Location? location, List<Person>? people, double top, double height) {
+    final displayTitle = _getDisplayTitle(ref, category, location, people);
     final adjustedTop = top.clamp(0.0, double.infinity);
     final adjustedHeight = height.clamp(8.0, double.infinity);
 
@@ -207,7 +241,7 @@ class _WeekEventBlock extends ConsumerWidget {
             children: [
               Expanded(
                 child: Text(
-                  event.name,
+                  displayTitle,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 9,
