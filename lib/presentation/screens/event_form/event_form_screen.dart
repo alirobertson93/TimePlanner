@@ -844,7 +844,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
           }
         } else {
           // Apply edits to multiple activities
-          final activity = formState.buildActivity(activityId: formState.id!);
+          final activity = formState.buildActivity(activityId: activityId);
           final updates = <String, dynamic>{
             'name': formState.title.trim().isEmpty ? null : formState.title.trim(),
             'description': formState.description.trim().isEmpty ? null : formState.description.trim(),
