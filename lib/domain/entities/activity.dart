@@ -122,9 +122,16 @@ class Activity {
   }
 
   /// Creates a copy of this activity with the given fields replaced
+  /// 
+  /// Note: Due to Dart's null-aware operator (??) behavior, passing `null`
+  /// for a parameter will use the existing value rather than setting it to null.
+  /// To explicitly clear the name, use `clearName: true` parameter.
+  /// For other nullable fields like schedulingConstraint, use the corresponding
+  /// clear flags (e.g., `clearSchedulingConstraint: true`).
   Activity copyWith({
     String? id,
     String? name,
+    bool clearName = false,
     String? description,
     TimingType? timingType,
     DateTime? startTime,
@@ -145,7 +152,7 @@ class Activity {
   }) {
     return Activity(
       id: id ?? this.id,
-      name: name ?? this.name,
+      name: clearName ? null : (name ?? this.name),
       description: description ?? this.description,
       timingType: timingType ?? this.timingType,
       startTime: startTime ?? this.startTime,

@@ -143,11 +143,15 @@ class AppDatabase extends _$AppDatabase {
               'CREATE INDEX IF NOT EXISTS idx_events_series ON events (series_id)');
         }
         // Migration from version 14 to 15: Make name column nullable for optional titles
-        // SQLite doesn't support ALTER COLUMN, so we need to recreate the table
+        // Note: SQLite doesn't support ALTER COLUMN to change NOT NULL constraint.
+        // However, since the column was already defined with nullable() in the schema,
+        // Drift handles this at the schema level. For existing databases where the column
+        // was NOT NULL, existing data remains valid (non-null values are still non-null).
+        // New records can now have NULL names. No explicit migration SQL is required
+        // because we're only relaxing the constraint, not tightening it.
         if (from <= 14) {
-          // The name column is already nullable in the new schema definition
-          // Existing data will continue to work since we're only relaxing the constraint
-          // No actual migration needed - the schema definition change handles it
+          // Schema change handled by Drift - existing data is compatible
+          // Existing events retain their names; new events can omit names
         }
       },
     );

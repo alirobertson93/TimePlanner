@@ -136,9 +136,14 @@ class Event {
   }
 
   /// Creates a copy of this event with the given fields replaced
+  /// 
+  /// Note: Due to Dart's null-aware operator (??) behavior, passing `null`
+  /// for a parameter will use the existing value rather than setting it to null.
+  /// To explicitly clear the name, use `clearName: true` parameter.
   Event copyWith({
     String? id,
     String? name,
+    bool clearName = false,
     String? description,
     TimingType? timingType,
     DateTime? startTime,
@@ -159,7 +164,7 @@ class Event {
   }) {
     return Event(
       id: id ?? this.id,
-      name: name ?? this.name,
+      name: clearName ? null : (name ?? this.name),
       description: description ?? this.description,
       timingType: timingType ?? this.timingType,
       startTime: startTime ?? this.startTime,

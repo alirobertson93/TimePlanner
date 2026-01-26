@@ -222,13 +222,23 @@ void main() {
     });
 
     group('copyWith', () {
-      test('can change name to null', () {
+      test('can change name to new value', () {
         final activity = createTestActivity(name: 'Test');
-        // Note: copyWith with null needs special handling if we want to allow
-        // explicitly setting name to null. Current implementation won't allow this.
-        // This is intentional - use a new constructor if you need null.
         final copied = activity.copyWith(name: 'New Name');
         expect(copied.name, 'New Name');
+      });
+
+      test('can clear name using clearName flag', () {
+        final activity = createTestActivity(name: 'Test');
+        final copied = activity.copyWith(clearName: true);
+        expect(copied.name, isNull);
+      });
+
+      test('preserves name when clearName is false and name is null', () {
+        final activity = createTestActivity(name: 'Test');
+        // Passing null for name should preserve the existing value
+        final copied = activity.copyWith(name: null);
+        expect(copied.name, 'Test');
       });
 
       test('preserves all fields when not specified', () {
