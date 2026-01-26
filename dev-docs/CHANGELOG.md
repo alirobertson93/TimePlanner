@@ -34,6 +34,132 @@ This changelog serves multiple purposes:
 ## Session Log
 
 
+### Session: 2026-01-26 (Activity Model Refactor - Phase 10D Implementation)
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Update Onboarding Wizard to create unscheduled Activities for the activity bank
+
+**Work Completed**:
+
+**Data Model Updates** ✅
+
+- ✅ Updated `_ActivityGoalData` class:
+  - Added `durationMinutes` field for default activity duration
+  - Added `categoryId` field for category association
+  - Added `createGoal` field to make goal creation optional
+
+**Save Flow Updates** ✅
+
+- ✅ Updated activity save flow in `_saveOnboardingData()`:
+  - Now creates unscheduled Activity entities (no start/end time)
+  - Activities go to the activity bank for planning wizard scheduling
+  - Default duration of 1 hour if not specified
+  - Category association supported
+  - Optionally creates associated Goal with `GoalType.activity`
+
+**UI Updates** ✅
+
+- ✅ Updated `_showAddActivityGoalDialog()`:
+  - Renamed dialog title to "Add Unscheduled Activity"
+  - Added duration picker (15min to 3 hours)
+  - Added category dropdown
+  - Added "Set Time Goal" toggle
+  - Goal fields only shown when toggle enabled
+
+- ✅ Updated `_buildActivityGoalsPage()`:
+  - Renamed title to "Unscheduled Activities"
+  - Updated icon to `widgets_outlined`
+  - Updated description to explain activity bank concept
+  - Updated button text to "Add Activity"
+  - Updated card icon to `event_available`
+
+- ✅ Created `_buildActivitySubtitle()`:
+  - Formats duration and goal info for card display
+
+- ✅ Updated summary page:
+  - Changed "Activities Tracked" to "Unscheduled Activities"
+
+- ✅ Updated suggestion chips with `createGoal: true`
+
+**Files Modified**:
+- lib/presentation/screens/onboarding/enhanced_onboarding_screen.dart
+
+**Phase 10D Complete** ✅
+
+**Activity Model Refactor Complete**:
+- Phase 10A: ✅ Terminology refactor, Activity entity, seriesId support
+- Phase 10B: ✅ Optional title, DisplayTitleService, validation
+- Phase 10C: ✅ Series support, matching service, edit service, UI dialogs, form integration
+- Phase 10D: ✅ Onboarding wizard updates for activity bank
+
+---
+
+### Session: 2026-01-26 (Activity Model Refactor - Phase 10C Integration)
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Integrate series support into the activity form save/edit flow
+
+**Work Completed**:
+
+**Provider Updates** ✅
+
+- ✅ Updated `lib/presentation/providers/event_form_providers.dart`:
+  - Added `seriesId` field to `EventFormState` for tracking series association
+  - Added `isInSeries` getter to check if activity belongs to a series
+  - Added `isRecurring` getter to check if activity has recurrence rule
+  - Added `buildActivity()` method to create Activity from form state for series matching
+  - Updated `copyWith()` method with `seriesId` and `clearSeriesId` parameters
+  - Updated `initializeForEdit()` to load `seriesId` from existing event
+  - Added `updateSeriesId()` method to update/clear series association
+  - Updated `save()` method to include `seriesId` when creating Event
+  - Added imports for Activity and ActivityStatus
+
+**Screen Updates** ✅
+
+- ✅ Updated `lib/presentation/screens/event_form/event_form_screen.dart`:
+  - Created `_saveWithSeriesIntegration()` method for handling saves with series logic
+  - Created `_handlePostSave()` method for post-save operations (travel time check, navigation)
+  - Updated save button to call `_saveWithSeriesIntegration()` instead of direct save
+  - Added imports for uuid, series_providers, series_prompt_dialog, edit_scope_dialog, edit_scope
+
+**Integration Flow**:
+
+For **new activities**:
+1. Build Activity from form state
+2. Call SeriesMatchingService to find matching series
+3. If matches found, show SeriesPromptDialog
+4. If user chooses to add to series, set seriesId before saving
+5. Save activity with seriesId
+
+For **existing activities in a series**:
+1. Get series count from SeriesMatchingService
+2. If series has multiple activities, show EditScopeDialog
+3. Based on selected scope:
+   - `thisOnly`: Save only this activity
+   - `allInSeries`: Save this activity, then apply updates to all in series
+   - `thisAndFuture`: Save this activity, then apply updates to this and future
+
+**Files Modified**:
+- lib/presentation/providers/event_form_providers.dart (seriesId support)
+- lib/presentation/screens/event_form/event_form_screen.dart (series integration)
+
+**Files Updated**:
+- dev-docs/ACTIVITY_REFACTOR_IMPLEMENTATION.md (Phase 10C completion)
+- dev-docs/CHANGELOG.md (this entry)
+- dev-docs/ROADMAP.md (status update)
+
+**Phase 10C Complete** ✅
+
+**Next Steps**:
+- Phase 10D: Onboarding Wizard Updates
+  - Rename Step 2 to "Recurring Activities"
+  - Refactor Step 4 to create unscheduled Activities
+  - Add optional goal creation for activities
+
+---
+
 ### Session: 2026-01-26 (Activity Model Refactor - Phase 10C Implementation)
 
 **Author**: AI Assistant (GitHub Copilot)

@@ -1247,4 +1247,140 @@ Implemented series support features for grouping related activities:
 
 ---
 
+**Session: 2026-01-26 (Phase 10C Integration - Series in Activity Form)**
+
+Integrated series support into the activity form save/edit flow:
+
+### Phase 10C Integration Completed Work:
+
+1. **Updated EventFormState** (`lib/presentation/providers/event_form_providers.dart`):
+   - Added `seriesId` field to track series association
+   - Added `isInSeries` getter to check if activity is in a series
+   - Added `isRecurring` getter to check if activity has recurrence
+   - Added `buildActivity()` method to create Activity from form state for series matching
+   - Updated `copyWith()` with `seriesId` and `clearSeriesId` parameters
+   - Updated `initializeForEdit()` to load seriesId from existing event
+   - Updated `save()` to include seriesId when creating Event
+
+2. **Added updateSeriesId Method** (`lib/presentation/providers/event_form_providers.dart`):
+   - New method to update or clear the seriesId on the form state
+   - Used when user chooses to add activity to a series
+
+3. **Created _saveWithSeriesIntegration Method** (`lib/presentation/screens/event_form/event_form_screen.dart`):
+   - Handles save with series integration for both new and existing activities
+   - For new activities:
+     - Calls SeriesMatchingService to find matching series
+     - Shows SeriesPromptDialog if matches found
+     - Sets seriesId if user chooses to add to series
+   - For existing activities in a series:
+     - Gets series count from SeriesMatchingService
+     - Shows EditScopeDialog if series has multiple activities
+     - Applies edits based on selected scope (thisOnly, allInSeries, thisAndFuture)
+     - Uses SeriesEditService for bulk updates
+
+4. **Created _handlePostSave Method** (`lib/presentation/screens/event_form/event_form_screen.dart`):
+   - Extracted post-save operations for reuse
+   - Handles travel time check and navigation
+
+5. **Updated Save Button** (`lib/presentation/screens/event_form/event_form_screen.dart`):
+   - Now calls `_saveWithSeriesIntegration` instead of direct `formNotifier.save()`
+
+6. **Added Imports** (`lib/presentation/screens/event_form/event_form_screen.dart`):
+   - Added uuid package for generating activity IDs
+   - Added series_providers for SeriesMatchingService and SeriesEditService
+   - Added series_prompt_dialog for SeriesPromptDialog
+   - Added edit_scope_dialog for EditScopeDialog
+   - Added edit_scope enum for EditScope
+
+### Files Modified:
+- `lib/presentation/providers/event_form_providers.dart` - Updated with seriesId support
+- `lib/presentation/screens/event_form/event_form_screen.dart` - Integrated series dialogs
+
+### Phase 10C Complete:
+✅ ActivitySeries model class created
+✅ EditScope enum created
+✅ SeriesMatchingService created
+✅ SeriesEditService created
+✅ SeriesPromptDialog UI widget created
+✅ EditScopeDialog UI widget created
+✅ series_providers.dart with Riverpod providers created
+✅ Unit tests for services created
+✅ Series prompt integrated into activity form save flow
+✅ Edit scope dialog integrated into activity form edit flow
+
+### Remaining:
+- Run Flutter tests (requires Flutter SDK)
+- Phase 10D: Onboarding Wizard Updates
+
+---
+
+**Session: 2026-01-26 (Phase 10D Implementation - Onboarding Wizard Updates)**
+
+Implemented Phase 10D - Onboarding Wizard Updates for activity bank integration:
+
+### Phase 10D Completed Work:
+
+1. **Updated `_ActivityGoalData` Class**:
+   - Added `durationMinutes` field for default activity duration
+   - Added `categoryId` field for category association
+   - Added `createGoal` field to make goal creation optional
+   - All fields properly documented
+
+2. **Updated Activity Save Flow** (`enhanced_onboarding_screen.dart`):
+   - Now creates unscheduled Activity entities for the activity bank
+   - Activities have no start/end time (for planning wizard scheduling)
+   - Default duration of 1 hour if not specified
+   - Category association supported
+   - Optionally creates associated Goal with `GoalType.activity`
+   - Uses `Event.fromActivity()` for repository compatibility
+
+3. **Updated `_showAddActivityGoalDialog`**:
+   - Renamed dialog title to "Add Unscheduled Activity"
+   - Added duration picker (15min to 3 hours options)
+   - Added category dropdown (loads from categoryRepository)
+   - Added "Set Time Goal" toggle to make goal creation optional
+   - Goal fields only shown when toggle is enabled
+   - Clear explanation that activities go to activity bank
+
+4. **Updated `_buildActivityGoalsPage`**:
+   - Renamed title to "Unscheduled Activities"
+   - Updated icon to `widgets_outlined`
+   - Updated description to explain activity bank concept
+   - Updated button text to "Add Activity"
+   - Updated card icon to `event_available`
+
+5. **Created `_buildActivitySubtitle` Helper**:
+   - Formats duration in hours and minutes
+   - Shows goal info if goal is enabled
+   - Returns "Unscheduled" if no details set
+
+6. **Updated Summary Page**:
+   - Changed "Activities Tracked" to "Unscheduled Activities"
+   - Updated icon to match new theme
+
+7. **Updated Suggestion Chips**:
+   - Added `createGoal: true` for suggested activities
+
+### Files Modified:
+- `lib/presentation/screens/onboarding/enhanced_onboarding_screen.dart` - Onboarding wizard updates
+
+### Phase 10D Complete:
+✅ Step 2 renamed to "Recurring Activities" (already done in previous session)
+✅ Step 4 refactored to create unscheduled Activities for activity bank
+✅ Optional goal creation for activities
+✅ Duration and category support added
+✅ UI updated to reflect activity bank concept
+
+### Activity Model Refactor Complete:
+Phase 10A: ✅ Terminology refactor, Activity entity, seriesId support
+Phase 10B: ✅ Optional title, DisplayTitleService, validation
+Phase 10C: ✅ Series support, matching service, edit service, UI dialogs, form integration
+Phase 10D: ✅ Onboarding wizard updates for activity bank
+
+### Remaining:
+- Run Flutter tests (requires Flutter SDK)
+- Optional: Phase 5 - Planning Wizard Updates for activity bank integration
+
+---
+
 *Last updated: 2026-01-26*

@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../domain/entities/activity.dart';
 import '../../../domain/entities/event.dart';
 import '../../../domain/entities/goal.dart';
 import '../../../domain/entities/location.dart';
 import '../../../domain/entities/person.dart';
 import '../../../domain/entities/recurrence_rule.dart';
+import '../../../domain/enums/activity_status.dart';
 import '../../../domain/enums/debt_strategy.dart';
 import '../../../domain/enums/event_status.dart';
 import '../../../domain/enums/goal_metric.dart';
@@ -198,21 +200,48 @@ class _EnhancedOnboardingScreenState
       }
     }
 
-    // Save activity goals
+    // Save activity goals and create unscheduled activities for the activity bank
     for (final activityData in _activityGoals) {
-      final goal = Goal(
+      // Create unscheduled Activity (goes to activity bank)
+      // These activities have no start/end time - they'll be scheduled by the planning wizard
+      final activityDuration = activityData.durationMinutes != null 
+          ? Duration(minutes: activityData.durationMinutes!) 
+          : const Duration(hours: 1); // Default 1 hour if not specified
+      
+      final activity = Activity(
         id: uuid.v4(),
-        title: activityData.name,
-        type: GoalType.custom,
-        metric: GoalMetric.hours,
-        targetValue: activityData.targetHours,
-        period: activityData.period,
-        debtStrategy: DebtStrategy.carryForward,
-        isActive: true,
+        name: activityData.name,
+        timingType: TimingType.flexible,
+        // No startTime/endTime - unscheduled activity for the activity bank
+        duration: activityDuration,
+        categoryId: activityData.categoryId,
+        appCanMove: true,
+        appCanResize: true,
+        isUserLocked: false,
+        status: ActivityStatus.pending,
         createdAt: now,
         updatedAt: now,
       );
-      await goalRepo.save(goal);
+      // Save as Event for compatibility with existing repository
+      await eventRepo.save(Event.fromActivity(activity));
+
+      // Optionally create associated Goal for time tracking
+      if (activityData.createGoal && activityData.targetHours > 0) {
+        final goal = Goal(
+          id: uuid.v4(),
+          title: activityData.name,
+          type: GoalType.activity,
+          activityTitle: activityData.name,
+          metric: GoalMetric.hours,
+          targetValue: activityData.targetHours,
+          period: activityData.period,
+          debtStrategy: DebtStrategy.carryForward,
+          isActive: true,
+          createdAt: now,
+          updatedAt: now,
+        );
+        await goalRepo.save(goal);
+      }
     }
 
     // Save locations and their goals
@@ -604,11 +633,11 @@ class _EnhancedOnboardingScreenState
         children: [
           Row(
             children: [
-              Icon(Icons.track_changes, color: theme.colorScheme.primary, size: 32),
+              Icon(Icons.widgets_outlined, color: theme.colorScheme.primary, size: 32),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Activity Time Tracking',
+                  'Unscheduled Activities',
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -618,25 +647,25 @@ class _EnhancedOnboardingScreenState
           ),
           const SizedBox(height: 8),
           Text(
-            'Track how much time you spend on activities like exercise, reading, hobbies, or learning. Set your time targets below.',
+            'Add activities you want to do but haven\'t scheduled yet. These go to your activity bank and can be scheduled by the Planning Wizard.',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.withOpacity(0.7),
             ),
           ),
           const SizedBox(height: 24),
 
-          // List of added activity goals
+          // List of added activities
           if (_activityGoals.isNotEmpty) ...[
             ..._activityGoals.asMap().entries.map((entry) {
               final index = entry.key;
-              final goal = entry.value;
+              final activity = entry.value;
               return Card(
                 margin: const EdgeInsets.only(bottom: 8),
                 child: ListTile(
-                  leading: const Icon(Icons.track_changes),
-                  title: Text(goal.name),
+                  leading: const Icon(Icons.event_available),
+                  title: Text(activity.name),
                   subtitle: Text(
-                    '${goal.targetHours} hours ${goal.period == GoalPeriod.week ? "per week" : "per month"}',
+                    _buildActivitySubtitle(activity),
                   ),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete_outline),
@@ -655,7 +684,7 @@ class _EnhancedOnboardingScreenState
           OutlinedButton.icon(
             onPressed: () => _showAddActivityGoalDialog(),
             icon: const Icon(Icons.add),
-            label: const Text('Track New Activity'),
+            label: const Text('Add Activity'),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
             ),
@@ -668,6 +697,30 @@ class _EnhancedOnboardingScreenState
         ],
       ),
     );
+  }
+
+  /// Build subtitle text for activity card showing duration and goal info
+  String _buildActivitySubtitle(_ActivityGoalData activity) {
+    final parts = <String>[];
+    
+    if (activity.durationMinutes != null) {
+      final hours = activity.durationMinutes! ~/ 60;
+      final mins = activity.durationMinutes! % 60;
+      if (hours > 0 && mins > 0) {
+        parts.add('$hours h $mins min');
+      } else if (hours > 0) {
+        parts.add('$hours ${hours == 1 ? 'hour' : 'hours'}');
+      } else {
+        parts.add('$mins min');
+      }
+    }
+    
+    if (activity.createGoal) {
+      final periodText = activity.period == GoalPeriod.week ? 'week' : 'month';
+      parts.add('Goal: ${activity.targetHours}h/$periodText');
+    }
+    
+    return parts.isEmpty ? 'Unscheduled' : parts.join(' • ');
   }
 
   Widget _buildSuggestedGoals(ThemeData theme) {
@@ -705,6 +758,7 @@ class _EnhancedOnboardingScreenState
             name: name,
             targetHours: suggestedHours,
             period: GoalPeriod.week,
+            createGoal: true, // Suggested activities get goals by default
           ));
         });
       },
@@ -885,8 +939,8 @@ class _EnhancedOnboardingScreenState
             ),
             _buildSummarySection(
               theme,
-              'Activities Tracked',
-              Icons.track_changes,
+              'Unscheduled Activities',
+              Icons.widgets_outlined,
               _activityGoals.length,
             ),
             _buildSummarySection(
@@ -1256,85 +1310,158 @@ class _EnhancedOnboardingScreenState
 
   Future<void> _showAddActivityGoalDialog() async {
     final nameController = TextEditingController();
+    int? durationMinutes = 60; // Default 1 hour
+    String? selectedCategoryId;
     int targetHours = 3;
     GoalPeriod period = GoalPeriod.week;
+    bool createGoal = true;
+
+    final categoriesAsync = ref.read(categoryRepositoryProvider).getAll();
+    final categories = await categoriesAsync;
+
+    if (!mounted) return;
 
     await showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('Track Time on Activity'),
+          title: const Text('Add Unscheduled Activity'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'What activity do you want to track time for?',
+                  'Create an activity for your activity bank. It will be available for scheduling later.',
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 16),
                 TextField(
                   controller: nameController,
                   decoration: const InputDecoration(
-                    labelText: 'Activity *',
+                    labelText: 'Activity Name *',
                     hintText: 'e.g., Exercise, Reading, Learning',
                   ),
                   autofocus: true,
                   textCapitalization: TextCapitalization.words,
                 ),
-                const SizedBox(height: 24),
-                const Text('How much time per period?'),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: DropdownButtonFormField<int>(
-                        value: targetHours,
-                        decoration: const InputDecoration(
-                          labelText: 'Hours',
-                          border: OutlineInputBorder(),
-                        ),
-                        items: List.generate(_maxActivityHours, (i) => i + 1).map((hours) {
-                          return DropdownMenuItem(
-                            value: hours,
-                            child: Text('$hours'),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setDialogState(() {
-                            targetHours = value ?? 3;
-                          });
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: DropdownButtonFormField<GoalPeriod>(
-                        value: period,
-                        decoration: const InputDecoration(
-                          labelText: 'Period',
-                          border: OutlineInputBorder(),
-                        ),
-                        items: const [
-                          DropdownMenuItem(
-                            value: GoalPeriod.week,
-                            child: Text('Per week'),
-                          ),
-                          DropdownMenuItem(
-                            value: GoalPeriod.month,
-                            child: Text('Per month'),
-                          ),
-                        ],
-                        onChanged: (value) {
-                          setDialogState(() {
-                            period = value ?? GoalPeriod.week;
-                          });
-                        },
-                      ),
-                    ),
+                const SizedBox(height: 16),
+                
+                // Duration picker
+                DropdownButtonFormField<int>(
+                  value: durationMinutes,
+                  decoration: const InputDecoration(
+                    labelText: 'Default Duration',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: const [
+                    DropdownMenuItem(value: 15, child: Text('15 minutes')),
+                    DropdownMenuItem(value: 30, child: Text('30 minutes')),
+                    DropdownMenuItem(value: 45, child: Text('45 minutes')),
+                    DropdownMenuItem(value: 60, child: Text('1 hour')),
+                    DropdownMenuItem(value: 90, child: Text('1.5 hours')),
+                    DropdownMenuItem(value: 120, child: Text('2 hours')),
+                    DropdownMenuItem(value: 180, child: Text('3 hours')),
                   ],
+                  onChanged: (value) {
+                    setDialogState(() {
+                      durationMinutes = value;
+                    });
+                  },
                 ),
+                const SizedBox(height: 16),
+
+                // Category picker (optional)
+                if (categories.isNotEmpty)
+                  DropdownButtonFormField<String?>(
+                    value: selectedCategoryId,
+                    decoration: const InputDecoration(
+                      labelText: 'Category (optional)',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: [
+                      const DropdownMenuItem(value: null, child: Text('No category')),
+                      ...categories.map((cat) => DropdownMenuItem(
+                        value: cat.id,
+                        child: Text(cat.name),
+                      )),
+                    ],
+                    onChanged: (value) {
+                      setDialogState(() {
+                        selectedCategoryId = value;
+                      });
+                    },
+                  ),
+                
+                const SizedBox(height: 24),
+                const Divider(),
+                const SizedBox(height: 8),
+                
+                // Time Goal section
+                SwitchListTile(
+                  value: createGoal,
+                  onChanged: (value) {
+                    setDialogState(() {
+                      createGoal = value;
+                    });
+                  },
+                  title: const Text('Set Time Goal'),
+                  subtitle: const Text('Track hours spent on this activity'),
+                  contentPadding: EdgeInsets.zero,
+                ),
+
+                if (createGoal) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DropdownButtonFormField<int>(
+                          value: targetHours,
+                          decoration: const InputDecoration(
+                            labelText: 'Target Hours',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: List.generate(_maxActivityHours, (i) => i + 1).map((hours) {
+                            return DropdownMenuItem(
+                              value: hours,
+                              child: Text('$hours'),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setDialogState(() {
+                              targetHours = value ?? 3;
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: DropdownButtonFormField<GoalPeriod>(
+                          value: period,
+                          decoration: const InputDecoration(
+                            labelText: 'Period',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: const [
+                            DropdownMenuItem(
+                              value: GoalPeriod.week,
+                              child: Text('Per week'),
+                            ),
+                            DropdownMenuItem(
+                              value: GoalPeriod.month,
+                              child: Text('Per month'),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            setDialogState(() {
+                              period = value ?? GoalPeriod.week;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
@@ -1354,8 +1481,11 @@ class _EnhancedOnboardingScreenState
                 setState(() {
                   _activityGoals.add(_ActivityGoalData(
                     name: nameController.text.trim(),
+                    durationMinutes: durationMinutes,
+                    categoryId: selectedCategoryId,
                     targetHours: targetHours,
                     period: period,
+                    createGoal: createGoal,
                   ));
                 });
                 Navigator.pop(context);
@@ -1551,13 +1681,23 @@ class _PersonWithGoalData {
 class _ActivityGoalData {
   _ActivityGoalData({
     required this.name,
+    this.durationMinutes,
+    this.categoryId,
     required this.targetHours,
     required this.period,
+    required this.createGoal,
   });
 
   final String name;
+  /// Default duration for this activity in minutes (optional)
+  final int? durationMinutes;
+  /// Associated category ID (optional)
+  final String? categoryId;
+  /// Target hours per period for the goal
   final int targetHours;
   final GoalPeriod period;
+  /// Whether to create a goal for this activity
+  final bool createGoal;
 }
 
 class _LocationWithGoalData {
