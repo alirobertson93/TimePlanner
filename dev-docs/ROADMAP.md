@@ -1,18 +1,32 @@
 # Project Roadmap
 
-**Last Updated**: 2026-01-25
+**Last Updated**: 2026-01-26
 
 This document is the single source of truth for the project's current status, completed work, and upcoming phases. For session logs and development history, see [CHANGELOG.md](./CHANGELOG.md).
 
 ## Current Status
 
-**Project Phase**: Phase 9 Complete - Enhanced Goals System ✅
+**Project Phase**: Phase 10 Planned - Activity Model Refactor (Documentation Complete)
 
-**Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9 Complete (100%)
+**Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9 Complete (100%), Phase 10 Documentation Complete
 
-**Active Work**: Bug Fixes and Maintenance
+**Active Work**: Activity Model Refactor - Documentation phase complete, code implementation to follow
 
-**Latest Update (2026-01-25 - Onboarding Wizard Bug Fixes)**:
+**Latest Update (2026-01-26 - Activity Model Refactor Documentation)**:
+- ✅ **Documentation Complete**: All dev-docs updated with Activity terminology
+  - DATA_MODEL.md: Event → Activity, seriesId field, nullable title, validation rules
+  - UX_FLOWS.md: Onboarding updates, series matching prompt, edit scope prompt
+  - ARCHITECTURE.md: Entity references, SeriesMatchingService
+  - USER_GUIDE.md: User-facing terminology, series explanation
+  - PRD.md: Activity bank concept, series concept
+  - ALGORITHM.md: Planning wizard with activity bank, series integration
+- ✅ **Implementation Guide Created**: `ACTIVITY_REFACTOR_IMPLEMENTATION.md`
+  - 5-phase implementation plan with detailed code examples
+  - File reference tables (rename, modify, create)
+  - Migration guide with SQL examples
+  - Testing guidance for each phase
+
+**Previous Update (2026-01-25 - Onboarding Wizard Bug Fixes)**:
 - ✅ **BUG-001 FIXED**: Replay Onboarding from settings now works correctly
   - Added provider invalidation after `resetOnboarding()` to force state refresh
 - ✅ **BUG-002 FIXED**: Onboarding no longer shows on every app restart
@@ -1049,6 +1063,70 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 - 🟡 Partial: Some work done, needs additional effort (below target coverage)
 - ⚪ Planned: Not started, planned for future phase
 
+---
+
+## Phase 10: Activity Model Refactor
+
+**Status**: Planned (Documentation Complete)
+
+**Goal**: Unify the app's core model around "Activity" terminology, add series support for grouping related activities, and establish unscheduled activities as a planning resource.
+
+**Documentation**: See `dev-docs/ACTIVITY_REFACTOR_IMPLEMENTATION.md` for detailed implementation guide.
+
+### Phase 10A: Terminology Refactor
+**Status**: Not Started
+
+- [ ] Rename Event → Activity (entity, table, repository)
+- [ ] Rename EventPeople → ActivityPeople
+- [ ] Update GoalType.event → GoalType.activity
+- [ ] Update Goal.eventTitle → Goal.activityTitle
+- [ ] Update all UI strings
+- [ ] Update all documentation references
+- [ ] Database migration (schema v14)
+
+**Files**: See ACTIVITY_REFACTOR_IMPLEMENTATION.md for complete file list
+
+### Phase 10B: Optional Title + Display Logic
+**Status**: Not Started
+
+- [ ] Make Activity.name nullable
+- [ ] Add validation (must have title OR person OR location OR category)
+- [ ] Implement displayTitle computed property
+- [ ] Update all UI to use displayTitle
+- [ ] Database migration
+
+### Phase 10C: Series Support
+**Status**: Not Started
+
+- [ ] Add seriesId field to Activity
+- [ ] Create SeriesMatchingService
+- [ ] Create series matching prompt UI
+- [ ] Create edit scope prompt UI
+- [ ] Implement bulk edit with property variance handling
+- [ ] Database migration (add series_id column + index)
+
+### Phase 10D: Onboarding Wizard Updates
+**Status**: Not Started
+
+- [ ] Rename Step 2 to "Recurring Activities"
+- [ ] Refactor Step 4 to create unscheduled Activities (not just Goals)
+- [ ] Integrate series matching prompts
+- [ ] Update onboarding tests
+
+### Phase 10E: Planning Wizard Updates
+**Status**: Not Started
+
+- [ ] Query both scheduled and unscheduled activities
+- [ ] Implement goal-based ranking for suggestions
+- [ ] Integrate series matching when scheduling suggestions
+- [ ] Update planning wizard tests
+
+**Dependencies**: None (can begin immediately)
+
+**Estimated Effort**: 3-5 development sessions
+
+---
+
 ## Known Issues & Planned Improvements
 
 ### Issue 1: Recurring Events Not Populating (CRITICAL)
@@ -1214,4 +1292,4 @@ Before considering the project "complete":
 
 *For session logs and detailed development history, see [CHANGELOG.md](./CHANGELOG.md)*
 
-*Last updated: 2026-01-25*
+*Last updated: 2026-01-26*

@@ -4,22 +4,25 @@
 
 Welcome to TimePlanner! This guide will help you make the most of the app's intelligent scheduling features.
 
+> **Note**: TimePlanner uses the term "Activity" for all calendar items - whether they're scheduled appointments, flexible tasks, or items in your planning bank.
+
 ---
 
 ## Table of Contents
 
 1. [Getting Started](#getting-started)
 2. [The Day View](#the-day-view)
-3. [Creating Events](#creating-events)
+3. [Creating Activities](#creating-activities)
 4. [Week View](#week-view)
 5. [Planning Wizard](#planning-wizard)
 6. [Goals](#goals)
 7. [People & Locations](#people--locations)
-8. [Recurring Events](#recurring-events)
-9. [Notifications](#notifications)
-10. [Settings](#settings)
-11. [Tips & Best Practices](#tips--best-practices)
-12. [Troubleshooting](#troubleshooting)
+8. [Recurring Activities](#recurring-activities)
+9. [Activity Series](#activity-series)
+10. [Notifications](#notifications)
+11. [Settings](#settings)
+12. [Tips & Best Practices](#tips--best-practices)
+13. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -27,22 +30,26 @@ Welcome to TimePlanner! This guide will help you make the most of the app's inte
 
 ### First Launch
 
-When you first open TimePlanner, you'll see a **5-page onboarding wizard** that introduces you to the key features:
+When you first open TimePlanner, you'll see a **6-page onboarding wizard** that introduces you to the key features:
 
 1. **Welcome** - Overview of TimePlanner
-2. **Smart Scheduling** - How the scheduling algorithm works
-3. **Track Your Goals** - Setting and monitoring goals
-4. **Plan Ahead** - Using the Planning Wizard
-5. **Stay Notified** - Notification options
+2. **Recurring Activities** - Set up activities that repeat weekly
+3. **People & Time Goals** - Add people and set time goals with them
+4. **Unscheduled Activities** - Build your activity bank for planning
+5. **Places** - Add your common locations
+6. **Summary** - Review and get started
 
-At the end of onboarding, you can choose to **install sample data** to see how the app looks with events, goals, and people already set up. This is great for exploring features before entering your own data.
+At the end of onboarding, you can choose to **install sample data** to see how the app looks with activities, goals, and people already set up. This is great for exploring features before entering your own data.
 
 ### Key Concepts
 
-- **Fixed Events**: Events with specific times that cannot move (meetings, appointments)
-- **Flexible Events**: Tasks that need to be scheduled but can happen at any time
-- **Categories**: Organize events by type (Work, Personal, Health, etc.)
-- **Goals**: Track time spent on categories or with specific people
+- **Scheduled Activities**: Activities with specific times that appear on your calendar
+- **Unscheduled Activities**: Activities in your "activity bank" waiting to be scheduled
+- **Fixed Activities**: Activities that cannot be moved (meetings, appointments)
+- **Flexible Activities**: Tasks that can be scheduled at any available time
+- **Categories**: Organize activities by type (Work, Personal, Health, etc.)
+- **Goals**: Track time spent on categories, people, locations, or specific activities
+- **Series**: Groups of related activities that can be edited together
 
 ---
 
@@ -59,13 +66,13 @@ The Day View is your home screen and shows a **24-hour scrollable timeline** of 
 ### Features
 
 - **Current Time Indicator**: A red line shows the current time
-- **Event Cards**: Your events appear as colored cards on the timeline
-- **Category Colors**: Each event is color-coded by its category
+- **Activity Cards**: Your activities appear as colored cards on the timeline
+- **Category Colors**: Each activity is color-coded by its category
 
 ### Actions
 
-- **Tap an Event**: Opens the event detail sheet with full information
-- **+ Button (FAB)**: Creates a new event
+- **Tap an Activity**: Opens the activity detail sheet with full information
+- **+ Button (FAB)**: Creates a new activity
 - **Top Navigation Buttons**:
   - 📊 Goals Dashboard
   - 👥 People Management
@@ -77,42 +84,57 @@ The Day View is your home screen and shows a **24-hour scrollable timeline** of 
 
 ---
 
-## Creating Events
+## Creating Activities
 
-Tap the **+** button to create a new event.
+Tap the **+** button to create a new activity.
 
-### Event Types
+### Activity Types
 
-**Fixed Events** (📌)
+**Fixed Activities** (📌)
 - Have a specific start and end time
 - Cannot be moved by the scheduler
 - Examples: Meetings, doctor appointments, classes
 
-**Flexible Events** (🔄)
+**Flexible Activities** (🔄)
 - Have a duration but no specific time
 - The Planning Wizard can schedule these optimally
 - Examples: Deep work, exercise, reading
 
-### Event Fields
+**Unscheduled Activities** (📋)
+- No date or time assigned yet
+- Live in your "Activity Bank"
+- The Planning Wizard suggests when to schedule them
+
+### Activity Fields
 
 | Field | Description |
 |-------|-------------|
-| **Title** | Name of the event (required) |
+| **Title** | Name of the activity (optional - see below) |
 | **Description** | Additional details |
-| **Category** | Event type for organization |
-| **Date** | Which day the event occurs |
-| **Start Time** | When the event begins (fixed events) |
-| **End Time** | When the event ends (fixed events) |
-| **Duration** | How long the event takes (flexible events) |
-| **Location** | Where the event takes place |
-| **People** | Who is involved in this event |
-| **Recurrence** | If the event repeats |
+| **Category** | Activity type for organization |
+| **Date** | Which day the activity occurs |
+| **Start Time** | When the activity begins (fixed activities) |
+| **End Time** | When the activity ends (fixed activities) |
+| **Duration** | How long the activity takes (flexible activities) |
+| **Location** | Where the activity takes place |
+| **People** | Who is involved in this activity |
+| **Recurrence** | If the activity repeats |
+
+### Minimum Requirements
+
+An activity must have **at least one** of:
+- Title
+- Person
+- Location
+- Category
+
+This means you can create an activity with just a person (e.g., "time with Mom") or just a location (e.g., "at the gym") without needing a title.
 
 ### Constraints (Advanced)
 
-- **Movable**: Can the scheduler move this event?
+- **Movable**: Can the scheduler move this activity?
 - **Resizable**: Can the scheduler adjust the duration?
-- **Locked**: Should this event stay exactly as scheduled?
+- **Locked**: Should this activity stay exactly as scheduled?
 
 ---
 
@@ -123,8 +145,8 @@ Access the Week View by tapping the calendar icon in the Day View.
 ### Layout
 
 - Shows **7 days** in a grid
-- Events appear as colored blocks
-- Each day shows a summary of events
+- Activities appear as colored blocks
+- Each day shows a summary of activities
 
 ### Navigation
 
@@ -138,6 +160,13 @@ Access the Week View by tapping the calendar icon in the Day View.
 ## Planning Wizard
 
 The Planning Wizard is TimePlanner's **intelligent scheduling engine**. Access it by tapping "Plan Week" in the Day View.
+
+### Source Activities
+
+The wizard draws from **all your activities**:
+- **Unscheduled activities** from your activity bank
+- **Previously scheduled activities** that might need rescheduling
+- **Recurring activities** expanded based on their patterns
 
 ### The 4-Step Process
 
@@ -158,19 +187,19 @@ The Planning Wizard is TimePlanner's **intelligent scheduling engine**. Access i
 | **Balanced** | Spreads work evenly across the week |
 | **Front-Loaded** | Schedules important work early in the week |
 | **Max Free Time** | Creates larger blocks of free time |
-| **Least Disruption** | Minimizes changes to existing events |
+| **Least Disruption** | Minimizes changes to existing activities |
 
 #### Step 4: Schedule Preview
 - Review the generated schedule
-- See which events were scheduled, conflicts, and unscheduled items
+- See which activities were scheduled, conflicts, and unscheduled items
 - **Accept**: Save the schedule to your calendar
 - **Reject**: Go back and adjust parameters
 
 ### Understanding Results
 
-- **Scheduled Events**: Events successfully placed on your calendar
-- **Conflicts**: Events that overlap with existing commitments
-- **Unscheduled**: Events that couldn't be scheduled (not enough time)
+- **Scheduled Activities**: Activities successfully placed on your calendar
+- **Conflicts**: Activities that overlap with existing commitments
+- **Unscheduled**: Activities that couldn't be scheduled (not enough time)
 
 ---
 
@@ -184,16 +213,24 @@ Access Goals by tapping the chart icon in the Day View.
 - Track time spent on a category
 - Example: "10 hours of Work per week"
 
-**Relationship Goals**
+**Relationship Goals (Person)**
 - Track time spent with a specific person
 - Example: "2 hours with Family per week"
+
+**Location Goals**
+- Track time spent at a specific place
+- Example: "15 hours at Home Office per week"
+
+**Activity Goals**
+- Track time spent on a specific recurring activity
+- Example: "3 hours on Guitar Practice per week"
 
 ### Creating Goals
 
 1. Tap **+** in the Goals Dashboard
-2. Choose goal type (Category or Person)
+2. Choose what to track (Category, Person, Location, or Activity)
 3. Set your target time
-4. Choose the period (Daily, Weekly, Monthly)
+4. Choose the period (Weekly, Monthly)
 5. Save
 
 ### Tracking Progress
@@ -204,6 +241,15 @@ The Goals Dashboard shows:
 - Status: On Track, At Risk, Completed
 - Goals at risk are highlighted for attention
 
+### How Activities Contribute
+
+When you complete a scheduled activity, it automatically contributes to **all relevant goals**:
+
+**Example**: Activity "Cinema" with person "Girlfriend" and category "Relaxation"
+- ✅ Contributes to "Cinema" activity goal (if exists)
+- ✅ Contributes to "Girlfriend" person goal (if exists)
+- ✅ Contributes to "Relaxation" category goal (if exists)
+
 ---
 
 ## People & Locations
@@ -212,9 +258,9 @@ The Goals Dashboard shows:
 
 Access via the People icon in Day View.
 
-- Add contacts associated with your events
+- Add contacts associated with your activities
 - Track relationship goals
-- Associate people with events
+- Associate people with activities
 
 ### Managing Locations
 
@@ -222,7 +268,7 @@ Access via the Locations icon in Day View.
 
 - Save frequently used locations
 - Set travel times between locations
-- The app prompts for travel times when you schedule consecutive events at different locations
+- The app prompts for travel times when you schedule consecutive activities at different locations
 
 ### Travel Times
 
@@ -233,9 +279,9 @@ Access via the Locations icon in Day View.
 
 ---
 
-## Recurring Events
+## Recurring Activities
 
-Create events that repeat on a schedule.
+Create activities that repeat on a schedule.
 
 ### Recurrence Options
 
@@ -250,14 +296,56 @@ Create events that repeat on a schedule.
 
 ### End Conditions
 
-- **Never**: Event repeats indefinitely
+- **Never**: Activity repeats indefinitely
 - **After N occurrences**: Stops after a set number
 - **On date**: Stops on a specific date
 
-### Identifying Recurring Events
+### Identifying Recurring Activities
 
-- Recurring events show a 🔄 repeat icon
-- The event detail shows the recurrence pattern
+- Recurring activities show a 🔄 repeat icon
+- The activity detail shows the recurrence pattern
+
+---
+
+## Activity Series
+
+**Series** group related activities together, letting you edit them as a unit.
+
+### What is a Series?
+
+A series links activities that represent "the same thing" done multiple times:
+- "Cinema with Girlfriend" on different dates
+- "Weekly Team Meeting" instances
+- "Guitar Practice" sessions
+
+### How Series Work
+
+**Automatic Detection**: When you create an activity similar to existing ones, TimePlanner asks if you want to link them:
+
+```
+"This looks similar to 'Cinema with Girlfriend' (3 previous times)"
+
+[ Add to this series ]
+[ Keep as standalone ]
+```
+
+**Matching Criteria** (triggers the prompt):
+- Same title (case-insensitive), OR
+- 2+ matching properties (person, location, category)
+
+### Editing Series
+
+When editing an activity in a series, you can choose:
+- **This activity only** - Normal edit
+- **All activities in this series** - Bulk edit
+- **This and all future** - For recurring activities
+
+### Property Variance
+
+If you edit all activities in a series and some properties differ:
+- TimePlanner shows which properties vary
+- You choose which to sync across all activities
+- Unchecked properties keep their individual values
 
 ---
 
@@ -269,10 +357,10 @@ Access the Notifications screen via the bell icon.
 
 | Type | Description |
 |------|-------------|
-| **Event Reminder** | Upcoming event alerts |
+| **Activity Reminder** | Upcoming activity alerts |
 | **Schedule Change** | When your schedule is modified |
 | **Goal Progress** | Updates on goal achievement |
-| **Conflict Warning** | Overlapping events detected |
+| **Conflict Warning** | Overlapping activities detected |
 | **Goal At Risk** | When you're falling behind on a goal |
 | **Goal Completed** | Celebration when you hit a goal |
 
@@ -280,7 +368,7 @@ Access the Notifications screen via the bell icon.
 
 - Swipe to dismiss individual notifications
 - Tap "Mark All Read" to clear unread status
-- Tap a notification to go to the related event or goal
+- Tap a notification to go to the related activity or goal
 
 ### Notification Settings
 
@@ -301,11 +389,11 @@ Access Settings via the gear icon.
 - **Work Day Start/End**: Your typical working hours
 - **First Day of Week**: Sunday or Monday
 
-### Default Event Settings
+### Default Activity Settings
 
-- **Default Duration**: For new events
-- **Default Movable**: Can scheduler move new events?
-- **Default Resizable**: Can scheduler resize new events?
+- **Default Duration**: For new activities
+- **Default Movable**: Can scheduler move new activities?
+- **Default Resizable**: Can scheduler resize new activities?
 
 ### Notification Settings
 
@@ -338,6 +426,8 @@ Access Settings via the gear icon.
 
 5. **Use the Planning Wizard weekly** - Sunday planning sets up your week
 
+6. **Build your Activity Bank** - Add unscheduled activities you want to make time for
+
 ### Scheduling Strategy Tips
 
 - **Balanced**: Good for consistent workloads
@@ -350,6 +440,13 @@ Access Settings via the gear icon.
 - Start with 2-3 goals, not 10
 - Weekly goals are easier to track than daily
 - Include both work and personal goals for balance
+- Use different goal types (category, person, activity) for variety
+
+### Series Tips
+
+- Let TimePlanner detect similar activities automatically
+- Use series for recurring social activities (dinners with friends, etc.)
+- Edit all in a series when you want to update a recurring commitment
 
 ---
 
@@ -357,13 +454,13 @@ Access Settings via the gear icon.
 
 ### Common Issues
 
-**Events aren't appearing**
+**Activities aren't appearing**
 - Check the date - you may be viewing the wrong day
 - Pull down to refresh the view
-- Verify the event was saved
+- Verify the activity was saved
 
 **Planning Wizard shows many conflicts**
-- You may have too many fixed events
+- You may have too many fixed activities
 - Try a longer planning period
 - Reduce the number of goals or their targets
 
@@ -374,8 +471,12 @@ Access Settings via the gear icon.
 
 **App is slow**
 - Try closing and reopening the app
-- Large numbers of events (100+) may take longer to process
-- Consider archiving old completed events
+- Large numbers of activities (100+) may take longer to process
+- Consider archiving old completed activities
+
+**Series not detecting matches**
+- Make sure activities have similar properties (2+ of: title, person, location, category)
+- Check that titles are spelled consistently
 
 ### Getting Help
 
@@ -390,6 +491,6 @@ Access Settings via the gear icon.
 
 ---
 
-*Last Updated: 2026-01-24*
+*Last Updated: 2026-01-26 (Activity Model Refactor documentation)*
 
 *Thank you for using TimePlanner! We hope it helps you make the most of your time.*

@@ -6,7 +6,9 @@ Complete architecture and code organization for TimePlanner.
 
 TimePlanner follows a **clean architecture** pattern with clear separation of concerns across layers. This document defines the structure, responsibilities, and patterns for each layer.
 
-**Last Updated**: 2026-01-17
+> **Note**: This document uses the term "Activity" as the unified model for all calendar items. The term "Event" may still appear in the current codebase but will be renamed to "Activity" as part of the Activity Model Refactor (see `ACTIVITY_REFACTOR_IMPLEMENTATION.md`).
+
+**Last Updated**: 2026-01-26
 
 ---
 
@@ -73,7 +75,7 @@ lib/
 │
 ├── domain/                            # Domain layer (pure business logic)
 │   ├── entities/                      # Business entities
-│   │   ├── event.dart
+│   │   ├── activity.dart              # Currently: event.dart
 │   │   ├── category.dart
 │   │   ├── goal.dart
 │   │   ├── person.dart
@@ -81,14 +83,17 @@ lib/
 │   │   ├── notification.dart
 │   │   ├── recurrence_rule.dart
 │   │   └── ...
-│   └── enums/                         # Domain enumerations
-│       ├── timing_type.dart
-│       ├── event_status.dart
-│       ├── goal_type.dart
-│       ├── notification_type.dart
-│       ├── notification_status.dart
-│       ├── recurrence_frequency.dart
-│       ├── recurrence_end_type.dart
+│   ├── enums/                         # Domain enumerations
+│   │   ├── timing_type.dart
+│   │   ├── activity_status.dart       # Currently: event_status.dart
+│   │   ├── goal_type.dart
+│   │   ├── notification_type.dart
+│   │   ├── notification_status.dart
+│   │   ├── recurrence_frequency.dart
+│   │   ├── recurrence_end_type.dart
+│   │   └── ...
+│   └── services/                      # Domain services (NEW)
+│       ├── series_matching_service.dart  # NEW - Series matching logic
 │       └── ...
 │
 ├── data/                              # Data layer (persistence)
@@ -96,29 +101,30 @@ lib/
 │   │   ├── app_database.dart          # Drift database definition
 │   │   ├── app_database.g.dart        # Generated code
 │   │   ├── tables/                    # Table definitions
-│   │   │   ├── events_table.dart
+│   │   │   ├── activities_table.dart  # Currently: events_table.dart
 │   │   │   ├── categories_table.dart
 │   │   │   └── ...
 │   │   └── daos/                      # Data Access Objects
-│   │       ├── event_dao.dart
+│   │       ├── activity_dao.dart      # Currently: event_dao.dart
 │   │       └── ...
 │   └── repositories/                  # Repository implementations
-│       ├── event_repository.dart
+│       ├── activity_repository.dart   # Currently: event_repository.dart
 │       ├── category_repository.dart
 │       ├── goal_repository.dart
 │       ├── person_repository.dart
 │       ├── location_repository.dart
 │       ├── notification_repository.dart
 │       ├── recurrence_rule_repository.dart
+│       ├── activity_people_repository.dart  # Currently: event_people_repository.dart
 │       └── ...
 │
 ├── scheduler/                         # Scheduling engine (pure Dart)
 │   ├── scheduler.dart                 # Main scheduler interface
-│   ├── event_scheduler.dart           # Scheduler implementation
+│   ├── activity_scheduler.dart        # Currently: event_scheduler.dart
 │   ├── models/                        # Scheduler-specific models
 │   │   ├── schedule_request.dart
 │   │   ├── schedule_result.dart
-│   │   ├── scheduled_event.dart
+│   │   ├── scheduled_activity.dart    # Currently: scheduled_event.dart
 │   │   ├── time_slot.dart
 │   │   ├── time_window.dart
 │   │   ├── conflict.dart
@@ -142,30 +148,31 @@ lib/
     │   ├── database_provider.dart     # Database instance
     │   ├── repository_providers.dart  # Repository instances
     │   ├── scheduler_provider.dart    # Scheduler instance
-    │   ├── event_providers.dart       # Event-related state
+    │   ├── activity_providers.dart    # Currently: event_providers.dart
     │   ├── category_providers.dart    # Category state
+    │   ├── series_matching_providers.dart  # NEW - Series matching state
     │   └── ...
     │
     ├── screens/                       # App screens
     │   ├── home/
     │   │   ├── home_screen.dart
     │   │   └── widgets/
-    │   │       ├── event_list.dart
-    │   │       └── add_event_fab.dart
+    │   │       ├── activity_list.dart  # Currently: event_list.dart
+    │   │       └── add_activity_fab.dart  # Currently: add_event_fab.dart
     │   ├── day_view/
     │   │   ├── day_view_screen.dart
     │   │   └── widgets/
     │   │       ├── day_timeline.dart
-    │   │       ├── event_card.dart
+    │   │       ├── activity_card.dart  # Currently: event_card.dart
     │   │       └── time_marker.dart
     │   ├── week_view/
     │   │   ├── week_view_screen.dart
     │   │   └── widgets/
-    │   ├── event_detail/
-    │   │   ├── event_detail_screen.dart
+    │   ├── activity_detail/           # Currently: event_detail/
+    │   │   ├── activity_detail_screen.dart  # Currently: event_detail_screen.dart
     │   │   └── widgets/
-    │   ├── event_form/
-    │   │   ├── event_form_screen.dart
+    │   ├── activity_form/             # Currently: event_form/
+    │   │   ├── activity_form_screen.dart  # Currently: event_form_screen.dart
     │   │   └── widgets/
     │   ├── planning_wizard/
     │   │   ├── planning_wizard_screen.dart
@@ -188,6 +195,8 @@ lib/
         ├── constraint_picker.dart
         ├── loading_indicator.dart
         ├── error_message.dart
+        ├── series_prompt_dialog.dart  # NEW - Series selection UI
+        ├── edit_scope_dialog.dart     # NEW - Edit scope selection UI
         └── ...
 ```
 
@@ -239,11 +248,12 @@ class DateTimeUtils {
 **Purpose**: Pure business entities and logic
 
 **What belongs here:**
-- ✅ Entity classes (Event, Category, Goal, etc.)
-- ✅ Enums (TimingType, EventStatus, etc.)
+- ✅ Entity classes (Activity, Category, Goal, etc.)
+- ✅ Enums (TimingType, ActivityStatus, etc.)
 - ✅ Value objects (Email, Duration, etc.)
 - ✅ Business rules (validation, calculations)
 - ✅ Domain exceptions
+- ✅ Domain services (SeriesMatchingService, etc.)
 
 **What doesn't:**
 - ❌ Database models (Drift tables)
@@ -257,13 +267,13 @@ class DateTimeUtils {
 
 **Example:**
 ```dart
-// lib/domain/entities/event.dart
-class Event {
+// lib/domain/entities/activity.dart (currently event.dart)
+class Activity {  // Currently: Event
   final String id;
-  final String title;
+  final String? title;  // NOW NULLABLE
   final String? description;
   final TimingType timingType;
-  final EventStatus status;
+  final ActivityStatus status;  // Currently: EventStatus
   final DateTime? startTime;
   final DateTime? endTime;
   final int? durationMinutes;
@@ -271,10 +281,11 @@ class Event {
   final bool isResizable;
   final bool isLocked;
   final String? categoryId;
+  final String? seriesId;  // NEW - for grouping related activities
   
-  Event({
+  Activity({
     required this.id,
-    required this.title,
+    this.title,  // Now optional
     required this.timingType,
     required this.status,
     this.description,
@@ -285,6 +296,7 @@ class Event {
     this.isResizable = true,
     this.isLocked = false,
     this.categoryId,
+    this.seriesId,
   });
   
   // Business logic
@@ -297,14 +309,78 @@ class Event {
   
   bool get isFixed => timingType == TimingType.fixed;
   bool get isFlexible => timingType == TimingType.flexible;
+  bool get isScheduled => startTime != null;
+  bool get isUnscheduled => startTime == null;
+  
+  // Display title (handles nullable title)
+  String get displayTitle {
+    if (title != null && title!.isNotEmpty) return title!;
+    return _computedDisplayTitle ?? 'Untitled Activity';
+  }
   
   // Validation
-  bool isValid() {
+  bool isValid({List<String>? personIds}) {
+    final hasTitle = title != null && title!.isNotEmpty;
+    final hasPerson = personIds != null && personIds.isNotEmpty;
+    final hasLocation = locationId != null;
+    final hasCategory = categoryId != null;
+    
+    // Must have at least one identifying property
+    if (!hasTitle && !hasPerson && !hasLocation && !hasCategory) {
+      return false;
+    }
+    
     if (timingType == TimingType.fixed) {
       return startTime != null && endTime != null && endTime!.isAfter(startTime!);
     } else {
       return durationMinutes != null && durationMinutes! > 0;
     }
+  }
+}
+```
+
+**SeriesMatchingService** (NEW - Activity Model Refactor):
+```dart
+// lib/domain/services/series_matching_service.dart
+class SeriesMatchingService {
+  final IActivityRepository _activityRepository;
+  final IActivityPeopleRepository _activityPeopleRepository;
+  
+  /// Find existing series that match the given activity
+  Future<List<ActivitySeries>> findMatchingSeries(Activity activity) async {
+    final allActivities = await _activityRepository.getAll();
+    final matches = <String, List<Activity>>{};
+    
+    for (final existing in allActivities) {
+      if (existing.id == activity.id) continue;
+      if (_isMatch(activity, existing)) {
+        final seriesId = existing.seriesId ?? existing.id;
+        matches.putIfAbsent(seriesId, () => []).add(existing);
+      }
+    }
+    
+    return matches.entries.map((e) => ActivitySeries(
+      id: e.key,
+      activities: e.value,
+      displayTitle: e.value.first.displayTitle,
+    )).toList();
+  }
+  
+  /// Check if two activities match (should be in same series)
+  bool _isMatch(Activity a, Activity b) {
+    // Title match (case-insensitive)
+    if (a.title != null && b.title != null &&
+        a.title!.toLowerCase() == b.title!.toLowerCase()) {
+      return true;
+    }
+    
+    // Property match (2+ of: person, location, category)
+    int matchCount = 0;
+    if (a.categoryId != null && a.categoryId == b.categoryId) matchCount++;
+    if (a.locationId != null && a.locationId == b.locationId) matchCount++;
+    if (_hasSamePerson(a, b)) matchCount++;
+    
+    return matchCount >= 2;
   }
 }
 ```
@@ -334,55 +410,86 @@ class Event {
 
 **Repository Pattern:**
 ```dart
-// lib/data/repositories/event_repository.dart
-class EventRepository {
+// lib/data/repositories/activity_repository.dart (currently event_repository.dart)
+class ActivityRepository implements IActivityRepository {  // Currently: EventRepository
   final AppDatabase _db;
   
-  EventRepository(this._db);
+  ActivityRepository(this._db);
   
   // Query methods
-  Future<List<Event>> getAll() async {
-    final results = await _db.select(_db.events).get();
+  Future<List<Activity>> getAll() async {
+    final results = await _db.select(_db.activities).get();  // Currently: _db.events
     return results.map(_toEntity).toList();
   }
   
-  Future<Event?> getById(String id) async {
-    final result = await (_db.select(_db.events)
-      ..where((e) => e.id.equals(id))).getSingleOrNull();
+  Future<Activity?> getById(String id) async {
+    final result = await (_db.select(_db.activities)  // Currently: _db.events
+      ..where((a) => a.id.equals(id))).getSingleOrNull();
     return result != null ? _toEntity(result) : null;
   }
   
-  Stream<List<Event>> watchForDateRange(DateTime start, DateTime end) {
-    return (_db.select(_db.events)
-      ..where((e) => 
-        e.startTime.isBiggerOrEqualValue(start) &
-        e.startTime.isSmallerThanValue(end)))
+  Stream<List<Activity>> watchForDateRange(DateTime start, DateTime end) {
+    return (_db.select(_db.activities)  // Currently: _db.events
+      ..where((a) => 
+        a.startTime.isBiggerOrEqualValue(start) &
+        a.startTime.isSmallerThanValue(end)))
       .watch()
       .map((rows) => rows.map(_toEntity).toList());
   }
   
-  // Mutation methods
-  Future<void> create(Event event) async {
-    await _db.into(_db.events).insert(_toCompanion(event));
+  // NEW - Get unscheduled activities (activity bank)
+  Stream<List<Activity>> watchUnscheduled() {
+    return (_db.select(_db.activities)
+      ..where((a) => a.startTime.isNull()))
+      .watch()
+      .map((rows) => rows.map(_toEntity).toList());
   }
   
-  Future<void> update(Event event) async {
-    await (_db.update(_db.events)..where((e) => e.id.equals(event.id)))
-      .write(_toCompanion(event));
+  // NEW - Get activities by series
+  Future<List<Activity>> getBySeriesId(String seriesId) async {
+    final results = await (_db.select(_db.activities)
+      ..where((a) => a.seriesId.equals(seriesId)))
+      .get();
+    return results.map(_toEntity).toList();
+  }
+  
+  // Mutation methods
+  Future<void> create(Activity activity, {List<String>? personIds}) async {
+    _validate(activity, personIds: personIds);
+    await _db.into(_db.activities).insert(_toCompanion(activity));  // Currently: _db.events
+  }
+  
+  Future<void> update(Activity activity) async {
+    await (_db.update(_db.activities)..where((a) => a.id.equals(activity.id)))  // Currently: _db.events
+      .write(_toCompanion(activity));
   }
   
   Future<void> delete(String id) async {
-    await (_db.delete(_db.events)..where((e) => e.id.equals(id))).go();
+    await (_db.delete(_db.activities)..where((a) => a.id.equals(id))).go();  // Currently: _db.events
+  }
+  
+  // Validation (NEW - Activity Model Refactor)
+  void _validate(Activity activity, {List<String>? personIds}) {
+    final hasTitle = activity.title != null && activity.title!.isNotEmpty;
+    final hasPerson = personIds != null && personIds.isNotEmpty;
+    final hasLocation = activity.locationId != null;
+    final hasCategory = activity.categoryId != null;
+    
+    if (!hasTitle && !hasPerson && !hasLocation && !hasCategory) {
+      throw ValidationException(
+        'Activity must have at least one of: title, person, location, or category'
+      );
+    }
   }
   
   // Mappers
-  Event _toEntity(EventData data) {
-    return Event(
+  Activity _toEntity(ActivityData data) {  // Currently: EventData
+    return Activity(
       id: data.id,
       title: data.title,
       description: data.description,
       timingType: TimingType.values[data.timingType],
-      status: EventStatus.values[data.status],
+      status: ActivityStatus.values[data.status],  // Currently: EventStatus
       startTime: data.startTime,
       endTime: data.endTime,
       durationMinutes: data.durationMinutes,
@@ -390,13 +497,14 @@ class EventRepository {
       isResizable: data.isResizable,
       isLocked: data.isLocked,
       categoryId: data.categoryId,
+      seriesId: data.seriesId,  // NEW
     );
   }
   
-  EventsCompanion _toCompanion(Event entity) {
-    return EventsCompanion.insert(
+  ActivitiesCompanion _toCompanion(Activity entity) {  // Currently: EventsCompanion
+    return ActivitiesCompanion.insert(
       id: entity.id,
-      title: entity.title,
+      title: Value(entity.title),  // Now nullable
       description: Value(entity.description),
       timingType: entity.timingType.index,
       status: entity.status.index,
@@ -407,6 +515,7 @@ class EventRepository {
       isResizable: entity.isResizable,
       isLocked: entity.isLocked,
       categoryId: Value(entity.categoryId),
+      seriesId: Value(entity.seriesId),  // NEW
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
@@ -440,8 +549,8 @@ class EventRepository {
 
 **Example:**
 ```dart
-// lib/scheduler/event_scheduler.dart
-class EventScheduler {
+// lib/scheduler/activity_scheduler.dart (currently event_scheduler.dart)
+class ActivityScheduler {  // Currently: EventScheduler
   // Pure function - no dependencies on database or UI
   ScheduleResult schedule(ScheduleRequest request) {
     final stopwatch = Stopwatch()..start();
@@ -451,12 +560,12 @@ class EventScheduler {
     
     // Multi-pass scheduling
     final conflicts = <Conflict>[];
-    _placeFixedEvents(request.fixedEvents, grid, conflicts);
-    _placeFlexibleEvents(request.flexibleEvents, grid, request.strategy);
+    _placeFixedActivities(request.fixedActivities, grid, conflicts);
+    _placeFlexibleActivities(request.flexibleActivities, grid, request.strategy);
     
     // Calculate goal progress
     final goalProgress = _calculateGoalProgress(
-      grid.scheduledEvents,
+      grid.scheduledActivities,
       request.goals,
       request.windowStart,
       request.windowEnd,
@@ -466,8 +575,8 @@ class EventScheduler {
     
     return ScheduleResult(
       success: conflicts.isEmpty,
-      scheduledEvents: grid.scheduledEvents,
-      unscheduledEvents: grid.unscheduledEvents,
+      scheduledActivities: grid.scheduledActivities,
+      unscheduledActivities: grid.unscheduledActivities,
       conflicts: conflicts,
       goalProgress: goalProgress,
       computationTime: stopwatch.elapsed,
@@ -508,29 +617,29 @@ class DayViewScreen extends ConsumerWidget {
   
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Watch events for this date
-    final eventsAsync = ref.watch(eventsForDateProvider(date));
+    // Watch activities for this date
+    final activitiesAsync = ref.watch(activitiesForDateProvider(date));  // Currently: eventsForDateProvider
     
     return Scaffold(
       appBar: AppBar(
         title: Text(DateFormat.yMMMMd().format(date)),
       ),
-      body: eventsAsync.when(
-        data: (events) => _buildEventList(events),
+      body: activitiesAsync.when(
+        data: (activities) => _buildActivityList(activities),  // Currently: _buildEventList
         loading: () => const LoadingIndicator(),
         error: (error, stack) => ErrorMessage(error.toString()),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddEventDialog(context, ref),
+        onPressed: () => _showAddActivityDialog(context, ref),  // Currently: _showAddEventDialog
         child: const Icon(Icons.add),
       ),
     );
   }
   
-  Widget _buildEventList(List<Event> events) {
+  Widget _buildActivityList(List<Activity> activities) {  // Currently: _buildEventList(List<Event> events)
     return ListView.builder(
-      itemCount: events.length,
-      itemBuilder: (context, index) => EventCard(events[index]),
+      itemCount: activities.length,
+      itemBuilder: (context, index) => ActivityCard(activities[index]),  // Currently: EventCard
     );
   }
 }
@@ -538,35 +647,42 @@ class DayViewScreen extends ConsumerWidget {
 
 **Provider Pattern:**
 ```dart
-// lib/presentation/providers/event_providers.dart
+// lib/presentation/providers/activity_providers.dart (currently event_providers.dart)
 @riverpod
-EventRepository eventRepository(EventRepositoryRef ref) {
+ActivityRepository activityRepository(ActivityRepositoryRef ref) {  // Currently: eventRepository
   final db = ref.watch(databaseProvider);
-  return EventRepository(db);
+  return ActivityRepository(db);  // Currently: EventRepository
 }
 
 @riverpod
-Stream<List<Event>> eventsForDate(EventsForDateRef ref, DateTime date) {
-  final repo = ref.watch(eventRepositoryProvider);
+Stream<List<Activity>> activitiesForDate(ActivitiesForDateRef ref, DateTime date) {  // Currently: eventsForDate
+  final repo = ref.watch(activityRepositoryProvider);  // Currently: eventRepositoryProvider
   final start = DateTimeUtils.startOfDay(date);
   final end = DateTimeUtils.endOfDay(date);
   return repo.watchForDateRange(start, end);
 }
 
+// NEW - Watch unscheduled activities (activity bank)
 @riverpod
-class EventForm extends _$EventForm {
+Stream<List<Activity>> unscheduledActivities(UnscheduledActivitiesRef ref) {
+  final repo = ref.watch(activityRepositoryProvider);
+  return repo.watchUnscheduled();
+}
+
+@riverpod
+class ActivityForm extends _$ActivityForm {  // Currently: EventForm
   @override
-  Event build() {
+  Activity build() {  // Currently: Event
     // Initial state
-    return Event(
+    return Activity(
       id: const Uuid().v4(),
-      title: '',
+      title: null,  // Now nullable
       timingType: TimingType.flexible,
-      status: EventStatus.pending,
+      status: ActivityStatus.pending,  // Currently: EventStatus
     );
   }
   
-  void updateTitle(String title) {
+  void updateTitle(String? title) {
     state = state.copyWith(title: title);
   }
   
@@ -574,9 +690,25 @@ class EventForm extends _$EventForm {
     state = state.copyWith(timingType: type);
   }
   
-  Future<void> save() async {
-    final repo = ref.read(eventRepositoryProvider);
-    await repo.create(state);
+  Future<void> save({List<String>? personIds}) async {
+    final repo = ref.read(activityRepositoryProvider);  // Currently: eventRepositoryProvider
+    await repo.create(state, personIds: personIds);
+  }
+}
+
+// NEW - Series matching provider
+@riverpod
+class SeriesMatchingNotifier extends _$SeriesMatchingNotifier {
+  @override
+  AsyncValue<List<ActivitySeries>> build(Activity activity) {
+    return const AsyncValue.loading();
+  }
+  
+  Future<void> findMatches(Activity activity) async {
+    state = const AsyncValue.loading();
+    final service = ref.read(seriesMatchingServiceProvider);
+    final matches = await service.findMatchingSeries(activity);
+    state = AsyncValue.data(matches);
   }
 }
 ```
@@ -831,4 +963,4 @@ When adding a new feature:
 
 ---
 
-*Last updated: 2026-01-22*
+*Last updated: 2026-01-26 (Activity Model Refactor documentation)*
