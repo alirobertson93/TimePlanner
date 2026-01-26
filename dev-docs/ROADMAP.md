@@ -6,13 +6,13 @@ This document is the single source of truth for the project's current status, co
 
 ## Current Status
 
-**Project Phase**: Phase 10C Complete - Activity Model Refactor (Series Support)
+**Project Phase**: Phase 10C Complete - Activity Model Refactor (Series Support Integration)
 
-**Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9 Complete (100%), Phase 10A ~80% Complete, Phase 10B Complete (100%), Phase 10C Complete (90%)
+**Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9 Complete (100%), Phase 10A ~80% Complete, Phase 10B Complete (100%), Phase 10C Complete (100%)
 
-**Active Work**: Activity Model Refactor - Phase 10C series support implementation complete, integration pending
+**Active Work**: Activity Model Refactor - Phase 10C complete, ready for Phase 10D
 
-**Latest Update (2026-01-26 - Phase 10C Series Support)**:
+**Latest Update (2026-01-26 - Phase 10C Series Integration)**:
 - ✅ **Phase 10C Complete**:
   - Created ActivitySeries model class for grouping related activities
   - Created EditScope enum (thisOnly, allInSeries, thisAndFuture)
@@ -22,9 +22,10 @@ This document is the single source of truth for the project's current status, co
   - Created EditScopeDialog UI widget
   - Created series_providers.dart with Riverpod providers
   - Created comprehensive unit tests for services
-- 🔄 **Remaining for Phase 10C**:
-  - Integrate series prompt into activity form save flow
-  - Integrate edit scope dialog into activity form edit flow
+  - **Integrated series prompt into activity form save flow**
+  - **Integrated edit scope dialog into activity form edit flow**
+  - Updated EventFormState with seriesId support
+  - Created _saveWithSeriesIntegration method for form save with series logic
 - 🔄 **Next: Phase 10D - Onboarding Wizard Updates**:
   - Rename Step 2 to "Recurring Activities"
   - Refactor Step 4 to create unscheduled Activities

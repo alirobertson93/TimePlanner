@@ -1,9 +1,11 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
+import '../../domain/entities/activity.dart';
 import '../../domain/entities/event.dart';
 import '../../domain/entities/scheduling_constraint.dart';
 import '../../domain/enums/timing_type.dart';
 import '../../domain/enums/event_status.dart';
+import '../../domain/enums/activity_status.dart';
 import '../../domain/enums/scheduling_preference_strength.dart';
 import 'repository_providers.dart';
 import 'error_handler_provider.dart';
@@ -19,6 +21,7 @@ class EventFormState {
     this.categoryId,
     this.locationId,
     this.recurrenceRuleId,
+    this.seriesId,
     this.timingType = TimingType.fixed,
     this.startDate,
     this.startTime,
@@ -46,6 +49,8 @@ class EventFormState {
   final String? categoryId;
   final String? locationId;
   final String? recurrenceRuleId;
+  /// Groups related activities together (independent of recurrence)
+  final String? seriesId;
   final TimingType timingType;
   final DateTime? startDate;
   final TimeOfDay? startTime;
@@ -79,6 +84,12 @@ class EventFormState {
   /// since locking only makes sense for events that have been scheduled.
   bool get hasScheduledTime => startDate != null && startTime != null;
 
+  /// Returns true if this activity is part of a series
+  bool get isInSeries => seriesId != null;
+
+  /// Returns true if this activity has a recurrence rule
+  bool get isRecurring => recurrenceRuleId != null;
+
   /// Builds a SchedulingConstraint from the current form state
   SchedulingConstraint? buildSchedulingConstraint() {
     if (!hasTimeConstraint) return null;
@@ -91,6 +102,53 @@ class EventFormState {
     );
   }
 
+  /// Builds an Activity from the current form state for series matching
+  /// 
+  /// This is used to check if the activity matches any existing series
+  /// before saving. The [activityId] should be the actual ID that will be
+  /// used when saving.
+  Activity buildActivity({required String activityId}) {
+    final now = DateTime.now();
+    return Activity(
+      id: activityId,
+      name: title.trim().isEmpty ? null : title.trim(),
+      description: description.trim().isEmpty ? null : description.trim(),
+      timingType: timingType,
+      startTime: timingType == TimingType.fixed && startDate != null && startTime != null
+          ? DateTime(
+              startDate!.year,
+              startDate!.month,
+              startDate!.day,
+              startTime!.hour,
+              startTime!.minute,
+            )
+          : null,
+      endTime: timingType == TimingType.fixed && endDate != null && endTime != null
+          ? DateTime(
+              endDate!.year,
+              endDate!.month,
+              endDate!.day,
+              endTime!.hour,
+              endTime!.minute,
+            )
+          : null,
+      duration: timingType == TimingType.flexible
+          ? Duration(hours: durationHours, minutes: durationMinutes)
+          : null,
+      categoryId: categoryId,
+      locationId: locationId,
+      recurrenceRuleId: recurrenceRuleId,
+      seriesId: seriesId,
+      schedulingConstraint: buildSchedulingConstraint(),
+      appCanMove: appCanMove,
+      appCanResize: appCanResize,
+      isUserLocked: isUserLocked,
+      status: ActivityStatus.pending,
+      createdAt: now,
+      updatedAt: now,
+    );
+  }
+
   EventFormState copyWith({
     String? id,
     String? title,
@@ -98,6 +156,8 @@ class EventFormState {
     String? categoryId,
     String? locationId,
     String? recurrenceRuleId,
+    String? seriesId,
+    bool clearSeriesId = false,
     TimingType? timingType,
     DateTime? startDate,
     TimeOfDay? startTime,
@@ -126,6 +186,7 @@ class EventFormState {
       categoryId: categoryId ?? this.categoryId,
       locationId: locationId ?? this.locationId,
       recurrenceRuleId: recurrenceRuleId ?? this.recurrenceRuleId,
+      seriesId: clearSeriesId ? null : (seriesId ?? this.seriesId),
       timingType: timingType ?? this.timingType,
       startDate: startDate ?? this.startDate,
       startTime: startTime ?? this.startTime,
@@ -275,6 +336,7 @@ class EventForm extends _$EventForm {
       categoryId: event.categoryId,
       locationId: event.locationId,
       recurrenceRuleId: event.recurrenceRuleId,
+      seriesId: event.seriesId,
       timingType: event.timingType,
       startDate: event.startTime,
       startTime: event.startTime != null
@@ -411,6 +473,15 @@ class EventForm extends _$EventForm {
     state = state.copyWith(timeConstraintStrength: strength);
   }
 
+  /// Update the series ID for this activity
+  void updateSeriesId(String? seriesId) {
+    if (seriesId == null) {
+      state = state.copyWith(clearSeriesId: true);
+    } else {
+      state = state.copyWith(seriesId: seriesId);
+    }
+  }
+
   /// Save the event
   Future<bool> save() async {
     final validationError = state.validate();
@@ -466,6 +537,7 @@ class EventForm extends _$EventForm {
         categoryId: state.categoryId,
         locationId: state.locationId,
         recurrenceRuleId: state.recurrenceRuleId,
+        seriesId: state.seriesId,
         schedulingConstraint: state.buildSchedulingConstraint(),
         appCanMove: state.appCanMove,
         appCanResize: state.appCanResize,

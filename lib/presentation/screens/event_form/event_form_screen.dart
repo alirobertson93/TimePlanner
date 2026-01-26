@@ -2,15 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 import '../../providers/event_form_providers.dart' as form_providers;
 import '../../providers/repository_providers.dart';
 import '../../providers/error_handler_provider.dart';
+import '../../providers/series_providers.dart';
 import '../../widgets/people_picker.dart';
 import '../../widgets/location_picker.dart';
 import '../../widgets/recurrence_picker.dart';
 import '../../widgets/travel_time_prompt.dart';
+import '../../widgets/series_prompt_dialog.dart';
+import '../../widgets/edit_scope_dialog.dart';
 import '../../../domain/enums/timing_type.dart';
 import '../../../domain/enums/scheduling_preference_strength.dart';
+import '../../../domain/enums/edit_scope.dart';
 import '../../../domain/entities/scheduling_constraint.dart';
 
 // Type aliases for clarity
@@ -89,23 +94,12 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
             child: TextButton(
               onPressed: formState.isSaving || !formState.isValid
                   ? null
-                  : () async {
-                      final success = await formNotifier.save();
-                      if (success && context.mounted) {
-                        // Check for missing travel times if the event has a location
-                        if (formState.locationId != null) {
-                          await _checkAndPromptForTravelTimes(
-                            context,
-                            ref,
-                            formState.locationId!,
-                            formState.startDate,
-                          );
-                        }
-                        if (context.mounted) {
-                          context.pop();
-                        }
-                      }
-                    },
+                  : () => _saveWithSeriesIntegration(
+                        context,
+                        ref,
+                        formState,
+                        formNotifier,
+                      ),
               child: formState.isSaving
                   ? const SizedBox(
                       width: 20,
@@ -799,6 +793,129 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
       // Return default color on parse error
     }
     return Colors.grey;
+  }
+
+  /// Handles the save operation with series integration.
+  /// 
+  /// For new activities:
+  /// - Checks for matching series and prompts user to join or stay standalone
+  /// - If user chooses to join, sets the seriesId before saving
+  /// 
+  /// For existing activities in a series:
+  /// - Prompts user to select edit scope (this only, all in series, this and future)
+  /// - Applies the edit according to the selected scope
+  Future<void> _saveWithSeriesIntegration(
+    BuildContext context,
+    WidgetRef ref,
+    form_providers.EventFormState formState,
+    form_providers.EventForm formNotifier,
+  ) async {
+    final seriesMatchingService = ref.read(seriesMatchingServiceProvider);
+    final seriesEditService = ref.read(seriesEditServiceProvider);
+
+    // Generate ID for new activities
+    final activityId = formState.id ?? const Uuid().v4();
+
+    // For editing existing activities that are in a series, show edit scope dialog
+    if (formState.isEditMode && formState.isInSeries) {
+      // Get the series count
+      final seriesCount = await seriesMatchingService.getSeriesCount(formState.seriesId!);
+      
+      if (seriesCount > 1 && context.mounted) {
+        final scope = await showEditScopeDialog(
+          context,
+          activityTitle: formState.title.isNotEmpty 
+              ? formState.title 
+              : 'Activity',
+          seriesCount: seriesCount,
+          isRecurring: formState.isRecurring,
+        );
+
+        if (scope == null) {
+          // User cancelled
+          return;
+        }
+
+        if (scope == EditScope.thisOnly) {
+          // Just save this activity normally
+          final success = await formNotifier.save();
+          if (success && context.mounted) {
+            await _handlePostSave(context, ref, formState);
+          }
+        } else {
+          // Apply edits to multiple activities
+          final activity = formState.buildActivity(activityId: formState.id!);
+          final updates = <String, dynamic>{
+            'name': formState.title.trim().isEmpty ? null : formState.title.trim(),
+            'description': formState.description.trim().isEmpty ? null : formState.description.trim(),
+            'categoryId': formState.categoryId,
+            'locationId': formState.locationId,
+          };
+
+          // First save this activity
+          final success = await formNotifier.save();
+          if (!success) return;
+
+          // Then apply to other activities in series based on scope
+          await seriesEditService.updateWithScope(
+            activity: activity,
+            updates: updates,
+            scope: scope,
+          );
+
+          if (context.mounted) {
+            await _handlePostSave(context, ref, formState);
+          }
+        }
+        return;
+      }
+    }
+
+    // For new activities (not editing), check for matching series
+    if (!formState.isEditMode) {
+      final activity = formState.buildActivity(activityId: activityId);
+      final matchingSeries = await seriesMatchingService.findMatchingSeries(activity);
+
+      if (matchingSeries.isNotEmpty && context.mounted) {
+        // Show series prompt dialog with the best match
+        final addToSeries = await showSeriesPromptDialog(
+          context,
+          matchingSeries: matchingSeries.first,
+        );
+
+        if (addToSeries == true) {
+          // User chose to add to series
+          formNotifier.updateSeriesId(matchingSeries.first.id);
+        }
+        // If addToSeries is false or null, continue without series
+      }
+    }
+
+    // Save the activity
+    final success = await formNotifier.save();
+    if (success && context.mounted) {
+      await _handlePostSave(context, ref, formState);
+    }
+  }
+
+  /// Handles post-save operations (travel time check, navigation)
+  Future<void> _handlePostSave(
+    BuildContext context,
+    WidgetRef ref,
+    form_providers.EventFormState formState,
+  ) async {
+    // Check for missing travel times if the event has a location
+    if (formState.locationId != null) {
+      await _checkAndPromptForTravelTimes(
+        context,
+        ref,
+        formState.locationId!,
+        formState.startDate,
+      );
+    }
+    if (context.mounted) {
+      context.pop();
+    }
   }
 
   /// Checks for adjacent events with different locations and prompts for travel time if needed

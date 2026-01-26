@@ -1247,4 +1247,71 @@ Implemented series support features for grouping related activities:
 
 ---
 
+**Session: 2026-01-26 (Phase 10C Integration - Series in Activity Form)**
+
+Integrated series support into the activity form save/edit flow:
+
+### Phase 10C Integration Completed Work:
+
+1. **Updated EventFormState** (`lib/presentation/providers/event_form_providers.dart`):
+   - Added `seriesId` field to track series association
+   - Added `isInSeries` getter to check if activity is in a series
+   - Added `isRecurring` getter to check if activity has recurrence
+   - Added `buildActivity()` method to create Activity from form state for series matching
+   - Updated `copyWith()` with `seriesId` and `clearSeriesId` parameters
+   - Updated `initializeForEdit()` to load seriesId from existing event
+   - Updated `save()` to include seriesId when creating Event
+
+2. **Added updateSeriesId Method** (`lib/presentation/providers/event_form_providers.dart`):
+   - New method to update or clear the seriesId on the form state
+   - Used when user chooses to add activity to a series
+
+3. **Created _saveWithSeriesIntegration Method** (`lib/presentation/screens/event_form/event_form_screen.dart`):
+   - Handles save with series integration for both new and existing activities
+   - For new activities:
+     - Calls SeriesMatchingService to find matching series
+     - Shows SeriesPromptDialog if matches found
+     - Sets seriesId if user chooses to add to series
+   - For existing activities in a series:
+     - Gets series count from SeriesMatchingService
+     - Shows EditScopeDialog if series has multiple activities
+     - Applies edits based on selected scope (thisOnly, allInSeries, thisAndFuture)
+     - Uses SeriesEditService for bulk updates
+
+4. **Created _handlePostSave Method** (`lib/presentation/screens/event_form/event_form_screen.dart`):
+   - Extracted post-save operations for reuse
+   - Handles travel time check and navigation
+
+5. **Updated Save Button** (`lib/presentation/screens/event_form/event_form_screen.dart`):
+   - Now calls `_saveWithSeriesIntegration` instead of direct `formNotifier.save()`
+
+6. **Added Imports** (`lib/presentation/screens/event_form/event_form_screen.dart`):
+   - Added uuid package for generating activity IDs
+   - Added series_providers for SeriesMatchingService and SeriesEditService
+   - Added series_prompt_dialog for SeriesPromptDialog
+   - Added edit_scope_dialog for EditScopeDialog
+   - Added edit_scope enum for EditScope
+
+### Files Modified:
+- `lib/presentation/providers/event_form_providers.dart` - Updated with seriesId support
+- `lib/presentation/screens/event_form/event_form_screen.dart` - Integrated series dialogs
+
+### Phase 10C Complete:
+✅ ActivitySeries model class created
+✅ EditScope enum created
+✅ SeriesMatchingService created
+✅ SeriesEditService created
+✅ SeriesPromptDialog UI widget created
+✅ EditScopeDialog UI widget created
+✅ series_providers.dart with Riverpod providers created
+✅ Unit tests for services created
+✅ Series prompt integrated into activity form save flow
+✅ Edit scope dialog integrated into activity form edit flow
+
+### Remaining:
+- Run Flutter tests (requires Flutter SDK)
+- Phase 10D: Onboarding Wizard Updates
+
+---
+
 *Last updated: 2026-01-26*
