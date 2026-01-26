@@ -13,7 +13,9 @@ import 'recurrence_rules.dart';
 @TableIndex(name: 'idx_events_series', columns: {#seriesId})
 class Events extends Table {
   TextColumn get id => text()();
-  TextColumn get name => text().withLength(min: 1, max: 200)();
+  /// The name/title of the activity. Can be null if the activity has
+  /// associated people, locations, or categories.
+  TextColumn get name => text().nullable().withLength(min: 0, max: 200)();
   TextColumn get description => text().nullable()();
   IntColumn get timingType => intEnum<TimingType>()();
   DateTimeColumn get fixedStartTime => dateTime().nullable()();

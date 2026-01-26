@@ -1050,6 +1050,60 @@ If issues are encountered:
 
 ## Implementation Progress
 
+**Session: 2026-01-26 (Phase 10B Implementation - Optional Title + Display Logic)**
+
+Added support for optional activity titles with display title fallback:
+
+### Phase 10B Completed Work:
+
+1. **Made Activity.name Nullable** (`lib/domain/entities/activity.dart`):
+   - Changed `name` from `String` to `String?`
+   - Added `hasName`, `hasLocation`, `hasCategory` computed properties
+   - Added `isValid()` validation method for minimum property requirements
+
+2. **Made Event.name Nullable** (`lib/domain/entities/event.dart`):
+   - Changed `name` from `String` to `String?` for consistency
+   - Added `hasName` computed property
+
+3. **Created DisplayTitleService** (`lib/domain/services/display_title_service.dart`):
+   - `getDisplayTitle()` - Computes full display title from associated entities
+   - `getShortDisplayTitle()` - Compact title for week view blocks
+   - Priority order: name → people → location → category → "Untitled Activity"
+   - Concatenates multiple properties with " · " separator
+
+4. **Created DisplayTitle Provider** (`lib/presentation/providers/display_title_providers.dart`):
+   - `displayTitleServiceProvider` - Riverpod provider for the service
+
+5. **Updated Database Schema** (v15):
+   - Made `name` column nullable in Events table
+   - Migration strategy prepared
+
+6. **Updated UI Components**:
+   - `EventCard` - Now fetches people, location, category to compute displayTitle
+   - `EventDetailSheet` - Uses displayTitle for title, delete confirmation, lock messages
+   - `WeekTimeline` - Uses getShortDisplayTitle for compact event blocks
+   - `PlanReviewStep` - Added null-safe handling for event names
+
+7. **Created Tests**:
+   - `test/domain/entities/activity_test.dart` - Activity validation tests
+   - `test/domain/services/display_title_service_test.dart` - DisplayTitleService tests
+
+### Files Changed:
+- `lib/domain/entities/activity.dart` - Nullable name, validation methods
+- `lib/domain/entities/event.dart` - Nullable name for consistency
+- `lib/domain/services/display_title_service.dart` - **NEW**
+- `lib/data/database/tables/events.dart` - Nullable name column
+- `lib/data/database/app_database.dart` - Schema v15
+- `lib/presentation/providers/display_title_providers.dart` - **NEW**
+- `lib/presentation/screens/day_view/widgets/event_card.dart`
+- `lib/presentation/screens/day_view/widgets/event_detail_sheet.dart`
+- `lib/presentation/screens/week_view/widgets/week_timeline.dart`
+- `lib/presentation/screens/planning_wizard/steps/plan_review_step.dart`
+- `lib/presentation/providers/event_form_providers.dart`
+- `lib/scheduler/models/scheduled_event.dart`
+
+---
+
 **Session: 2026-01-26 (Phase 10A Implementation)**
 
 Significant progress made on Phase 10A - Terminology Refactor:

@@ -6,13 +6,29 @@ This document is the single source of truth for the project's current status, co
 
 ## Current Status
 
-**Project Phase**: Phase 10A In Progress - Activity Model Refactor (Code Implementation)
+**Project Phase**: Phase 10B Complete - Activity Model Refactor (Optional Title + Display Logic)
 
-**Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9 Complete (100%), Phase 10A ~80% Complete
+**Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9 Complete (100%), Phase 10A ~80% Complete, Phase 10B Complete (100%)
 
-**Active Work**: Activity Model Refactor - Phase 10A terminology refactor code implementation in progress
+**Active Work**: Activity Model Refactor - Phase 10B optional title and display logic complete, ready for Phase 10C
 
-**Latest Update (2026-01-26 - Activity Model Refactor Code Implementation)**:
+**Latest Update (2026-01-26 - Phase 10B Optional Title + Display Logic)**:
+- ✅ **Phase 10B Complete**:
+  - Made Activity.name nullable (optional titles)
+  - Made Event.name nullable for consistency
+  - Created DisplayTitleService for computing display titles
+  - Added isValid() validation method to Activity entity
+  - Updated database schema v15 (nullable name column)
+  - Updated EventCard, EventDetailSheet, WeekTimeline to use displayTitle
+  - Updated PlanReviewStep with null-safe handling
+  - Created activity_test.dart and display_title_service_test.dart
+- 🔄 **Next: Phase 10C - Series Support**:
+  - Create SeriesMatchingService
+  - Create series matching prompt UI
+  - Create edit scope prompt UI
+  - Implement bulk edit with property variance handling
+
+**Previous Update (2026-01-26 - Phase 10A Code Implementation)**:
 - ✅ **Phase 10A Code Implementation** (Major Progress):
   - Created Activity entity with seriesId field
   - Created ActivityStatus enum (renamed from EventStatus)
@@ -1110,13 +1126,28 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 **Files Changed**: See ACTIVITY_REFACTOR_IMPLEMENTATION.md for complete file list
 
 ### Phase 10B: Optional Title + Display Logic
-**Status**: Not Started
+**Status**: Complete (100%)
 
-- [ ] Make Activity.name nullable
-- [ ] Add validation (must have title OR person OR location OR category)
-- [ ] Implement displayTitle computed property
-- [ ] Update all UI to use displayTitle
-- [ ] Database migration
+- [x] Make Activity.name nullable
+- [x] Make Event.name nullable for consistency
+- [x] Add hasName, hasLocation, hasCategory computed properties
+- [x] Add isValid() validation method (must have title OR person OR location OR category)
+- [x] Create DisplayTitleService for computing display titles
+- [x] Create displayTitleServiceProvider for dependency injection
+- [x] Update EventCard to use displayTitle
+- [x] Update EventDetailSheet to use displayTitle
+- [x] Update WeekTimeline to use getShortDisplayTitle
+- [x] Update PlanReviewStep with null-safe handling
+- [x] Update event_form_providers with null-safe handling
+- [x] Database migration (schema v15 - nullable name column)
+- [x] Create activity_test.dart
+- [x] Create display_title_service_test.dart
+
+**Files Created**:
+- `lib/domain/services/display_title_service.dart`
+- `lib/presentation/providers/display_title_providers.dart`
+- `test/domain/entities/activity_test.dart`
+- `test/domain/services/display_title_service_test.dart`
 
 ### Phase 10C: Series Support
 **Status**: Partially Started (seriesId field added)

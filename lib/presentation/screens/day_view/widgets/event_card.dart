@@ -3,7 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../domain/entities/event.dart';
 import '../../../../domain/entities/category.dart';
+import '../../../../domain/entities/person.dart';
+import '../../../../domain/entities/location.dart';
 import '../../../providers/category_providers.dart';
+import '../../../providers/location_providers.dart';
+import '../../../providers/person_providers.dart';
+import '../../../providers/display_title_providers.dart';
 
 /// Card widget displaying an event in the timeline
 class EventCard extends ConsumerWidget {
@@ -18,22 +23,54 @@ class EventCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Fetch category to get color
+    // Fetch category to get color and name
     final categoryAsync = event.categoryId != null
         ? ref.watch(categoryByIdProvider(event.categoryId!))
         : const AsyncValue<Category?>.data(null);
 
+    // Fetch location for display title
+    final locationAsync = event.locationId != null
+        ? ref.watch(locationByIdProvider(event.locationId!))
+        : const AsyncValue<Location?>.data(null);
+
+    // Fetch people for display title
+    final peopleAsync = ref.watch(peopleForEventProvider(event.id));
+
     return categoryAsync.when(
-      data: (category) => _buildCard(context, category),
-      loading: () => _buildCard(context, null),
-      error: (_, __) => _buildCard(context, null),
+      data: (category) => locationAsync.when(
+        data: (location) => peopleAsync.when(
+          data: (people) => _buildCard(context, ref, category, location, people),
+          loading: () => _buildCard(context, ref, category, location, null),
+          error: (_, __) => _buildCard(context, ref, category, location, null),
+        ),
+        loading: () => _buildCard(context, ref, category, null, null),
+        error: (_, __) => _buildCard(context, ref, category, null, null),
+      ),
+      loading: () => _buildCard(context, ref, null, null, null),
+      error: (_, __) => _buildCard(context, ref, null, null, null),
+    );
+  }
+
+  /// Get the display title for the event
+  String _getDisplayTitle(WidgetRef ref, Category? category, Location? location, List<Person>? people) {
+    final service = ref.read(displayTitleServiceProvider);
+    
+    // Convert Event to Activity for displayTitle computation
+    final activity = event.toActivity();
+    
+    return service.getDisplayTitle(
+      activity,
+      people: people,
+      location: location,
+      category: category,
     );
   }
 
   /// Build semantic label for screen readers
-  String _buildSemanticLabel(Category? category) {
+  String _buildSemanticLabel(WidgetRef ref, Category? category, Location? location, List<Person>? people) {
+    final displayTitle = _getDisplayTitle(ref, category, location, people);
     final buffer = StringBuffer();
-    buffer.write(event.name);
+    buffer.write(displayTitle);
 
     if (event.startTime != null) {
       final timeFormat = DateFormat.jm();
@@ -67,10 +104,12 @@ class EventCard extends ConsumerWidget {
     return buffer.toString();
   }
 
-  Widget _buildCard(BuildContext context, Category? category) {
+  Widget _buildCard(BuildContext context, WidgetRef ref, Category? category, Location? location, List<Person>? people) {
+    final displayTitle = _getDisplayTitle(ref, category, location, people);
+    
     return Semantics(
       button: true,
-      label: _buildSemanticLabel(category),
+      label: _buildSemanticLabel(ref, category, location, people),
       excludeSemantics: true,
       child: GestureDetector(
         onTap: onTap,
@@ -89,7 +128,7 @@ class EventCard extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        event.name,
+                        displayTitle,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,

@@ -3,9 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../domain/entities/event.dart';
+import '../../../../domain/entities/category.dart';
+import '../../../../domain/entities/person.dart';
+import '../../../../domain/entities/location.dart';
 import '../../../providers/event_providers.dart';
 import '../../../providers/error_handler_provider.dart';
 import '../../../providers/repository_providers.dart';
+import '../../../providers/category_providers.dart';
+import '../../../providers/location_providers.dart';
+import '../../../providers/person_providers.dart';
+import '../../../providers/display_title_providers.dart';
 
 /// Bottom sheet showing event details
 class EventDetailSheet extends ConsumerWidget {
@@ -18,6 +25,48 @@ class EventDetailSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Fetch related entities for display title
+    final categoryAsync = event.categoryId != null
+        ? ref.watch(categoryByIdProvider(event.categoryId!))
+        : const AsyncValue<Category?>.data(null);
+    final locationAsync = event.locationId != null
+        ? ref.watch(locationByIdProvider(event.locationId!))
+        : const AsyncValue<Location?>.data(null);
+    final peopleAsync = ref.watch(peopleForEventProvider(event.id));
+
+    return categoryAsync.when(
+      data: (category) => locationAsync.when(
+        data: (location) => peopleAsync.when(
+          data: (people) => _buildSheet(context, ref, category, location, people),
+          loading: () => _buildSheet(context, ref, category, location, null),
+          error: (_, __) => _buildSheet(context, ref, category, location, null),
+        ),
+        loading: () => _buildSheet(context, ref, category, null, null),
+        error: (_, __) => _buildSheet(context, ref, category, null, null),
+      ),
+      loading: () => _buildSheet(context, ref, null, null, null),
+      error: (_, __) => _buildSheet(context, ref, null, null, null),
+    );
+  }
+
+  /// Get the display title for the event
+  String _getDisplayTitle(WidgetRef ref, Category? category, Location? location, List<Person>? people) {
+    final service = ref.read(displayTitleServiceProvider);
+    
+    // Convert Event to Activity for displayTitle computation
+    final activity = event.toActivity();
+    
+    return service.getDisplayTitle(
+      activity,
+      people: people,
+      location: location,
+      category: category,
+    );
+  }
+
+  Widget _buildSheet(BuildContext context, WidgetRef ref, Category? category, Location? location, List<Person>? people) {
+    final displayTitle = _getDisplayTitle(ref, category, location, people);
+    
     return DraggableScrollableSheet(
       initialChildSize: 0.6,
       minChildSize: 0.4,
@@ -48,7 +97,7 @@ class EventDetailSheet extends ConsumerWidget {
                   children: [
                     // Title
                     Text(
-                      event.name,
+                      displayTitle,
                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -126,68 +175,72 @@ class EventDetailSheet extends ConsumerWidget {
                 ),
               ),
               // Action buttons
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, -5),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Lock/Unlock button for flexible events with scheduled time
-                    if (!event.isFixed && event.startTime != null) ...[
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton.icon(
-                          onPressed: () => _toggleLock(context, ref),
-                          icon: Icon(
-                            event.isUserLocked ? Icons.lock_open : Icons.lock,
-                          ),
-                          label: Text(
-                            event.isUserLocked ? 'Unlock Activity' : 'Lock Activity',
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                    ],
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: () {
-                              context.pushReplacement('/event/${event.id}/edit');
-                            },
-                            icon: const Icon(Icons.edit),
-                            label: const Text('Edit'),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: FilledButton.icon(
-                            onPressed: () => _showDeleteConfirmation(context, ref),
-                            icon: const Icon(Icons.delete),
-                            label: const Text('Delete'),
-                            style: FilledButton.styleFrom(
-                              backgroundColor: Colors.red,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+              _buildActionButtons(context, ref, displayTitle),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildActionButtons(BuildContext context, WidgetRef ref, String displayTitle) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Lock/Unlock button for flexible events with scheduled time
+          if (!event.isFixed && event.startTime != null) ...[
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => _toggleLock(context, ref, displayTitle),
+                icon: Icon(
+                  event.isUserLocked ? Icons.lock_open : Icons.lock,
+                ),
+                label: Text(
+                  event.isUserLocked ? 'Unlock Activity' : 'Lock Activity',
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    context.pushReplacement('/event/${event.id}/edit');
+                  },
+                  icon: const Icon(Icons.edit),
+                  label: const Text('Edit'),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: () => _showDeleteConfirmation(context, ref, displayTitle),
+                  icon: const Icon(Icons.delete),
+                  label: const Text('Delete'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -243,13 +296,13 @@ class EventDetailSheet extends ConsumerWidget {
   }
 
   /// Shows a confirmation dialog before deleting the event
-  void _showDeleteConfirmation(BuildContext context, WidgetRef ref) {
+  void _showDeleteConfirmation(BuildContext context, WidgetRef ref, String displayTitle) {
     showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Delete Activity'),
         content: Text(
-          'Are you sure you want to delete "${event.name}"? This action cannot be undone.',
+          'Are you sure you want to delete "$displayTitle"? This action cannot be undone.',
         ),
         actions: [
           TextButton(
@@ -278,7 +331,7 @@ class EventDetailSheet extends ConsumerWidget {
             // Show success message
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Activity "${event.name}" deleted successfully'),
+                content: Text('Activity "$displayTitle" deleted successfully'),
                 backgroundColor: Colors.green,
               ),
             );
@@ -298,7 +351,7 @@ class EventDetailSheet extends ConsumerWidget {
   }
 
   /// Toggles the lock status of the event and saves immediately
-  Future<void> _toggleLock(BuildContext context, WidgetRef ref) async {
+  Future<void> _toggleLock(BuildContext context, WidgetRef ref, String displayTitle) async {
     try {
       final repository = ref.read(eventRepositoryProvider);
       final updatedEvent = event.copyWith(
@@ -320,8 +373,8 @@ class EventDetailSheet extends ConsumerWidget {
           SnackBar(
             content: Text(
               updatedEvent.isUserLocked 
-                  ? 'Activity "${updatedEvent.name}" locked'
-                  : 'Activity "${updatedEvent.name}" unlocked',
+                  ? 'Activity "$displayTitle" locked'
+                  : 'Activity "$displayTitle" unlocked',
             ),
             backgroundColor: Colors.green,
           ),

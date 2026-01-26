@@ -7,10 +7,17 @@ import 'scheduling_constraint.dart';
 /// An Activity is any item the user wants to track or schedule. It can be:
 /// - **Scheduled** - Has a specific date/time, appears on the calendar
 /// - **Unscheduled** - No date/time, exists in an "activity bank" for planning
+/// 
+/// ## Validation
+/// An Activity must have at least one of:
+/// - `name` (non-empty)
+/// - Person (via ActivityPeople junction - validated externally with personIds)
+/// - `locationId`
+/// - `categoryId`
 class Activity {
   const Activity({
     required this.id,
-    required this.name,
+    this.name,
     this.description,
     required this.timingType,
     this.startTime,
@@ -30,7 +37,9 @@ class Activity {
   });
 
   final String id;
-  final String name;
+  /// The name/title of the activity. Can be null if the activity has
+  /// associated people, locations, or categories.
+  final String? name;
   final String? description;
   final TimingType timingType;
   final DateTime? startTime;
@@ -75,6 +84,31 @@ class Activity {
   /// Returns true if this activity has scheduling constraints
   bool get hasSchedulingConstraints =>
       schedulingConstraint != null && schedulingConstraint!.hasAnyConstraints;
+
+  /// Returns true if the activity has a non-empty name
+  bool get hasName => name != null && name!.isNotEmpty;
+
+  /// Returns true if the activity has an assigned location
+  bool get hasLocation => locationId != null;
+
+  /// Returns true if the activity has an assigned category
+  bool get hasCategory => categoryId != null;
+
+  /// Validates that the activity has at least one identifying property.
+  /// 
+  /// An Activity must have at least one of:
+  /// - `name` (non-empty)
+  /// - Person (via personIds parameter - validated externally)
+  /// - `locationId`
+  /// - `categoryId`
+  /// 
+  /// [personIds] - Optional list of person IDs associated with this activity
+  /// (from the ActivityPeople junction table)
+  bool isValid({List<String>? personIds}) {
+    final hasPerson = personIds != null && personIds.isNotEmpty;
+    
+    return hasName || hasPerson || hasLocation || hasCategory;
+  }
 
   /// Calculates the effective duration of the activity
   Duration get effectiveDuration {
