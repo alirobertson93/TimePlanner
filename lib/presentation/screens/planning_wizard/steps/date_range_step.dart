@@ -23,7 +23,7 @@ class DateRangeStep extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Select the date range you want to plan for. The scheduler will arrange your flexible events within this period.',
+            'Select the date range you want to plan for. The scheduler will arrange your flexible activities within this period.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),

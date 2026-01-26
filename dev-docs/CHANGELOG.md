@@ -33,6 +33,145 @@ This changelog serves multiple purposes:
 
 ## Session Log
 
+### Session: 2026-01-26 (Activity Model Refactor - Phase 10A Code Implementation)
+
+**Author**: AI Assistant (GitHub Copilot)
+
+**Goal**: Implement Phase 10A terminology refactor - rename Event to Activity across codebase while maintaining backward compatibility.
+
+**Work Completed**:
+
+**Entity Layer** ✅
+
+- ✅ Created `lib/domain/entities/activity.dart`:
+  - New unified Activity class with all properties
+  - Added `seriesId` field for series support
+  - Added `isScheduled` and `isUnscheduled` computed properties
+  - Full implementation with copyWith, equality, and hashCode
+
+- ✅ Updated `lib/domain/entities/event.dart`:
+  - Added seriesId field for backward compatibility
+  - Added `toActivity()` conversion method
+  - Added `Event.fromActivity()` factory constructor
+  - Marked as deprecated in favor of Activity
+
+- ✅ Created `lib/domain/enums/activity_status.dart`:
+  - Renamed from EventStatus with identical values
+  - Maintains same integer values for database compatibility
+
+**Domain Entity Updates** ✅
+
+- ✅ Updated `lib/domain/entities/goal.dart`:
+  - Renamed `eventTitle` → `activityTitle`
+
+- ✅ Updated `lib/domain/enums/goal_type.dart`:
+  - Renamed `GoalType.event` → `GoalType.activity`
+
+- ✅ Updated `lib/domain/enums/goal_metric.dart`:
+  - Renamed `GoalMetric.events` → `GoalMetric.activities`
+
+**Database Updates** ✅
+
+- ✅ Updated `lib/data/database/tables/events.dart`:
+  - Added `seriesId` TEXT column (nullable)
+  - Added `idx_events_series` index
+
+- ✅ Updated `lib/data/database/app_database.dart`:
+  - Schema version bumped to 14
+  - Added migration for seriesId column and index
+
+**Repository Updates** ✅
+
+- ✅ Updated `lib/data/repositories/event_repository.dart`:
+  - Added `getBySeriesId(String seriesId)` method
+  - Added `countInSeries(String seriesId)` method
+  - Updated mapping to include seriesId
+
+- ✅ Updated `lib/data/repositories/goal_repository.dart`:
+  - Renamed `getByEventTitle()` → `getByActivityTitle()`
+  - Updated entity mapping for activityTitle
+
+**Service Layer Updates** ✅
+
+- ✅ Updated `lib/domain/services/historical_event_service.dart`:
+  - Renamed `HistoricalPatternType.eventTitle` → `activityTitle`
+  - Renamed `eventTitlePatterns` → `activityTitlePatterns`
+  - Updated field names in HistoricalActivityPattern
+
+- ✅ Updated `lib/domain/services/goal_recommendation_service.dart`:
+  - Updated GoalType.event → GoalType.activity references
+  - Updated field names in GoalRecommendation
+
+- ✅ Updated `lib/domain/services/goal_warning_service.dart`:
+  - Updated GoalType.event → GoalType.activity references
+
+**Provider Updates** ✅
+
+- ✅ Updated `lib/presentation/providers/goal_providers.dart`
+- ✅ Updated `lib/presentation/providers/goal_form_providers.dart`
+- ✅ Updated `lib/presentation/providers/goal_analysis_providers.dart`
+- ✅ Updated `lib/presentation/providers/historical_analysis_providers.dart`
+  - Renamed `eventTitleSuggestionsProvider` → `activityTitleSuggestionsProvider`
+
+**UI Screen Updates** ✅
+
+- ✅ Updated Day View screens:
+  - day_view_screen.dart: "Create new activity", "Error loading activities"
+  - event_card.dart: "locked activity", "recurring activity"
+  - event_detail_sheet.dart: All event → activity strings
+
+- ✅ Updated Event Form screen:
+  - "Edit Activity", "New Activity", "Activity title", etc.
+
+- ✅ Updated Week View screen:
+  - "Error loading activities"
+
+- ✅ Updated Planning Wizard steps:
+  - "Scheduled Activities", "Unscheduled Activities"
+  - Updated strategy descriptions
+
+- ✅ Updated Onboarding Wizard:
+  - "Recurring Activities" (Step 2)
+  - "Add Recurring Activity"
+  - All event → activity UI strings
+
+- ✅ Updated Settings screen:
+  - "Activities Movable by Default"
+
+- ✅ Updated Goals screens:
+  - goal_form_screen.dart: GoalType.activity, updateActivityTitle
+  - goals_dashboard_screen.dart: Activity-based goal display
+
+**Files Changed**:
+- lib/domain/entities/activity.dart (NEW)
+- lib/domain/enums/activity_status.dart (NEW)
+- lib/domain/entities/event.dart
+- lib/domain/entities/goal.dart
+- lib/domain/enums/goal_type.dart
+- lib/domain/enums/goal_metric.dart
+- lib/data/database/tables/events.dart
+- lib/data/database/app_database.dart
+- lib/data/repositories/event_repository.dart
+- lib/data/repositories/goal_repository.dart
+- lib/domain/services/historical_event_service.dart
+- lib/domain/services/goal_recommendation_service.dart
+- lib/domain/services/goal_warning_service.dart
+- lib/presentation/providers/* (multiple)
+- lib/presentation/screens/* (multiple)
+- lib/presentation/widgets/historical_suggestions.dart
+
+**Remaining for Phase 10A**:
+- Run build_runner to regenerate database code (requires Flutter SDK)
+- File renames (optional - backward compatibility maintained)
+- Update tests
+
+**Next Steps**:
+- Continue with Phase 10B: Optional Title + Display Logic
+- Continue with Phase 10C: Series Support implementation
+
+---
+
+
 ### Session: 2026-01-26 (Activity Model Refactor - Documentation)
 
 **Author**: AI Assistant (GitHub Copilot)

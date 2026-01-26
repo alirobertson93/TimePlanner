@@ -156,9 +156,9 @@ Future<double> _calculateProgress({
   } else if (goal.type == GoalType.location && goal.locationId != null) {
     // Location goals: filter by location
     relevantEvents = events.where((e) => e.locationId == goal.locationId).toList();
-  } else if (goal.type == GoalType.event && goal.eventTitle != null) {
+  } else if (goal.type == GoalType.activity && goal.activityTitle != null) {
     // Event goals: filter by exact title (case-insensitive)
-    final targetTitle = goal.eventTitle!.toLowerCase();
+    final targetTitle = goal.activityTitle!.toLowerCase();
     relevantEvents = events.where((e) => e.name.toLowerCase() == targetTitle).toList();
   } else {
     relevantEvents = events;
@@ -177,7 +177,7 @@ Future<double> _calculateProgress({
       }
       return totalMinutes / 60.0;
 
-    case GoalMetric.events:
+    case GoalMetric.activities:
       return relevantEvents.length.toDouble();
 
     case GoalMetric.completions:

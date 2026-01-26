@@ -5,11 +5,12 @@ import 'categories.dart';
 import 'locations.dart';
 import 'recurrence_rules.dart';
 
-/// Events table definition
+/// Events table definition (will be renamed to Activities in future)
 @TableIndex(name: 'idx_events_start_time', columns: {#fixedStartTime})
 @TableIndex(name: 'idx_events_end_time', columns: {#fixedEndTime})
 @TableIndex(name: 'idx_events_category', columns: {#categoryId})
 @TableIndex(name: 'idx_events_status', columns: {#status})
+@TableIndex(name: 'idx_events_series', columns: {#seriesId})
 class Events extends Table {
   TextColumn get id => text()();
   TextColumn get name => text().withLength(min: 1, max: 200)();
@@ -24,6 +25,9 @@ class Events extends Table {
   /// Reference to the recurrence rule for repeating events
   TextColumn get recurrenceRuleId =>
       text().nullable().references(RecurrenceRules, #id)();
+  
+  /// Groups related activities together (independent of recurrence)
+  TextColumn get seriesId => text().nullable()();
   
   /// JSON-encoded scheduling constraints (time restrictions, day preferences)
   TextColumn get schedulingConstraintsJson => text().nullable()();

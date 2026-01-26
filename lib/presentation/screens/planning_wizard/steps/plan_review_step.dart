@@ -49,7 +49,7 @@ class PlanReviewStep extends ConsumerWidget {
           // Scheduled events by day
           if (result.scheduledEvents.isNotEmpty) ...[
             Text(
-              'Scheduled Events',
+              'Scheduled Activities',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
@@ -263,7 +263,7 @@ class PlanReviewStep extends ConsumerWidget {
             ),
             const SizedBox(width: 8),
             Text(
-              'Time Constraint Warnings (${result.eventsWithConstraintWarnings})',
+              'Schedule Warnings (${result.eventsWithConstraintWarnings})',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: Colors.orange,
                   ),
@@ -281,7 +281,7 @@ class PlanReviewStep extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Some events were scheduled outside their preferred time constraints:',
+                'Some activities were scheduled outside their preferred time constraints:',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -393,7 +393,7 @@ class PlanReviewStep extends ConsumerWidget {
               ),
               const Spacer(),
               Text(
-                '${events.length} events',
+                '${events.length} activities',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -453,7 +453,7 @@ class PlanReviewStep extends ConsumerWidget {
             ),
             const SizedBox(width: 8),
             Text(
-              'Unscheduled Events (${result.unscheduledEvents.length})',
+              'Unscheduled Activities (${result.unscheduledEvents.length})',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: Theme.of(context).colorScheme.error,
                   ),
@@ -471,7 +471,7 @@ class PlanReviewStep extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'The following events couldn\'t be scheduled due to time constraints:',
+                'The following activities couldn\'t be scheduled due to time constraints:',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),

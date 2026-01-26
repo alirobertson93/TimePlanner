@@ -15,7 +15,7 @@ class Goal {
     this.categoryId,
     this.personId,
     this.locationId,
-    this.eventTitle,
+    this.activityTitle,
     required this.debtStrategy,
     this.isActive = true,
     required this.createdAt,
@@ -33,8 +33,8 @@ class Goal {
   final String? personId;
   /// Related location ID (for location goals - tracking time at specific locations)
   final String? locationId;
-  /// Event title for event-type goals (matches event title, case-insensitive)
-  final String? eventTitle;
+  /// Activity title for activity-type goals (matches activity title, case-insensitive)
+  final String? activityTitle;
   final DebtStrategy debtStrategy;
   final bool isActive;
   final DateTime createdAt;
@@ -51,7 +51,7 @@ class Goal {
     String? categoryId,
     String? personId,
     String? locationId,
-    String? eventTitle,
+    String? activityTitle,
     DebtStrategy? debtStrategy,
     bool? isActive,
     DateTime? createdAt,
@@ -67,7 +67,7 @@ class Goal {
       categoryId: categoryId ?? this.categoryId,
       personId: personId ?? this.personId,
       locationId: locationId ?? this.locationId,
-      eventTitle: eventTitle ?? this.eventTitle,
+      activityTitle: activityTitle ?? this.activityTitle,
       debtStrategy: debtStrategy ?? this.debtStrategy,
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
@@ -89,7 +89,7 @@ class Goal {
         other.categoryId == categoryId &&
         other.personId == personId &&
         other.locationId == locationId &&
-        other.eventTitle == eventTitle &&
+        other.activityTitle == activityTitle &&
         other.debtStrategy == debtStrategy &&
         other.isActive == isActive &&
         other.createdAt == createdAt &&
@@ -108,7 +108,7 @@ class Goal {
       categoryId,
       personId,
       locationId,
-      eventTitle,
+      activityTitle,
       debtStrategy,
       isActive,
       createdAt,
@@ -118,6 +118,6 @@ class Goal {
 
   @override
   String toString() {
-    return 'Goal(id: $id, title: $title, type: $type, targetValue: $targetValue, period: $period, personId: $personId, locationId: $locationId, eventTitle: $eventTitle)';
+    return 'Goal(id: $id, title: $title, type: $type, targetValue: $targetValue, period: $period, personId: $personId, locationId: $locationId, activityTitle: $activityTitle)';
   }
 }

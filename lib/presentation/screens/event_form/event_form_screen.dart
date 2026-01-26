@@ -76,15 +76,15 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(formState.isEditMode ? 'Edit Event' : 'New Event'),
+        title: Text(formState.isEditMode ? 'Edit Activity' : 'New Activity'),
         actions: [
           Semantics(
             button: true,
             label: formState.isSaving
-                ? 'Saving event'
+                ? 'Saving activity'
                 : (formState.isEditMode
-                    ? 'Save changes to event'
-                    : 'Save new event'),
+                    ? 'Save changes to activity'
+                    : 'Save new activity'),
             enabled: !formState.isSaving && formState.isValid,
             child: TextButton(
               onPressed: formState.isSaving || !formState.isValid
@@ -157,13 +157,13 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
           // Title field
           Semantics(
             textField: true,
-            label: 'Event title, required field',
+            label: 'Activity title, required field',
             child: TextField(
               controller: _titleController,
               decoration: const InputDecoration(
                 labelText: 'Title *',
                 border: OutlineInputBorder(),
-                hintText: 'Enter event title',
+                hintText: 'Enter activity title',
               ),
               onChanged: formNotifier.updateTitle,
             ),
@@ -176,7 +176,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
             decoration: const InputDecoration(
               labelText: 'Description',
               border: OutlineInputBorder(),
-              hintText: 'Enter event description',
+              hintText: 'Enter activity description',
             ),
             maxLines: 4,
             onChanged: formNotifier.updateDescription,
@@ -243,11 +243,11 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
           const Divider(height: 16),
           const SizedBox(height: 16),
 
-          // Event Type segmented button
+          // Activity Type segmented button
           Semantics(
-            label: 'Event type selection',
+            label: 'Activity type selection',
             child: Text(
-              'Event Type',
+              'Activity Type',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
@@ -255,18 +255,18 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
           Semantics(
             container: true,
             label:
-                'Select event type: ${formState.timingType == TimingType.fixed ? "Fixed time selected" : "Flexible selected"}',
+                'Select activity type: ${formState.timingType == TimingType.fixed ? "Fixed time selected" : "Flexible selected"}',
             child: SegmentedButton<TimingType>(
               segments: const [
                 ButtonSegment<TimingType>(
                   value: TimingType.fixed,
                   label: Text('Fixed Time'),
-                  icon: Icon(Icons.schedule, semanticLabel: 'Fixed time event'),
+                  icon: Icon(Icons.schedule, semanticLabel: 'Fixed time activity'),
                 ),
                 ButtonSegment<TimingType>(
                   value: TimingType.flexible,
                   label: Text('Flexible'),
-                  icon: Icon(Icons.timelapse, semanticLabel: 'Flexible event'),
+                  icon: Icon(Icons.timelapse, semanticLabel: 'Flexible activity'),
                 ),
               ],
               selected: {formState.timingType},
@@ -552,7 +552,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
             contentPadding: EdgeInsets.zero,
           ),
         ] else ...[
-          // Flexible event: Lock this time toggle
+          // Flexible activity: Lock this time toggle
           // Only show if the event is being edited AND has a scheduled time.
           // New flexible events don't have times yet (scheduler places them),
           // so there's nothing to lock. Existing events that have been scheduled
@@ -572,7 +572,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
             ),
             const SizedBox(height: 8),
           ],
-          // Flexible event: Allow duration changes
+          // Flexible activity: Allow duration changes
           SwitchListTile(
             value: formState.appCanResize,
             onChanged: (value) => formNotifier.updateAppCanResize(value),

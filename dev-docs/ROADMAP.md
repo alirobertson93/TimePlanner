@@ -6,13 +6,32 @@ This document is the single source of truth for the project's current status, co
 
 ## Current Status
 
-**Project Phase**: Phase 10 Planned - Activity Model Refactor (Documentation Complete)
+**Project Phase**: Phase 10A In Progress - Activity Model Refactor (Code Implementation)
 
-**Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9 Complete (100%), Phase 10 Documentation Complete
+**Overall Progress**: ~100% Core Features Complete, Phase 8 Complete, Phase 9 Complete (100%), Phase 10A ~80% Complete
 
-**Active Work**: Activity Model Refactor - Documentation phase complete, code implementation to follow
+**Active Work**: Activity Model Refactor - Phase 10A terminology refactor code implementation in progress
 
-**Latest Update (2026-01-26 - Activity Model Refactor Documentation)**:
+**Latest Update (2026-01-26 - Activity Model Refactor Code Implementation)**:
+- ✅ **Phase 10A Code Implementation** (Major Progress):
+  - Created Activity entity with seriesId field
+  - Created ActivityStatus enum (renamed from EventStatus)
+  - Updated Event entity for backward compatibility
+  - Updated Goal entity (eventTitle → activityTitle)
+  - Updated GoalType enum (event → activity)
+  - Updated GoalMetric enum (events → activities)
+  - Updated database schema v14 (added seriesId column + index)
+  - Updated EventRepository with series methods
+  - Updated GoalRepository (getByActivityTitle)
+  - Updated all domain services
+  - Updated all providers
+  - Updated all UI strings in screens
+- 🔄 **Remaining for Phase 10A**:
+  - Run build_runner (requires Flutter SDK)
+  - Update tests to use new terminology
+  - Optional: file renames (backward compatibility maintained)
+
+**Previous Update (2026-01-26 - Activity Model Refactor Documentation)**:
 - ✅ **Documentation Complete**: All dev-docs updated with Activity terminology
   - DATA_MODEL.md: Event → Activity, seriesId field, nullable title, validation rules
   - UX_FLOWS.md: Onboarding updates, series matching prompt, edit scope prompt
@@ -26,6 +45,7 @@ This document is the single source of truth for the project's current status, co
   - Migration guide with SQL examples
   - Testing guidance for each phase
 
+**Previous Update (2026-01-25 - Onboarding Wizard Bug Fixes)**:
 **Previous Update (2026-01-25 - Onboarding Wizard Bug Fixes)**:
 - ✅ **BUG-001 FIXED**: Replay Onboarding from settings now works correctly
   - Added provider invalidation after `resetOnboarding()` to force state refresh
@@ -1067,24 +1087,27 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 
 ## Phase 10: Activity Model Refactor
 
-**Status**: Planned (Documentation Complete)
+**Status**: In Progress (Phase 10A ~80% Complete)
 
 **Goal**: Unify the app's core model around "Activity" terminology, add series support for grouping related activities, and establish unscheduled activities as a planning resource.
 
 **Documentation**: See `dev-docs/ACTIVITY_REFACTOR_IMPLEMENTATION.md` for detailed implementation guide.
 
 ### Phase 10A: Terminology Refactor
-**Status**: Not Started
+**Status**: In Progress (~80% Complete)
 
-- [ ] Rename Event → Activity (entity, table, repository)
-- [ ] Rename EventPeople → ActivityPeople
-- [ ] Update GoalType.event → GoalType.activity
-- [ ] Update Goal.eventTitle → Goal.activityTitle
-- [ ] Update all UI strings
-- [ ] Update all documentation references
-- [ ] Database migration (schema v14)
+- [x] Create Activity entity with backward compatibility
+- [x] Create ActivityStatus enum (renamed from EventStatus)
+- [x] Update GoalType.event → GoalType.activity
+- [x] Update GoalMetric.events → GoalMetric.activities
+- [x] Update Goal.eventTitle → Goal.activityTitle
+- [x] Update all UI strings
+- [x] Database migration (schema v14 - seriesId column)
+- [ ] File renames (optional - backward compatibility maintained)
+- [ ] Run build_runner (requires Flutter SDK)
+- [ ] Update test files
 
-**Files**: See ACTIVITY_REFACTOR_IMPLEMENTATION.md for complete file list
+**Files Changed**: See ACTIVITY_REFACTOR_IMPLEMENTATION.md for complete file list
 
 ### Phase 10B: Optional Title + Display Logic
 **Status**: Not Started
@@ -1096,19 +1119,19 @@ A comprehensive codebase audit was performed. Full report available at `dev-docs
 - [ ] Database migration
 
 ### Phase 10C: Series Support
-**Status**: Not Started
+**Status**: Partially Started (seriesId field added)
 
-- [ ] Add seriesId field to Activity
+- [x] Add seriesId field to Activity
+- [x] Database migration (add series_id column + index)
 - [ ] Create SeriesMatchingService
 - [ ] Create series matching prompt UI
 - [ ] Create edit scope prompt UI
 - [ ] Implement bulk edit with property variance handling
-- [ ] Database migration (add series_id column + index)
 
 ### Phase 10D: Onboarding Wizard Updates
-**Status**: Not Started
+**Status**: Partially Complete
 
-- [ ] Rename Step 2 to "Recurring Activities"
+- [x] Rename Step 2 to "Recurring Activities"
 - [ ] Refactor Step 4 to create unscheduled Activities (not just Goals)
 - [ ] Integrate series matching prompts
 - [ ] Update onboarding tests

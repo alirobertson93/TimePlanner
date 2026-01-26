@@ -211,7 +211,7 @@ class GoalsReviewStep extends ConsumerWidget {
       case 0:
         return 'hours';
       case 1:
-        return 'events';
+        return 'activities';
       default:
         return 'units';
     }

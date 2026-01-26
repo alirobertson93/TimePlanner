@@ -70,7 +70,7 @@ class WeekViewScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'Error loading events',
+                'Error loading activities',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 8),

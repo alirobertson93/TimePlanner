@@ -18,7 +18,7 @@ class HistoricalActivityPattern {
     this.categoryId,
     this.personId,
     this.locationId,
-    this.eventTitle,
+    this.activityTitle,
   });
 
   /// Unique identifier (categoryId, personId, locationId, or normalized title)
@@ -59,7 +59,7 @@ class HistoricalActivityPattern {
   /// Location ID (for location patterns)
   final String? locationId;
 
-  /// Event title (for event title patterns)
+  /// Activity title (for event title patterns)
   final String? eventTitle;
 
   /// Get time in hours with one decimal
@@ -105,7 +105,7 @@ enum HistoricalPatternType {
   location,
 
   /// Pattern based on recurring event title
-  eventTitle,
+  activityTitle,
 }
 
 /// Summary of historical data analysis
@@ -142,7 +142,7 @@ class HistoricalAnalysisSummary {
   /// Location-based patterns
   final List<HistoricalActivityPattern> locationPatterns;
 
-  /// Event title patterns
+  /// Activity title patterns
   final List<HistoricalActivityPattern> eventTitlePatterns;
 
   /// All patterns combined, sorted by confidence
@@ -251,7 +251,7 @@ class HistoricalEventService {
       case HistoricalPatternType.location:
         patterns = summary.locationPatterns;
         break;
-      case HistoricalPatternType.eventTitle:
+      case HistoricalPatternType.activityTitle:
         patterns = summary.eventTitlePatterns;
         break;
     }
@@ -403,7 +403,7 @@ class HistoricalEventService {
       patterns.add(HistoricalActivityPattern(
         id: entry.key,
         name: entry.value.originalTitle ?? entry.key,
-        patternType: HistoricalPatternType.eventTitle,
+        patternType: HistoricalPatternType.activityTitle,
         totalMinutes: entry.value.totalMinutes,
         eventCount: entry.value.eventCount,
         averageMinutesPerWeek: entry.value.totalMinutes / weeksInPeriod,
@@ -411,7 +411,7 @@ class HistoricalEventService {
             entry.value.totalMinutes / entry.value.eventCount,
         firstSeen: entry.value.firstSeen!,
         lastSeen: entry.value.lastSeen!,
-        eventTitle: entry.value.originalTitle ?? entry.key,
+        activityTitle: entry.value.originalTitle ?? entry.key,
       ));
     }
 

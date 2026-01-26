@@ -22,7 +22,7 @@ class GoalRecommendation {
     this.categoryId,
     this.personId,
     this.locationId,
-    this.eventTitle,
+    this.activityTitle,
   });
 
   /// The type of goal being recommended
@@ -58,7 +58,7 @@ class GoalRecommendation {
   /// Location ID (for location-type goals)
   final String? locationId;
 
-  /// Event title (for event-type goals)
+  /// Activity title (for activity-type goals)
   final String? eventTitle;
 
   /// Create a Goal entity from this recommendation
@@ -74,7 +74,7 @@ class GoalRecommendation {
       categoryId: categoryId,
       personId: personId,
       locationId: locationId,
-      eventTitle: eventTitle,
+      activityTitle: activityTitle,
       debtStrategy: DebtStrategy.carryForward,
       isActive: true,
       createdAt: now,
@@ -308,8 +308,8 @@ class GoalRecommendationService {
       // Skip if there's already a goal for this event title
       final hasExistingGoal = existingGoals.any(
         (g) =>
-            g.type == GoalType.event &&
-            g.eventTitle?.toLowerCase() == entry.key,
+            g.type == GoalType.activity &&
+            g.activityTitle?.toLowerCase() == entry.key,
       );
       if (hasExistingGoal) continue;
 
@@ -320,7 +320,7 @@ class GoalRecommendationService {
       // Only recommend if there's meaningful time spent
       if (avgHoursPerWeek >= 0.5) {
         recommendations.add(GoalRecommendation(
-          type: GoalType.event,
+          type: GoalType.activity,
           title: '${suggestedTarget} hours on ${stats.title}',
           description: 'Track time spent on "${stats.title}" events',
           suggestedTarget: suggestedTarget,
@@ -329,7 +329,7 @@ class GoalRecommendationService {
           reason:
               'You have ${stats.eventCount} "${stats.title}" events averaging ${avgHoursPerWeek.toStringAsFixed(1)} hours/week',
           confidence: confidence,
-          eventTitle: stats.title,
+          activityTitle: stats.title,
         ));
       }
     }

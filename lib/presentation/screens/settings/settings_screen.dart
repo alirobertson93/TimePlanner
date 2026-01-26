@@ -64,8 +64,8 @@ class SettingsScreen extends ConsumerWidget {
           _buildSwitchTile(
             context: context,
             icon: Icons.open_with,
-            title: 'Events Movable by Default',
-            subtitle: 'Allow app to reschedule events',
+            title: 'Activities Movable by Default',
+            subtitle: 'Allow app to reschedule activities',
             value: settings.eventsMovableByDefault,
             onChanged: (value) {
               settingsNotifier.setEventsMovableByDefault(value);

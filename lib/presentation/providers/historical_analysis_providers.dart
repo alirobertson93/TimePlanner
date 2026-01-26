@@ -51,12 +51,12 @@ final locationSuggestionsProvider =
   );
 });
 
-/// Provider for event title pattern suggestions (recurring activities)
-final eventTitleSuggestionsProvider =
+/// Provider for activity title pattern suggestions (recurring activities)
+final activityTitleSuggestionsProvider =
     FutureProvider<List<HistoricalActivityPattern>>((ref) async {
   final summary = await ref.watch(historicalAnalysisProvider.future);
   return HistoricalEventService.getSuggestionsForType(
-    type: HistoricalPatternType.eventTitle,
+    type: HistoricalPatternType.activityTitle,
     summary: summary,
     maxSuggestions: 5,
   );

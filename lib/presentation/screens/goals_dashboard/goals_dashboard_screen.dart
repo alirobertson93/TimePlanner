@@ -640,9 +640,9 @@ class GoalsDashboardScreen extends ConsumerWidget {
     }
 
     // For event goals
-    if (goalProgress.goal.type == GoalType.event &&
-        goalProgress.goal.eventTitle != null) {
-      targetName = goalProgress.goal.eventTitle;
+    if (goalProgress.goal.type == GoalType.activity &&
+        goalProgress.goal.activityTitle != null) {
+      targetName = goalProgress.goal.activityTitle;
       indicatorColor = Theme.of(context).colorScheme.primary;
       targetIcon = Icons.event;
     }
@@ -739,7 +739,7 @@ class GoalsDashboardScreen extends ConsumerWidget {
                                   const SizedBox(width: 4),
                                 ],
                                 if (goalProgress.goal.type ==
-                                    GoalType.event) ...[
+                                    GoalType.activity) ...[
                                   Icon(
                                     Icons.event_outlined,
                                     size: 14,
