@@ -199,7 +199,7 @@ class _SuggestionChip extends StatelessWidget {
       case HistoricalPatternType.location:
         iconData = Icons.location_on;
         break;
-      case HistoricalPatternType.eventTitle:
+      case HistoricalPatternType.activityTitle:
         iconData = Icons.event;
         break;
     }

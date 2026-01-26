@@ -15,7 +15,7 @@ abstract class IGoalRepository {
   Future<List<domain.Goal>> getByCategory(String categoryId);
   Future<List<domain.Goal>> getByPerson(String personId);
   Future<List<domain.Goal>> getByLocation(String locationId);
-  Future<List<domain.Goal>> getByEventTitle(String eventTitle);
+  Future<List<domain.Goal>> getByActivityTitle(String activityTitle);
   Stream<List<domain.Goal>> watchAll();
 }
 
@@ -84,11 +84,13 @@ class GoalRepository implements IGoalRepository {
     return results.map(_mapToEntity).toList();
   }
 
-  /// Retrieves goals for a specific event title (event-based goals)
-  Future<List<domain.Goal>> getByEventTitle(String eventTitle) async {
+  /// Retrieves goals for a specific activity title (activity-based goals)
+  /// Note: Database column is still named eventTitle for backward compatibility
+  @override
+  Future<List<domain.Goal>> getByActivityTitle(String activityTitle) async {
     final query = _db.select(_db.goals)
       ..where((tbl) =>
-          tbl.eventTitle.equals(eventTitle) & tbl.isActive.equals(true));
+          tbl.eventTitle.equals(activityTitle) & tbl.isActive.equals(true));
 
     final results = await query.get();
     return results.map(_mapToEntity).toList();
@@ -115,7 +117,7 @@ class GoalRepository implements IGoalRepository {
       categoryId: dbGoal.categoryId,
       personId: dbGoal.personId,
       locationId: dbGoal.locationId,
-      eventTitle: dbGoal.eventTitle,
+      activityTitle: dbGoal.eventTitle, // Map DB column to new domain name
       debtStrategy: DebtStrategy.fromValue(dbGoal.debtStrategy),
       isActive: dbGoal.isActive,
       createdAt: dbGoal.createdAt,
@@ -135,7 +137,7 @@ class GoalRepository implements IGoalRepository {
       categoryId: Value(goal.categoryId),
       personId: Value(goal.personId),
       locationId: Value(goal.locationId),
-      eventTitle: Value(goal.eventTitle),
+      eventTitle: Value(goal.activityTitle), // Map domain field to DB column
       debtStrategy: Value(goal.debtStrategy.value),
       isActive: Value(goal.isActive),
       createdAt: Value(goal.createdAt),

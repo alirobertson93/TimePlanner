@@ -268,9 +268,9 @@ class GoalWarningService {
             hasContributingEvents = true;
           }
           break;
-        case GoalType.event:
-          if (goal.eventTitle != null &&
-              event.name.toLowerCase() == goal.eventTitle!.toLowerCase()) {
+        case GoalType.activity:
+          if (goal.activityTitle != null &&
+              event.name.toLowerCase() == goal.activityTitle!.toLowerCase()) {
             hasContributingEvents = true;
           }
           break;

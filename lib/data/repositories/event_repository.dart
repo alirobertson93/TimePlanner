@@ -19,6 +19,8 @@ abstract class IEventRepository {
   Future<List<domain.Event>> getAll();
   Future<List<domain.Event>> getByCategory(String categoryId);
   Future<List<domain.Event>> getByStatus(EventStatus status);
+  Future<List<domain.Event>> getBySeriesId(String seriesId);
+  Future<int> countInSeries(String seriesId);
 }
 
 /// Repository for managing events in the database
@@ -88,6 +90,26 @@ class EventRepository implements IEventRepository {
     return results.map<domain.Event>(_mapToEntity).toList();
   }
 
+  /// Retrieves events by series ID
+  @override
+  Future<List<domain.Event>> getBySeriesId(String seriesId) async {
+    final query = _db.select(_db.events)
+      ..where((tbl) => tbl.seriesId.equals(seriesId));
+
+    final results = await query.get();
+    return results.map<domain.Event>(_mapToEntity).toList();
+  }
+
+  /// Counts events in a series
+  @override
+  Future<int> countInSeries(String seriesId) async {
+    final result = await (selectOnly(_db.events)
+          ..addColumns([countAll()])
+          ..where(_db.events.seriesId.equals(seriesId)))
+        .getSingle();
+    return result.read(countAll()) ?? 0;
+  }
+
   /// Maps a database event to a domain event entity
   domain.Event _mapToEntity(Event dbEvent) {
     // Parse scheduling constraints from JSON if present
@@ -114,6 +136,7 @@ class EventRepository implements IEventRepository {
       categoryId: dbEvent.categoryId,
       locationId: dbEvent.locationId,
       recurrenceRuleId: dbEvent.recurrenceRuleId,
+      seriesId: dbEvent.seriesId,
       schedulingConstraint: schedulingConstraint,
       appCanMove: dbEvent.appCanMove,
       appCanResize: dbEvent.appCanResize,
@@ -143,6 +166,7 @@ class EventRepository implements IEventRepository {
       categoryId: Value(event.categoryId),
       locationId: Value(event.locationId),
       recurrenceRuleId: Value(event.recurrenceRuleId),
+      seriesId: Value(event.seriesId),
       schedulingConstraintsJson: Value(constraintsJson),
       appCanMove: Value(event.appCanMove),
       appCanResize: Value(event.appCanResize),

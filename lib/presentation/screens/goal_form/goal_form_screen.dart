@@ -248,7 +248,7 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
             _buildLocationPicker(context, ref, formState, formNotifier),
 
           // Event title text field (shown when type is event)
-          if (formState.type == GoalType.event)
+          if (formState.type == GoalType.activity)
             _buildEventTitleField(context, formState, formNotifier),
 
           const SizedBox(height: 24),
@@ -497,9 +497,9 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
                   formNotifier.updateType(GoalType.location);
                   formNotifier.updateLocation(pattern.locationId);
                   break;
-                case HistoricalPatternType.eventTitle:
-                  formNotifier.updateType(GoalType.event);
-                  formNotifier.updateEventTitle(pattern.eventTitle);
+                case HistoricalPatternType.activityTitle:
+                  formNotifier.updateType(GoalType.activity);
+                  formNotifier.updateActivityTitle(pattern.activityTitle);
                   break;
                 case HistoricalPatternType.person:
                   formNotifier.updateType(GoalType.person);
@@ -564,9 +564,9 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
           context: context,
           label: 'Event',
           icon: Icons.event,
-          type: GoalType.event,
-          isSelected: formState.type == GoalType.event,
-          onSelected: () => formNotifier.updateType(GoalType.event),
+          type: GoalType.activity,
+          isSelected: formState.type == GoalType.activity,
+          onSelected: () => formNotifier.updateType(GoalType.activity),
         ),
       ],
     );
@@ -814,7 +814,7 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
     GoalFormState formState,
     GoalForm formNotifier,
   ) {
-    final eventSuggestionsAsync = ref.watch(eventTitleSuggestionsProvider);
+    final eventSuggestionsAsync = ref.watch(activityTitleSuggestionsProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -828,11 +828,11 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
                 'Enter the exact name of the event to track (case-insensitive)',
             hintText: 'e.g., Guitar Practice, Team Meeting',
           ),
-          controller: TextEditingController(text: formState.eventTitle ?? '')
+          controller: TextEditingController(text: formState.activityTitle ?? '')
             ..selection = TextSelection.fromPosition(
-              TextPosition(offset: formState.eventTitle?.length ?? 0),
+              TextPosition(offset: formState.activityTitle?.length ?? 0),
             ),
-          onChanged: formNotifier.updateEventTitle,
+          onChanged: formNotifier.updateActivityTitle,
         ),
         // Event title suggestions based on historical data
         eventSuggestionsAsync.when(
@@ -844,9 +844,9 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
               padding: const EdgeInsets.only(top: 8),
               child: InlineSuggestionList(
                 suggestions: suggestions,
-                selectedId: formState.eventTitle?.toLowerCase(),
+                selectedId: formState.activityTitle?.toLowerCase(),
                 onSuggestionSelected: (pattern) {
-                  formNotifier.updateEventTitle(pattern.eventTitle);
+                  formNotifier.updateActivityTitle(pattern.activityTitle);
                   // Suggest target value based on historical data
                   final suggestedTarget = pattern.weeklyHours.ceil();
                   if (suggestedTarget > 0) {
@@ -886,10 +886,10 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
     } else if (formState.type == GoalType.location &&
         formState.locationId != null) {
       return 'Track $targetText at selected location';
-    } else if (formState.type == GoalType.event &&
-        formState.eventTitle != null &&
-        formState.eventTitle!.isNotEmpty) {
-      return 'Track $targetText on "${formState.eventTitle}"';
+    } else if (formState.type == GoalType.activity &&
+        formState.activityTitle != null &&
+        formState.activityTitle!.isNotEmpty) {
+      return 'Track $targetText on "${formState.activityTitle}"';
     }
 
     return 'Track $targetText';

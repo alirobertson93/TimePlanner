@@ -1,15 +1,14 @@
-import '../enums/event_status.dart';
 import '../enums/activity_status.dart';
 import '../enums/timing_type.dart';
 import 'scheduling_constraint.dart';
-import 'activity.dart';
 
-/// Pure domain entity representing an event in the time planner
+/// Pure domain entity representing an activity in the time planner
 /// 
-/// @deprecated Use Activity instead. This class will be removed in a future version.
-/// Event is now an alias for backward compatibility.
-class Event {
-  const Event({
+/// An Activity is any item the user wants to track or schedule. It can be:
+/// - **Scheduled** - Has a specific date/time, appears on the calendar
+/// - **Unscheduled** - No date/time, exists in an "activity bank" for planning
+class Activity {
+  const Activity({
     required this.id,
     required this.name,
     this.description,
@@ -25,7 +24,7 @@ class Event {
     this.appCanMove = true,
     this.appCanResize = true,
     this.isUserLocked = false,
-    this.status = EventStatus.pending,
+    this.status = ActivityStatus.pending,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -39,7 +38,7 @@ class Event {
   final Duration? duration;
   final String? categoryId;
   final String? locationId;
-  /// Reference to the recurrence rule for repeating events
+  /// Reference to the recurrence rule for repeating activities
   final String? recurrenceRuleId;
   /// Groups related activities together (independent of recurrence)
   final String? seriesId;
@@ -48,30 +47,36 @@ class Event {
   final bool appCanMove;
   final bool appCanResize;
   final bool isUserLocked;
-  final EventStatus status;
+  final ActivityStatus status;
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  /// Returns true if this is a fixed-time event
+  /// Returns true if this is a fixed-time activity
   bool get isFixed => timingType == TimingType.fixed;
 
-  /// Returns true if the app can move this event during scheduling
+  /// Returns true if this activity is scheduled (has a start time)
+  bool get isScheduled => startTime != null;
+
+  /// Returns true if this activity is unscheduled (no start time - in activity bank)
+  bool get isUnscheduled => startTime == null;
+
+  /// Returns true if the app can move this activity during scheduling
   bool get isMovableByApp => appCanMove && !isUserLocked;
 
-  /// Returns true if the app can resize this event during scheduling
+  /// Returns true if the app can resize this activity during scheduling
   bool get isResizableByApp => appCanResize && !isUserLocked;
 
-  /// Returns true if this event is part of a recurring series
+  /// Returns true if this activity is part of a recurring series
   bool get isRecurring => recurrenceRuleId != null;
 
-  /// Returns true if this event is part of an activity series
+  /// Returns true if this activity is part of an activity series
   bool get isInSeries => seriesId != null;
 
-  /// Returns true if this event has scheduling constraints
+  /// Returns true if this activity has scheduling constraints
   bool get hasSchedulingConstraints =>
       schedulingConstraint != null && schedulingConstraint!.hasAnyConstraints;
 
-  /// Calculates the effective duration of the event
+  /// Calculates the effective duration of the activity
   Duration get effectiveDuration {
     if (duration != null) {
       return duration!;
@@ -79,59 +84,11 @@ class Event {
     if (startTime != null && endTime != null) {
       return endTime!.difference(startTime!);
     }
-    throw StateError('Event must have either duration or start/end times');
+    throw StateError('Activity must have either duration or start/end times');
   }
 
-  /// Convert this Event to an Activity
-  Activity toActivity() {
-    return Activity(
-      id: id,
-      name: name,
-      description: description,
-      timingType: timingType,
-      startTime: startTime,
-      endTime: endTime,
-      duration: duration,
-      categoryId: categoryId,
-      locationId: locationId,
-      recurrenceRuleId: recurrenceRuleId,
-      seriesId: seriesId,
-      schedulingConstraint: schedulingConstraint,
-      appCanMove: appCanMove,
-      appCanResize: appCanResize,
-      isUserLocked: isUserLocked,
-      status: ActivityStatus.fromValue(status.value),
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-    );
-  }
-
-  /// Create an Event from an Activity
-  factory Event.fromActivity(Activity activity) {
-    return Event(
-      id: activity.id,
-      name: activity.name,
-      description: activity.description,
-      timingType: activity.timingType,
-      startTime: activity.startTime,
-      endTime: activity.endTime,
-      duration: activity.duration,
-      categoryId: activity.categoryId,
-      locationId: activity.locationId,
-      recurrenceRuleId: activity.recurrenceRuleId,
-      seriesId: activity.seriesId,
-      schedulingConstraint: activity.schedulingConstraint,
-      appCanMove: activity.appCanMove,
-      appCanResize: activity.appCanResize,
-      isUserLocked: activity.isUserLocked,
-      status: EventStatus.fromValue(activity.status.value),
-      createdAt: activity.createdAt,
-      updatedAt: activity.updatedAt,
-    );
-  }
-
-  /// Creates a copy of this event with the given fields replaced
-  Event copyWith({
+  /// Creates a copy of this activity with the given fields replaced
+  Activity copyWith({
     String? id,
     String? name,
     String? description,
@@ -148,11 +105,11 @@ class Event {
     bool? appCanMove,
     bool? appCanResize,
     bool? isUserLocked,
-    EventStatus? status,
+    ActivityStatus? status,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return Event(
+    return Activity(
       id: id ?? this.id,
       name: name ?? this.name,
       description: description ?? this.description,
@@ -180,7 +137,7 @@ class Event {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Event &&
+    return other is Activity &&
         other.id == id &&
         other.name == name &&
         other.description == description &&
@@ -227,6 +184,6 @@ class Event {
 
   @override
   String toString() {
-    return 'Event(id: $id, name: $name, timingType: $timingType, status: $status, isRecurring: $isRecurring, hasConstraints: $hasSchedulingConstraints)';
+    return 'Activity(id: $id, name: $name, timingType: $timingType, status: $status, isRecurring: $isRecurring, isInSeries: $isInSeries, hasConstraints: $hasSchedulingConstraints)';
   }
 }

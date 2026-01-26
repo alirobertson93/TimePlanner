@@ -22,7 +22,7 @@ class GoalFormState {
     this.categoryId,
     this.personId,
     this.locationId,
-    this.eventTitle,
+    this.activityTitle,
     this.debtStrategy = DebtStrategy.ignore,
     this.isActive = true,
     this.isEditMode = false,
@@ -39,7 +39,7 @@ class GoalFormState {
   final String? categoryId;
   final String? personId;
   final String? locationId;
-  final String? eventTitle;
+  final String? activityTitle;
   final DebtStrategy debtStrategy;
   final bool isActive;
   final bool isEditMode;
@@ -59,8 +59,8 @@ class GoalFormState {
     bool clearPersonId = false,
     String? locationId,
     bool clearLocationId = false,
-    String? eventTitle,
-    bool clearEventTitle = false,
+    String? activityTitle,
+    bool clearActivityTitle = false,
     DebtStrategy? debtStrategy,
     bool? isActive,
     bool? isEditMode,
@@ -78,7 +78,7 @@ class GoalFormState {
       categoryId: clearCategoryId ? null : (categoryId ?? this.categoryId),
       personId: clearPersonId ? null : (personId ?? this.personId),
       locationId: clearLocationId ? null : (locationId ?? this.locationId),
-      eventTitle: clearEventTitle ? null : (eventTitle ?? this.eventTitle),
+      activityTitle: clearActivityTitle ? null : (activityTitle ?? this.activityTitle),
       debtStrategy: debtStrategy ?? this.debtStrategy,
       isActive: isActive ?? this.isActive,
       isEditMode: isEditMode ?? this.isEditMode,
@@ -107,8 +107,8 @@ class GoalFormState {
       return 'Please select a location for this location goal';
     }
 
-    if (type == GoalType.event && (eventTitle == null || eventTitle!.isEmpty)) {
-      return 'Please enter an event title for this event goal';
+    if (type == GoalType.activity && (activityTitle == null || activityTitle!.isEmpty)) {
+      return 'Please enter an activity title for this activity goal';
     }
 
     return null;
@@ -185,7 +185,7 @@ class GoalForm extends _$GoalForm {
       categoryId: goal.categoryId,
       personId: goal.personId,
       locationId: goal.locationId,
-      eventTitle: goal.eventTitle,
+      activityTitle: goal.activityTitle,
       debtStrategy: goal.debtStrategy,
       isActive: goal.isActive,
       isEditMode: true,
@@ -199,7 +199,7 @@ class GoalForm extends _$GoalForm {
 
   void updateType(GoalType type) {
     state = state.copyWith(type: type, clearError: true);
-    // Clear category/person/location/eventTitle based on type
+    // Clear category/person/location/activityTitle based on type
     if (type != GoalType.category) {
       state = state.copyWith(clearCategoryId: true);
     }
@@ -209,8 +209,8 @@ class GoalForm extends _$GoalForm {
     if (type != GoalType.location) {
       state = state.copyWith(clearLocationId: true);
     }
-    if (type != GoalType.event) {
-      state = state.copyWith(clearEventTitle: true);
+    if (type != GoalType.activity) {
+      state = state.copyWith(clearActivityTitle: true);
     }
   }
 
@@ -250,11 +250,11 @@ class GoalForm extends _$GoalForm {
     }
   }
 
-  void updateEventTitle(String? eventTitle) {
-    if (eventTitle == null || eventTitle.isEmpty) {
-      state = state.copyWith(clearEventTitle: true, clearError: true);
+  void updateActivityTitle(String? activityTitle) {
+    if (activityTitle == null || activityTitle.isEmpty) {
+      state = state.copyWith(clearActivityTitle: true, clearError: true);
     } else {
-      state = state.copyWith(eventTitle: eventTitle, clearError: true);
+      state = state.copyWith(activityTitle: activityTitle, clearError: true);
     }
   }
 
@@ -306,7 +306,7 @@ class GoalForm extends _$GoalForm {
         categoryId: state.type == GoalType.category ? state.categoryId : null,
         personId: state.type == GoalType.person ? state.personId : null,
         locationId: state.type == GoalType.location ? state.locationId : null,
-        eventTitle: state.type == GoalType.event ? state.eventTitle : null,
+        activityTitle: state.type == GoalType.activity ? state.activityTitle : null,
         debtStrategy: state.debtStrategy,
         isActive: state.isActive,
         createdAt: createdAt,
@@ -368,9 +368,9 @@ class GoalForm extends _$GoalForm {
         );
         targetName = location.name;
       }
-    } else if (state.type == GoalType.event && state.eventTitle != null) {
+    } else if (state.type == GoalType.activity && state.activityTitle != null) {
       // Use event title directly
-      targetName = state.eventTitle!;
+      targetName = state.activityTitle!;
     }
 
     // Build title
@@ -385,7 +385,7 @@ class GoalForm extends _$GoalForm {
       case GoalType.location:
         typeText = 'at';
         break;
-      case GoalType.event:
+      case GoalType.activity:
         typeText = 'on';
         break;
       case GoalType.custom:
